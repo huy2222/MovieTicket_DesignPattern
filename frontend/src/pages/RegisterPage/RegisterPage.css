@@ -1,0 +1,91 @@
+.register-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-card {
+    width: 450px;
+    background: #1e293b;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,0,0,.4);
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.register-header h1 {
+    color: #ef4444;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.register-header p {
+    color: #94a3b8;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: white;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #ef4444;
+}
+
+.register-btn {
+    width: 100%;
+    border: none;
+    background: #ef4444;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.register-btn:hover {
+    background: #dc2626;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    color: #94a3b8;
+}
+
+.login-link a {
+    color: #ef4444;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+.error-box {
+    background: rgba(239,68,68,.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}

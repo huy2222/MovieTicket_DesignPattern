@@ -1,0 +1,143 @@
+.featured-hero {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  margin-bottom: 4rem;
+}
+
+.featured-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+.featured-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(15, 15, 15, 0.95) 0%,
+    rgba(15, 15, 15, 0.7) 50%,
+    rgba(15, 15, 15, 0.3) 100%
+  );
+  z-index: 2;
+}
+
+.featured-content {
+  position: absolute;
+  bottom: 60px;
+  left: 60px;
+  right: 60px;
+  z-index: 3;
+  max-width: 600px;
+  color: white;
+  animation: slideUp 0.8s ease-out;
+}
+
+.featured-content h2 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  line-height: 1.1;
+}
+
+.featured-content p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: rgba(229, 233, 225, 0.9);
+  line-height: 1.6;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.featured-metadata {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.featured-metadata span {
+  display: inline-block;
+  background: rgba(229, 9, 20, 0.2);
+  border: 1px solid rgba(229, 9, 20, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.95rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-hero {
+    height: 400px;
+    margin-bottom: 2rem;
+  }
+
+  .featured-content {
+    bottom: 30px;
+    left: 30px;
+    right: 30px;
+    max-width: 100%;
+  }
+
+  .featured-content h2 {
+    font-size: 2rem;
+  }
+
+  .featured-content p {
+    font-size: 1rem;
+  }
+
+  .featured-metadata {
+    gap: 1rem;
+  }
+
+  .featured-metadata span {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-hero {
+    height: 300px;
+  }
+
+  .featured-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .featured-content p {
+    font-size: 0.95rem;
+  }
+
+  .featured-metadata {
+    gap: 0.5rem;
+  }
+
+  .featured-metadata span {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
