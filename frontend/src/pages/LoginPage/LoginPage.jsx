@@ -4,15 +4,17 @@ import { login } from "../../services/authService";
 import "./LoginPage.css";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
     rememberMe: false,
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -20,28 +22,49 @@ export default function LoginPage() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.username || !formData.password) {
+    if (!formData.email || !formData.password) {
       setError("Vui lòng nhập đầy đủ thông tin.");
       return;
     }
 
     setLoading(true);
+    setError("");
 
-    // setTimeout(() => {
-    //   setLoading(false);
-    //   console.log(formData);
-    // }, 1000);
     try {
-      const response = login(formData);
-      console.log(response.data);
-      navigate("/"); // Chuyển hướng đến trang chủ sau khi đăng nhập thành công
-    } catch {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      const response = await login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const user = response.data;
+
+      // Lưu thông tin user
+      localStorage.setItem("token", user.token);
+      // Lưu thông tin user vào localStorage
+      localStorage.setItem("user", JSON.stringify({
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        role: user.role
+      }));
+      // Chuyển trang
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+
+      if (err.response) {
+        setError("Email hoặc mật khẩu không đúng.");
+      } else {
+        setError("Không thể kết nối tới máy chủ.");
+      }
     } finally {
       setLoading(false);
     }
@@ -59,14 +82,14 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label>Tên đăng nhập</label>
+            <label>Email</label>
 
             <input
-              type="text"
-              name="username"
-              value={formData.username}
+              type="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              placeholder="Nhập tên đăng nhập"
+              placeholder="Nhập email"
             />
           </div>
 
@@ -89,7 +112,6 @@ export default function LoginPage() {
               checked={formData.rememberMe}
               onChange={handleChange}
             />
-
             <span>Ghi nhớ tài khoản</span>
           </div>
 
@@ -101,6 +123,7 @@ export default function LoginPage() {
         <div className="forgot-password">
           <Link to="#">Quên mật khẩu?</Link>
         </div>
+
         <div className="register-link">
           Chưa có tài khoản?
           <Link to="/register">Đăng ký ngay</Link>
