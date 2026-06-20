@@ -47,7 +47,7 @@ public class Cinema {
     private List<Voucher> vouchers;
 
     // Thêm vào class Cinema
-    @OneToMany(mappedBy = "frequentCinema")
+    @ManyToMany(mappedBy = "frequentCinemas")
     private List<Customer> frequentCustomers;
 
 }
