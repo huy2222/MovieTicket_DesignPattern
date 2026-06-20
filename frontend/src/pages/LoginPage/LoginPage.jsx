@@ -56,7 +56,11 @@ export default function LoginPage() {
         role: user.role
       }));
       // Chuyển trang
-      navigate("/");
+      if (user.role === "ADMIN") {
+        navigate("/admin/vouchers");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
 
