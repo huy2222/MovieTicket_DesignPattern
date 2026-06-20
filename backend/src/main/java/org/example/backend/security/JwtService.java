@@ -25,9 +25,7 @@ public class JwtService {
                 secretKey.getBytes(StandardCharsets.UTF_8)
         );
     }
-
     public String generateToken(User user) {
-
         return Jwts.builder()
                 .subject(user.getEmail())
                 .issuedAt(new Date())
@@ -37,7 +35,6 @@ public class JwtService {
     }
 
     public String extractEmail(String token) {
-
         return Jwts.parser()
                 .verifyWith((SecretKey)getSignKey())
                 .build()
@@ -48,20 +45,14 @@ public class JwtService {
     }
 
     public boolean isValid(String token) {
-
         try {
-
             Jwts.parser()
                     .verifyWith((SecretKey)getSignKey())
                     .build()
                     .parseSignedClaims(token);
-
             return true;
-
         } catch (Exception e) {
-
             return false;
-
         }
     }
 

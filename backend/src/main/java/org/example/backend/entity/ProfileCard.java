@@ -18,7 +18,7 @@ public class ProfileCard {
     private Long id; // profileCardId
 
     private int age;
-    private String avatarUrl;
+    private String avatarUrl;      // bỏ
     private double compatibilityScore;
     private String displayName;
     private double distanceInKm;

@@ -28,9 +28,13 @@ public class Customer extends User{
     @JoinColumn(name = "current_location_id")
     private Location currentLocation;
 
-    @ManyToOne
-    @JoinColumn(name = "frequent_cinema_id")
-    private Cinema frequentCinema;
+    @ManyToMany
+    @JoinTable(
+            name = "customer_frequent_cinemas",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "cinema_id")
+    )
+    private List<Cinema> frequentCinemas;
 
     @ManyToMany
     @JoinTable(

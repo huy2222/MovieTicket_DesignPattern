@@ -10,29 +10,35 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource; // Thêm import này
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthenticationFilter jwtFilter;
+    // Tự động inject bean corsConfigurationSource từ file CorsConfig của bạn vào đây
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
 
         return http
+                // Chuyền corsConfigurationSource vào đây để kích hoạt CORS đúng cách
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // public
                         .requestMatchers("/api/auth/**").permitAll()
                         // phải đăng nhập
-                        // Cần cái gì thì vào đây, ví dụ: /api/users/**, /api/bookings/**, ...
-                        .requestMatchers("/api/users/**","/api/bookings/**", "/home").authenticated()
+                        .requestMatchers("/api/customers/**","/api/bookings/**", "/home").authenticated()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session ->
@@ -44,12 +50,4 @@ public class SecurityConfig {
                 )
                 .build();
     }
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .cors(cors -> {})
-//                .csrf(csrf -> csrf.disable());
-//
-//        return http.build();
-//    }
 }
