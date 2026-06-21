@@ -1,7 +1,8 @@
 import './Header.css'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const userStr = localStorage.getItem("user");
   let user = null;
@@ -12,53 +13,49 @@ export default function Header() {
       // ignore
     }
   }
+  const isLoggedIn = Boolean(token && user);
+  const isAdmin = user?.role === "ADMIN";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   return (
     <header className="header">
       <div className="header-content">
-        <h1 className="logo">CINEMAX</h1>
+        <Link to="/" className="logo">CINEMAX</Link>
         <nav className="nav">
           <Link to="/" className="nav-link">
             Home
           </Link>
-          <Link to="/movies" className="nav-link">
-            Movies
-          </Link>
-          {user && (
-            <Link to="/bookings" className="nav-link">
-              Bookings
-            </Link>
-          )}
-          {user && user.role === "ADMIN" && (
-            <Link to="/admin/vouchers" className="nav-link admin-nav-link" style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
-              Admin Panel
-            </Link>
-          )}
-          {user ? (
+          {isLoggedIn ? (
             <>
-              {user.role !== "ADMIN" && (
-                <Link to="/account" className="nav-link">
-                  {user.fullName || "Account"}
-                </Link>
+              {isAdmin ? (
+                <>
+                  <Link to="/admin/cinemas" className="nav-link">
+                    Manage Cinemas
+                  </Link>
+                  <Link to="/admin/vouchers" className="nav-link admin-nav-link" style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
+                    Admin Panel
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/movies" className="nav-link">
+                    Movies
+                  </Link>
+                  <Link to="/bookings" className="nav-link">
+                    Bookings
+                  </Link>
+                  <Link to="/account" className="nav-link">
+                    {user.fullName || "Account"}
+                  </Link>
+                </>
               )}
-              <button 
-                onClick={handleLogout} 
-                className="nav-link" 
-                style={{ 
-                  background: 'none', 
-                  border: 'none', 
-                  color: 'inherit', 
-                  font: 'inherit', 
-                  cursor: 'pointer',
-                  padding: 0
-                }}
-              >
+              <span className="role-badge">{user.role}</span>
+              <button type="button" className="logout-btn" onClick={handleLogout}>
                 Logout
               </button>
             </>

@@ -38,7 +38,7 @@ public class SecurityConfig {
                         // public
                         .requestMatchers("/api/auth/**").permitAll()
                         // admin
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // phải đăng nhập
                         .requestMatchers("/api/customers/**","/api/bookings/**", "/home").authenticated()
                         .anyRequest().permitAll()

@@ -55,9 +55,8 @@ export default function LoginPage() {
         phoneNumber: user.phoneNumber,
         role: user.role
       }));
-      // Chuyển trang
       if (user.role === "ADMIN") {
-        navigate("/admin/vouchers");
+        navigate("/admin");
       } else {
         navigate("/");
       }
