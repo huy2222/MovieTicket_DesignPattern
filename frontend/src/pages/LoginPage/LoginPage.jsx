@@ -55,8 +55,7 @@ export default function LoginPage() {
         phoneNumber: user.phoneNumber,
         role: user.role
       }));
-      // Chuyển trang
-      navigate("/");
+      navigate(user.role === "ADMIN" ? "/admin/cinemas" : "/");
     } catch (err) {
       console.error(err);
 
