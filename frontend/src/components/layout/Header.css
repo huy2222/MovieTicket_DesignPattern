@@ -18,9 +18,9 @@
 }
 
 .logo {
+  display: inline-flex;
   font-size: 2rem;
   font-weight: 800;
-  color: white;
   text-transform: uppercase;
   letter-spacing: 2px;
   background: linear-gradient(135deg, var(--accent-red), var(--accent-gold));
@@ -29,6 +29,7 @@
   background-clip: text;
   margin: 0;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .logo:hover {
@@ -69,6 +70,40 @@
 
 .nav-link:hover::after {
   width: 100%;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 215, 0, 0.36);
+  border-radius: 999px;
+  color: var(--accent-gold);
+  background: rgba(255, 215, 0, 0.08);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.logout-btn {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(229, 9, 20, 0.5);
+  border-radius: 6px;
+  color: var(--text-light);
+  background: rgba(229, 9, 20, 0.12);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.logout-btn:hover {
+  color: #ffffff;
+  background: var(--accent-red);
+  box-shadow: 0 0 18px rgba(229, 9, 20, 0.26);
 }
 
 @media (max-width: 768px) {

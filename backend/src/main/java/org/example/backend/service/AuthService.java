@@ -10,8 +10,10 @@ import org.example.backend.enums.AccountStatus;
 import org.example.backend.enums.Role;
 import org.example.backend.repository.UserRepository;
 import org.example.backend.security.JwtService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -59,14 +61,14 @@ public class AuthService {
     public AuthResponse login(LoginRequest req) {
 
         User user = userRepository.findByEmail(req.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Wrong password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
         if (user.getStatus() != AccountStatus.ACTIVE) {
-            throw new RuntimeException("Account is not active");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account is not active");
         }
 
         String token = jwtService.generateToken(user);
