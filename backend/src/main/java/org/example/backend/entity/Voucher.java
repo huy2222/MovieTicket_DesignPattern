@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.backend.enums.VoucherStatus;
+import org.example.backend.enums.VoucherType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,24 @@ public class Voucher {
 
     @Enumerated(EnumType.STRING)
     private VoucherStatus status;
+
+    // ===== Decorator Pattern Fields =====
+
+    // Loại voucher — dùng để biết nên dùng Decorator nào
+    @Enumerated(EnumType.STRING)
+    private VoucherType voucherType;
+
+    // Phần trăm giảm giá (dùng cho PERCENT_DISCOUNT và MIN_TICKET_DISCOUNT)
+    private Double discountPercent;
+
+    // Số vé cần mua (dùng cho BUY_N_GET_FREE)
+    private Integer buyQuantity;
+
+    // Số vé được tặng (dùng cho BUY_N_GET_FREE)
+    private Integer freeQuantity;
+
+    // Số vé tối thiểu cần mua (dùng cho MIN_TICKET_DISCOUNT)
+    private Integer minTickets;
 
     @ManyToMany
     @JoinTable(

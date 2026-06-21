@@ -55,7 +55,11 @@ export default function LoginPage() {
         phoneNumber: user.phoneNumber,
         role: user.role
       }));
-      navigate(user.role === "ADMIN" ? "/admin/cinemas" : "/");
+      if (user.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
 

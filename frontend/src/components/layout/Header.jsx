@@ -3,8 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-  const isLoggedIn = Boolean(localStorage.getItem("token") && user);
+  const token = localStorage.getItem("token");
+  const userStr = localStorage.getItem("user");
+  let user = null;
+  if (token && userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch (e) {
+      // ignore
+    }
+  }
+  const isLoggedIn = Boolean(token && user);
   const isAdmin = user?.role === "ADMIN";
 
   const handleLogout = () => {
@@ -24,13 +33,26 @@ export default function Header() {
           {isLoggedIn ? (
             <>
               {isAdmin ? (
-                <Link to="/admin/cinemas" className="nav-link">
-                  Manage Cinemas
-                </Link>
+                <>
+                  <Link to="/admin/cinemas" className="nav-link">
+                    Manage Cinemas
+                  </Link>
+                  <Link to="/admin/vouchers" className="nav-link admin-nav-link" style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
+                    Admin Panel
+                  </Link>
+                </>
               ) : (
-                <Link to="/account" className="nav-link">
-                  Account
-                </Link>
+                <>
+                  <Link to="/movies" className="nav-link">
+                    Movies
+                  </Link>
+                  <Link to="/bookings" className="nav-link">
+                    Bookings
+                  </Link>
+                  <Link to="/account" className="nav-link">
+                    {user.fullName || "Account"}
+                  </Link>
+                </>
               )}
               <span className="role-badge">{user.role}</span>
               <button type="button" className="logout-btn" onClick={handleLogout}>
