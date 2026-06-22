@@ -53,6 +53,15 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             <span className="sidebar-link-icon">🎫</span>
             Khuyến mãi
           </NavLink>
+          <NavLink
+            to="/admin/movies"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-link-icon">🎬</span>
+            Phim
+          </NavLink>
         </nav>
 
         {/* Footer */}
