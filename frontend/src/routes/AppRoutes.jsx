@@ -10,6 +10,7 @@ import ProtectedRoute from "./ProtectedRoute";
 // Admin
 import AdminLayout from "../components/layout/AdminLayout";
 import VoucherManagementPage from "../pages/Admin/VoucherManagementPage";
+import MovieManagementPage from "../pages/Admin/MovieManagementPage";
 
 export default function AppRoutes() {
     return (
@@ -24,6 +25,7 @@ export default function AppRoutes() {
             <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<VoucherManagementPage />} />
                 <Route path="vouchers" element={<VoucherManagementPage />} />
+                <Route path="movies" element={<MovieManagementPage />} />
             </Route>
 
             <Route

@@ -20,6 +20,7 @@ public class Movie {
     private Long id; // movieId
 
     private String title;
+    private String englishTitle;
     private String description;
     private String director;
     private String cast;
@@ -27,8 +28,9 @@ public class Movie {
     private String language;
     private String ageRating;
     private int duration; // Tính bằng phút
-    private String images; // Có thể lưu URL ảnh
-    private String trailers; // Có thể lưu URL video
+    private String images; // Poster URL
+    private String banner; // Banner URL
+    private String trailers; // Trailer URL
     private LocalDate releaseDate;
 
     @Enumerated(EnumType.STRING)

@@ -3,6 +3,8 @@ package org.example.backend.repository;
 import org.example.backend.entity.Voucher;
 import org.example.backend.enums.VoucherStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +21,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     
     // Tìm voucher theo tên (chứa keyword)
     List<Voucher> findByNameContainingIgnoreCase(String name);
+
+    @Query("SELECT COUNT(v) > 0 FROM Voucher v JOIN v.applicableMovies m WHERE m.id = :movieId")
+    boolean existsByApplicableMovieId(@Param("movieId") Long movieId);
 }
