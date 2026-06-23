@@ -26,7 +26,6 @@ const SEAT_TYPE_LABELS = {
   STANDARD: "Thường",
   VIP: "VIP",
   COUPLE: "Ghế đôi",
-  DISABLED_ACCESS: "Hỗ trợ tiếp cận",
 };
 
 const ROOM_STATUS_LABELS = {
