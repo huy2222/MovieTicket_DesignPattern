@@ -34,6 +34,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             """)
     Optional<Room> findByIdWithCinemaAndSeats(@Param("id") Long id);
 
+    Optional<Room> findByCinema_IdAndRoomCodeIgnoreCase(Long cinemaId, String roomCode);
+
     boolean existsByCinema_IdAndRoomCodeIgnoreCase(Long cinemaId, String roomCode);
 
     boolean existsByCinema_IdAndRoomCodeIgnoreCaseAndIdNot(Long cinemaId, String roomCode, Long id);
