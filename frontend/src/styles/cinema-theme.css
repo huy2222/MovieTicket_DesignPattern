@@ -1,0 +1,44 @@
+/* Cinema theme — Bootstrap 5 overrides */
+:root {
+  --cinema-black: #0f0f0f;
+  --cinema-dark: #161616;
+  --cinema-red: #e50914;
+  --cinema-white: #ffffff;
+  --font-body: "Inter", "Noto Sans", "Roboto", sans-serif;
+  --font-heading: "Poppins", "Inter", "Noto Sans", sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+.btn-cinema {
+  background: linear-gradient(135deg, #e50914 0%, #b20710 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.btn-cinema:hover,
+.btn-cinema:focus {
+  background: linear-gradient(135deg, #ff1a25 0%, #e50914 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.4);
+}
+
+.text-muted {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.spinner-border.text-danger {
+  color: #e50914 !important;
+}

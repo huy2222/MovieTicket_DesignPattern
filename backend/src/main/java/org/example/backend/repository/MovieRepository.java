@@ -10,12 +10,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @EntityGraph(attributePaths = {"genres"})
     Optional<Movie> findWithGenresById(Long id);
+
+    @EntityGraph(attributePaths = {"genres"})
+    List<Movie> findByStatusOrderByReleaseDateDesc(MovieStatus status);
 
     @Query("""
             SELECT m FROM Movie m

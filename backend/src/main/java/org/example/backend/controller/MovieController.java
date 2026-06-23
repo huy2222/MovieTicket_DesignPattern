@@ -3,11 +3,11 @@ package org.example.backend.controller;
 import org.example.backend.dto.request.MovieRequest;
 import org.example.backend.dto.request.MovieStatusRequest;
 import org.example.backend.dto.response.MovieDeleteResponse;
-import org.example.backend.dto.response.MoviePageResponse;
 import org.example.backend.dto.response.MovieResponse;
 import org.example.backend.enums.MovieStatus;
 import org.example.backend.service.MovieService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,14 +31,23 @@ public class MovieController {
     }
 
     @GetMapping
-    public MoviePageResponse getMovies(
+    public ResponseEntity<?> getMovies(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) MovieStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "desc") String sortDirection
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sortDirection
     ) {
-        return movieService.getMovies(search, status, page, size, sortDirection);
+        if (page == null) {
+            return ResponseEntity.ok(movieService.getMoviesByStatus(status));
+        }
+        return ResponseEntity.ok(movieService.getMovies(
+                search,
+                status,
+                page,
+                size != null ? size : 10,
+                sortDirection != null ? sortDirection : "desc"
+        ));
     }
 
     @GetMapping("/{id}")

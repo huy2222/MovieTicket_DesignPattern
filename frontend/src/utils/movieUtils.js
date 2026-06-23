@@ -2,9 +2,9 @@ export const DEFAULT_POSTER =
   "https://via.placeholder.com/300x450/1a1a1a/e50914?text=No+Poster";
 
 export const MOVIE_STATUS_LABELS = {
-  NOW_SHOWING: "Now Showing",
-  COMING_SOON: "Coming Soon",
-  ENDED: "Ended",
+  NOW_SHOWING: "Đang chiếu",
+  COMING_SOON: "Sắp chiếu",
+  ENDED: "Đã kết thúc",
 };
 
 export const MOVIE_STATUS_CLASS = {
@@ -41,23 +41,36 @@ export function formatDate(dateStr) {
   });
 }
 
-export function getYoutubeEmbedUrl(url) {
+export function getYoutubeVideoId(url) {
   if (!url) return null;
   const trimmed = url.trim();
-
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/,
     /youtube\.com\/shorts\/([\w-]{11})/,
   ];
-
   for (const pattern of patterns) {
     const match = trimmed.match(pattern);
-    if (match) {
-      return `https://www.youtube.com/embed/${match[1]}`;
-    }
+    if (match) return match[1];
   }
-
   return null;
+}
+
+export function getYoutubeEmbedUrl(url) {
+  const videoId = getYoutubeVideoId(url);
+  if (!videoId) return null;
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
+export function getYoutubeAutoplayEmbedUrl(url) {
+  const videoId = getYoutubeVideoId(url);
+  if (!videoId) return null;
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+}
+
+export function getYoutubeThumbnailUrl(url) {
+  const videoId = getYoutubeVideoId(url);
+  if (!videoId) return null;
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 }
 
 export function getPosterUrl(posterUrl) {

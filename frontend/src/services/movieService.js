@@ -1,5 +1,9 @@
 import api from "../api/axiosConfig";
 
-export const getFeaturedMovie = () => api.get("/movies/featured");
-export const getNowShowing = () => api.get("/movies/now-showing");
-export const getComingSoon = () => api.get("/movies/coming-soon");
+export const getNowShowing = () =>
+  api.get("/movies", { params: { status: "NOW_SHOWING" } });
+
+export const getComingSoon = () =>
+  api.get("/movies", { params: { status: "COMING_SOON" } });
+
+export const getMovieById = (id) => api.get(`/movies/${id}`);
