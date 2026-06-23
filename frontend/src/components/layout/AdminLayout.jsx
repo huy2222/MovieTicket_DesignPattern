@@ -35,7 +35,7 @@ export default function AdminLayout() {
     } catch {
       // ignore
     }
-    return { fullName: "Admin", email: "" };
+    return { fullName: "Quản trị viên", email: "" };
   };
 
   const user = getUserInfo();
@@ -66,7 +66,7 @@ export default function AdminLayout() {
               <div className="admin-user-avatar">{initials}</div>
               <div>
                 <div className="admin-user-name">{user.fullName}</div>
-                <div className="admin-user-role">Administrator</div>
+                <div className="admin-user-role">Quản trị viên</div>
               </div>
             </div>
           </div>
