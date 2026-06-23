@@ -28,7 +28,7 @@ export default function Header() {
         <Link to="/" className="logo">CINEMAX</Link>
         <nav className="nav">
           <Link to="/" className="nav-link">
-            Home
+            Trang chủ
           </Link>
           {isLoggedIn ? (
             <>
