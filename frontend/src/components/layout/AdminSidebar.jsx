@@ -12,24 +12,21 @@ export default function AdminSidebar({ isOpen, onToggle }) {
 
   return (
     <>
-      {/* Toggle Button */}
       <button
         className={`sidebar-toggle ${!isOpen ? "collapsed" : ""}`}
         onClick={onToggle}
         title={isOpen ? "Thu gọn sidebar" : "Mở sidebar"}
+        aria-label={isOpen ? "Thu gọn sidebar" : "Mở sidebar"}
       >
-        {isOpen ? "◀" : "▶"}
+        {isOpen ? "‹" : "›"}
       </button>
 
-      {/* Sidebar */}
       <aside className={`admin-sidebar ${!isOpen ? "collapsed" : ""}`}>
-        {/* Logo */}
         <div className="sidebar-logo">
           <h1 className="sidebar-logo-text">Cinemax</h1>
-          <span className="sidebar-logo-badge">Admin</span>
+          <span className="sidebar-logo-badge">Quản trị</span>
         </div>
 
-        {/* Navigation */}
         <nav className="sidebar-nav">
           <p className="sidebar-section-label">Tổng quan</p>
           <NavLink
@@ -40,7 +37,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             }
           >
             <span className="sidebar-link-icon">📊</span>
-            Dashboard
+            Tổng quan
           </NavLink>
 
           <p className="sidebar-section-label">Quản lý</p>
@@ -62,9 +59,26 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             <span className="sidebar-link-icon">🎬</span>
             Phim
           </NavLink>
+          <NavLink
+            to="/admin/cinemas"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-link-icon">🏢</span>
+            Rạp chiếu
+          </NavLink>
+          <NavLink
+            to="/admin/rooms"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-link-icon">#</span>
+            Phòng chiếu
+          </NavLink>
         </nav>
 
-        {/* Footer */}
         <div className="sidebar-footer">
           <button className="sidebar-logout" onClick={handleLogout}>
             <span className="sidebar-link-icon">🚪</span>

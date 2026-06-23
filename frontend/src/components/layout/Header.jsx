@@ -28,40 +28,37 @@ export default function Header() {
         <Link to="/" className="logo">CINEMAX</Link>
         <nav className="nav">
           <Link to="/" className="nav-link">
-            Home
+            Trang chủ
           </Link>
           {isLoggedIn ? (
             <>
               {isAdmin ? (
-                <>
-                  <Link to="/admin/cinemas" className="nav-link">
-                    Manage Cinemas
-                  </Link>
-                  <Link to="/admin/vouchers" className="nav-link admin-nav-link" style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
-                    Admin Panel
-                  </Link>
-                </>
+                <Link to="/admin" className="nav-link admin-nav-link">
+                  Bảng quản trị
+                </Link>
               ) : (
                 <>
                   <Link to="/movies" className="nav-link">
-                    Movies
+                    Phim
                   </Link>
                   <Link to="/bookings" className="nav-link">
-                    Bookings
+                    Đặt vé
                   </Link>
                   <Link to="/account" className="nav-link">
-                    {user.fullName || "Account"}
+                    {user.fullName || "Tài khoản"}
                   </Link>
                 </>
               )}
-              <span className="role-badge">{user.role}</span>
+              <span className="role-badge">
+                {isAdmin ? "Quản trị" : user.role}
+              </span>
               <button type="button" className="logout-btn" onClick={handleLogout}>
-                Logout
+                Đăng xuất
               </button>
             </>
           ) : (
             <Link to="/login" className="nav-link">
-              Login
+              Đăng nhập
             </Link>
           )}
         </nav>
