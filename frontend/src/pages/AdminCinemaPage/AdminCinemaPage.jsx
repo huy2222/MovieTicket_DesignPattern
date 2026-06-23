@@ -1,13 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
-import Header from "../../components/layout/Header";
-import Footer from "../../components/layout/Footer";
 import {
   createAdminCinema,
   deleteAdminCinema,
   getAdminCinemas,
   updateAdminCinema,
 } from "../../services/cinemaAdminService";
+import { getApiErrorMessage } from "../../utils/apiError";
 import "./AdminCinemaPage.css";
+
+const STATUS_OPTIONS = [
+  { value: "ACTIVE", label: "Đang hoạt động" },
+  { value: "MAINTENANCE", label: "Bảo trì" },
+  { value: "CLOSED", label: "Đã đóng" },
+];
+
+const STATUS_LABELS = {
+  ACTIVE: "Đang hoạt động",
+  MAINTENANCE: "Bảo trì",
+  CLOSED: "Đã đóng",
+};
 
 const emptyForm = {
   name: "",
@@ -20,25 +31,30 @@ const emptyForm = {
 export default function AdminCinemaPage() {
   const [cinemas, setCinemas] = useState([]);
   const [form, setForm] = useState(emptyForm);
-  const [editingId, setEditingId] = useState(null);
+  const [editingCinema, setEditingCinema] = useState(null);
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [toast, setToast] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCinemas();
   }, []);
 
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   const fetchCinemas = async () => {
     try {
       setLoading(true);
-      setError("");
       const response = await getAdminCinemas();
-      setCinemas(response.data);
+      setCinemas(response.data || []);
     } catch (err) {
-      console.error(err);
-      setError("Unable to load cinemas from server.");
+      showToast(getApiErrorMessage(err, "Không thể tải danh sách rạp chiếu"), "error");
     } finally {
       setLoading(false);
     }
@@ -47,17 +63,20 @@ export default function AdminCinemaPage() {
   const filteredCinemas = useMemo(() => {
     const keyword = query.trim().toLowerCase();
 
-    if (!keyword) {
-      return cinemas;
-    }
+    return cinemas.filter((cinema) => {
+      const matchesSearch =
+        !keyword ||
+        [cinema.name, cinema.area, cinema.address, cinema.phoneNumber, cinema.status]
+          .join(" ")
+          .toLowerCase()
+          .includes(keyword);
 
-    return cinemas.filter((cinema) =>
-      [cinema.name, cinema.area, cinema.address, cinema.status]
-        .join(" ")
-        .toLowerCase()
-        .includes(keyword)
-    );
-  }, [cinemas, query]);
+      const matchesStatus =
+        statusFilter === "ALL" || cinema.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [cinemas, query, statusFilter]);
 
   const activeCount = cinemas.filter((cinema) => cinema.status === "ACTIVE").length;
   const maintenanceCount = cinemas.filter((cinema) => cinema.status === "MAINTENANCE").length;
@@ -74,212 +93,276 @@ export default function AdminCinemaPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSaving(true);
-    setError("");
 
     try {
-      if (editingId) {
-        const response = await updateAdminCinema(editingId, form);
+      if (editingCinema) {
+        const response = await updateAdminCinema(editingCinema.id, form);
         setCinemas((current) =>
-          current.map((cinema) => (cinema.id === editingId ? response.data : cinema))
+          current.map((cinema) =>
+            cinema.id === editingCinema.id ? response.data : cinema
+          )
         );
+        showToast("Cập nhật rạp chiếu thành công");
       } else {
         const response = await createAdminCinema(form);
         setCinemas((current) => [...current, response.data]);
+        showToast("Thêm rạp chiếu thành công");
       }
 
       handleReset();
     } catch (err) {
-      console.error(err);
-      setError("Unable to save cinema. Please check the backend server.");
+      showToast(getApiErrorMessage(err, "Không thể lưu rạp chiếu"), "error");
     } finally {
       setSaving(false);
     }
   };
 
   const handleEdit = (cinema) => {
-    setEditingId(cinema.id);
+    setEditingCinema(cinema);
     setForm({
-      name: cinema.name,
-      phoneNumber: cinema.phoneNumber,
-      area: cinema.area,
-      address: cinema.address,
-      status: cinema.status,
+      name: cinema.name || "",
+      phoneNumber: cinema.phoneNumber || "",
+      area: cinema.area || "",
+      address: cinema.address || "",
+      status: cinema.status || "ACTIVE",
     });
+    setModalOpen(true);
   };
 
-  const handleDelete = async (cinemaId) => {
-    try {
-      setError("");
-      await deleteAdminCinema(cinemaId);
-      setCinemas((current) => current.filter((cinema) => cinema.id !== cinemaId));
+  const handleDelete = async (cinema) => {
+    if (!window.confirm(`Bạn có chắc muốn xóa rạp "${cinema.name}"?`)) return;
 
-      if (editingId === cinemaId) {
+    try {
+      await deleteAdminCinema(cinema.id);
+      setCinemas((current) => current.filter((item) => item.id !== cinema.id));
+      showToast("Xóa rạp chiếu thành công");
+
+      if (editingCinema?.id === cinema.id) {
         handleReset();
       }
     } catch (err) {
-      console.error(err);
-      setError("Unable to delete cinema. Please try again.");
+      showToast(getApiErrorMessage(err, "Không thể xóa rạp chiếu"), "error");
     }
   };
 
   const handleReset = () => {
-    setEditingId(null);
+    setEditingCinema(null);
     setForm(emptyForm);
+    setModalOpen(false);
+  };
+
+  const handleCreate = () => {
+    setEditingCinema(null);
+    setForm(emptyForm);
+    setModalOpen(true);
   };
 
   return (
-    <div className="admin-cinema-page">
-      <Header />
+    <div className="cinema-management-page">
+      {toast && (
+        <div className={`cinema-toast ${toast.type}`}>{toast.message}</div>
+      )}
 
-      <main className="admin-cinema-main">
-        <section className="admin-cinema-hero">
-          <div>
-            <span className="admin-eyebrow">Admin Workspace</span>
-            <h1>Cinema Management</h1>
+      <div className="cinema-page-header">
+        <h1 className="cinema-page-title">
+          <span className="cinema-page-title-icon">🏢</span>
+          Quản lý Rạp chiếu
+          <span className="cinema-count-badge">{cinemas.length} rạp</span>
+        </h1>
+        <button className="btn-create-cinema" onClick={handleCreate}>
+          <span>＋</span> Thêm rạp
+        </button>
+      </div>
+
+      <div className="cinema-summary-row">
+        <div className="cinema-summary-item">
+          <span>{cinemas.length}</span>
+          <p>Tổng rạp</p>
+        </div>
+        <div className="cinema-summary-item">
+          <span>{activeCount}</span>
+          <p>Đang hoạt động</p>
+        </div>
+        <div className="cinema-summary-item">
+          <span>{maintenanceCount}</span>
+          <p>Bảo trì</p>
+        </div>
+        <div className="cinema-summary-item">
+          <span>{closedCount}</span>
+          <p>Đã đóng</p>
+        </div>
+      </div>
+
+      <div className="cinema-toolbar">
+        <div className="cinema-search">
+          <span className="cinema-search-icon">🔍</span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Tìm theo tên rạp, khu vực, địa chỉ..."
+          />
+        </div>
+
+        <select
+          className="cinema-filter-select"
+          value={statusFilter}
+          onChange={(event) => setStatusFilter(event.target.value)}
+        >
+          <option value="ALL">Tất cả trạng thái</option>
+          {STATUS_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <section className="cinema-table-section">
+        {loading ? (
+          <div className="cinema-loading">
+            <div className="cinema-loading-spinner" />
+            <p>Đang tải dữ liệu...</p>
           </div>
-
-          <div className="admin-stat-row">
-            <div className="admin-stat">
-              <span>{cinemas.length}</span>
-              <p>Total</p>
-            </div>
-            <div className="admin-stat">
-              <span>{activeCount}</span>
-              <p>Active</p>
-            </div>
-            <div className="admin-stat">
-              <span>{maintenanceCount}</span>
-              <p>Maintenance</p>
-            </div>
-            <div className="admin-stat">
-              <span>{closedCount}</span>
-              <p>Closed</p>
-            </div>
+        ) : filteredCinemas.length === 0 ? (
+          <div className="cinema-empty">
+            <div className="cinema-empty-icon">🏢</div>
+            <h3>Chưa có rạp chiếu</h3>
+            <p>Thêm rạp mới hoặc thay đổi bộ lọc để xem dữ liệu.</p>
           </div>
-        </section>
+        ) : (
+          <div className="cinema-table-wrapper">
+            <table className="cinema-table">
+              <thead>
+                <tr>
+                  <th>Tên rạp</th>
+                  <th>Khu vực</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCinemas.map((cinema) => (
+                  <tr key={cinema.id}>
+                    <td>
+                      <strong>{cinema.name}</strong>
+                      <small>{cinema.address}</small>
+                      <small>{cinema.phoneNumber}</small>
+                    </td>
+                    <td>{cinema.area}</td>
+                    <td>
+                      <span className={`cinema-status ${cinema.status?.toLowerCase()}`}>
+                        {STATUS_LABELS[cinema.status] || cinema.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="cinema-actions">
+                        <button
+                          type="button"
+                          className="btn-cinema-action edit"
+                          onClick={() => handleEdit(cinema)}
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-cinema-action delete"
+                          onClick={() => handleDelete(cinema)}
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
-        <section className="admin-cinema-workspace">
-          <form className="cinema-form-panel" onSubmit={handleSubmit}>
-            <div className="panel-heading">
-              <h2>{editingId ? "Edit Cinema" : "Add Cinema"}</h2>
-              {editingId && (
-                <button type="button" className="ghost-action" onClick={handleReset}>
-                  Cancel
-                </button>
-              )}
+      {modalOpen && (
+        <div className="cinema-modal-overlay" onClick={handleReset}>
+          <div className="cinema-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="cinema-modal-header">
+              <h2>{editingCinema ? "Sửa rạp chiếu" : "Thêm rạp chiếu mới"}</h2>
+              <button type="button" className="cinema-modal-close" onClick={handleReset}>
+                ×
+              </button>
             </div>
 
-            <label>
-              Cinema name
-              <input
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="CineMax Central"
-                required
-              />
-            </label>
+            <form className="cinema-modal-form" onSubmit={handleSubmit}>
+              <div className="cinema-modal-section-title">Thông tin rạp</div>
+              <div className="cinema-form-grid">
+                <label>
+                  Tên rạp *
+                  <input
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="CineMax Trung tâm"
+                    required
+                  />
+                </label>
 
-            <label>
-              Phone number
-              <input
-                name="phoneNumber"
-                value={form.phoneNumber}
-                onChange={handleChange}
-                placeholder="028 0000 0000"
-                required
-              />
-            </label>
-
-            <label>
-              Area
-              <input
-                name="area"
-                value={form.area}
-                onChange={handleChange}
-                placeholder="District 1"
-                required
-              />
-            </label>
-
-            <label>
-              Address
-              <textarea
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                placeholder="Street, ward, district"
-                required
-              />
-            </label>
-
-            <label>
-              Status
-              <select name="status" value={form.status} onChange={handleChange}>
-                <option value="ACTIVE">Active</option>
-                <option value="MAINTENANCE">Maintenance</option>
-                <option value="CLOSED">Closed</option>
-              </select>
-            </label>
-
-            {error && <div className="admin-error">{error}</div>}
-
-            <button className="primary-action" type="submit" disabled={saving}>
-              {saving ? "Saving..." : editingId ? "Save Changes" : "Add Cinema"}
-            </button>
-          </form>
-
-          <div className="cinema-list-panel">
-            <div className="list-toolbar">
-              <h2>Cinemas</h2>
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search"
-              />
-            </div>
-
-            <div className="cinema-table">
-              <div className="cinema-table-head">
-                <span>Name</span>
-                <span>Area</span>
-                <span>Status</span>
-                <span>Actions</span>
+                <label>
+                  Số điện thoại *
+                  <input
+                    name="phoneNumber"
+                    value={form.phoneNumber}
+                    onChange={handleChange}
+                    placeholder="028 0000 0000"
+                    required
+                  />
+                </label>
               </div>
 
-              {loading && <div className="empty-state">Loading cinemas...</div>}
+              <div className="cinema-form-grid">
+                <label>
+                  Khu vực *
+                  <input
+                    name="area"
+                    value={form.area}
+                    onChange={handleChange}
+                    placeholder="Quận 1"
+                    required
+                  />
+                </label>
 
-              {!loading && filteredCinemas.map((cinema) => (
-                <div className="cinema-table-row" key={cinema.id}>
-                  <div>
-                    <strong>{cinema.name}</strong>
-                    <small>{cinema.address}</small>
-                    <small>{cinema.phoneNumber}</small>
-                  </div>
-                  <span>{cinema.area}</span>
-                  <span className={`status-pill status-${cinema.status.toLowerCase()}`}>
-                    {cinema.status}
-                  </span>
-                  <div className="row-actions">
-                    <button type="button" onClick={() => handleEdit(cinema)}>
-                      Edit
-                    </button>
-                    <button type="button" onClick={() => handleDelete(cinema.id)}>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
+                <label>
+                  Trạng thái
+                  <select name="status" value={form.status} onChange={handleChange}>
+                    {STATUS_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
 
-              {!loading && filteredCinemas.length === 0 && (
-                <div className="empty-state">No cinema found</div>
-              )}
-            </div>
+              <label>
+                Địa chỉ *
+                <textarea
+                  name="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  placeholder="Đường, phường, quận"
+                  required
+                />
+              </label>
+
+              <div className="cinema-modal-actions">
+                <button type="button" className="btn-cinema-cancel" onClick={handleReset}>
+                  Hủy
+                </button>
+                <button className="btn-cinema-submit" type="submit" disabled={saving}>
+                  {saving ? "Đang lưu..." : editingCinema ? "Lưu thay đổi" : "Thêm rạp"}
+                </button>
+              </div>
+            </form>
           </div>
-        </section>
-      </main>
-
-      <Footer />
+        </div>
+      )}
     </div>
   );
 }

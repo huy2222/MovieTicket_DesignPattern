@@ -55,13 +55,13 @@
 /* Toggle Button */
 .sidebar-toggle {
   position: fixed;
-  top: 1.25rem;
-  left: 270px;
-  width: 32px;
-  height: 32px;
-  background: rgba(229, 9, 20, 0.15);
+  top: 5.75rem;
+  left: 244px;
+  width: 34px;
+  height: 42px;
+  background: rgba(229, 9, 20, 0.14);
   border: 1px solid rgba(229, 9, 20, 0.3);
-  border-radius: 8px;
+  border-radius: 0 10px 10px 0;
   color: var(--text-light);
   display: flex;
   align-items: center;
@@ -69,7 +69,9 @@
   cursor: pointer;
   z-index: 1001;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 1.75rem;
+  line-height: 1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
 .sidebar-toggle:hover {
@@ -79,7 +81,8 @@
 }
 
 .sidebar-toggle.collapsed {
-  left: 10px;
+  left: 0.75rem;
+  border-radius: 10px;
 }
 
 /* Navigation */
@@ -184,10 +187,11 @@
   }
 
   .sidebar-toggle {
-    left: 10px;
+    top: 1rem;
+    left: 0.75rem;
   }
 
   .sidebar-toggle.open {
-    left: 270px;
+    left: 244px;
   }
 }
