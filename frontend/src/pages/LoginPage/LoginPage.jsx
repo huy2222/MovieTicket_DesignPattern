@@ -55,8 +55,11 @@ export default function LoginPage() {
         phoneNumber: user.phoneNumber,
         role: user.role
       }));
-      // Chuyển trang
-      navigate("/");
+      if (user.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
 

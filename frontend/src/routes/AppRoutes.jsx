@@ -4,34 +4,31 @@ import HomePage from "../pages/HomePage/HomePage";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
+import AdminCinemaPage from "../pages/AdminCinemaPage/AdminCinemaPage";
+
+// Admin
+import AdminLayout from "../components/layout/AdminLayout";
+import VoucherManagementPage from "../pages/Admin/VoucherManagementPage";
+import MovieManagementPage from "../pages/Admin/MovieManagementPage";
+import RoomManagementPage from "../pages/Admin/RoomManagementPage";
+
 export default function AppRoutes() {
     return (
         <Routes>
+            {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/account" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/account" element={<ProfilePage />} />
+
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<VoucherManagementPage />} />
+                <Route path="vouchers" element={<VoucherManagementPage />} />
+                <Route path="movies" element={<MovieManagementPage />} />
+                <Route path="cinemas" element={<AdminCinemaPage />} />
+                <Route path="rooms" element={<RoomManagementPage />} />
+            </Route>
         </Routes>
-        // dùng khi muốn chặn khi chưa login
-    //     <Routes>
-
-    //   {/* public route */}
-    //   <Route path="/login" element={<LoginPage />} />
-
-    //   {/* public home (tuỳ bạn) */}
-    //   <Route path="/" element={<HomePage />} />
-
-    //   {/* protected route */}
-    //   <Route
-    //     path="/booking"
-    //     element={
-    //       <ProtectedRoute>
-    //         <BookingPage />
-    //       </ProtectedRoute>
-    //     }
-    //   />
-
-    // </Routes>
     );
 }

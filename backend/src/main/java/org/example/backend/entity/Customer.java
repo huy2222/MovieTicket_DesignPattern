@@ -28,6 +28,7 @@ public class Customer extends User{
     @JoinColumn(name = "current_location_id")
     private Location currentLocation;
 
+    // Rạp chiếu phim thường xuyên ghé thăm (Đã chuyển thành danh sách nhiều rạp)
     @ManyToMany
     @JoinTable(
             name = "customer_frequent_cinemas",

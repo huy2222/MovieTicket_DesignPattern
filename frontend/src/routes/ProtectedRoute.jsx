@@ -1,13 +1,16 @@
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, requiredRole }) {
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  // chưa có token → đá về login
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // có token → cho phép truy cập
+  if (requiredRole && user?.role !== requiredRole) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 }
