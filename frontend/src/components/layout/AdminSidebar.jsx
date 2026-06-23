@@ -1,6 +1,95 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./AdminSidebar.css";
 
+function SidebarIcon({ name }) {
+  const commonProps = {
+    width: 20,
+    height: 20,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true",
+  };
+
+  const icons = {
+    dashboard: (
+      <svg {...commonProps}>
+        <rect x="3" y="3" width="7" height="8" rx="1.5" />
+        <rect x="14" y="3" width="7" height="5" rx="1.5" />
+        <rect x="14" y="12" width="7" height="9" rx="1.5" />
+        <rect x="3" y="15" width="7" height="6" rx="1.5" />
+      </svg>
+    ),
+    voucher: (
+      <svg {...commonProps}>
+        <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V7Z" />
+        <path d="M9 8h.01" />
+        <path d="M9 12h.01" />
+        <path d="M9 16h.01" />
+        <path d="M13 9h4" />
+        <path d="M13 15h4" />
+      </svg>
+    ),
+    movie: (
+      <svg {...commonProps}>
+        <rect x="4" y="5" width="16" height="14" rx="2" />
+        <path d="M8 5v14" />
+        <path d="M16 5v14" />
+        <path d="M4 9h4" />
+        <path d="M4 15h4" />
+        <path d="M16 9h4" />
+        <path d="M16 15h4" />
+      </svg>
+    ),
+    cinema: (
+      <svg {...commonProps}>
+        <path d="M4 21V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v16" />
+        <path d="M17 9h1a2 2 0 0 1 2 2v10" />
+        <path d="M8 7h.01" />
+        <path d="M12 7h.01" />
+        <path d="M8 11h.01" />
+        <path d="M12 11h.01" />
+        <path d="M8 15h.01" />
+        <path d="M12 15h.01" />
+        <path d="M2 21h20" />
+      </svg>
+    ),
+    room: (
+      <svg {...commonProps}>
+        <path d="M5 4h14v5H5z" />
+        <path d="M7 14h2" />
+        <path d="M11 14h2" />
+        <path d="M15 14h2" />
+        <path d="M7 18h2" />
+        <path d="M11 18h2" />
+        <path d="M15 18h2" />
+        <path d="M4 22h16" />
+      </svg>
+    ),
+    showtime: (
+      <svg {...commonProps}>
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 8v5l3 2" />
+        <path d="M5 4 3 6" />
+        <path d="m19 4 2 2" />
+      </svg>
+    ),
+    logout: (
+      <svg {...commonProps}>
+        <path d="M10 17 15 12 10 7" />
+        <path d="M15 12H3" />
+        <path d="M21 19V5a2 2 0 0 0-2-2h-5" />
+        <path d="M14 21h5a2 2 0 0 0 2-2" />
+      </svg>
+    ),
+  };
+
+  return <span className="sidebar-link-icon">{icons[name]}</span>;
+}
+
 export default function AdminSidebar({ isOpen, onToggle }) {
   const navigate = useNavigate();
 
@@ -36,7 +125,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <span className="sidebar-link-icon">📊</span>
+            <SidebarIcon name="dashboard" />
             Tổng quan
           </NavLink>
 
@@ -47,7 +136,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <span className="sidebar-link-icon">🎫</span>
+            <SidebarIcon name="voucher" />
             Khuyến mãi
           </NavLink>
           <NavLink
@@ -56,7 +145,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <span className="sidebar-link-icon">🎬</span>
+            <SidebarIcon name="movie" />
             Phim
           </NavLink>
           <NavLink
@@ -65,7 +154,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <span className="sidebar-link-icon">🏢</span>
+            <SidebarIcon name="cinema" />
             Rạp chiếu
           </NavLink>
           <NavLink
@@ -74,14 +163,23 @@ export default function AdminSidebar({ isOpen, onToggle }) {
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <span className="sidebar-link-icon">#</span>
+            <SidebarIcon name="room" />
             Phòng chiếu
+          </NavLink>
+          <NavLink
+            to="/admin/showtimes"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="showtime" />
+            Lịch chiếu
           </NavLink>
         </nav>
 
         <div className="sidebar-footer">
           <button className="sidebar-logout" onClick={handleLogout}>
-            <span className="sidebar-link-icon">🚪</span>
+            <SidebarIcon name="logout" />
             Đăng xuất
           </button>
         </div>

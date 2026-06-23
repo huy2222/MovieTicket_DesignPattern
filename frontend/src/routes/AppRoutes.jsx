@@ -11,6 +11,7 @@ import AdminLayout from "../components/layout/AdminLayout";
 import VoucherManagementPage from "../pages/Admin/VoucherManagementPage";
 import MovieManagementPage from "../pages/Admin/MovieManagementPage";
 import RoomManagementPage from "../pages/Admin/RoomManagementPage";
+import ShowtimeManagementPage from "../pages/Admin/ShowtimeManagementPage";
 
 export default function AppRoutes() {
     return (
@@ -28,6 +29,7 @@ export default function AppRoutes() {
                 <Route path="movies" element={<MovieManagementPage />} />
                 <Route path="cinemas" element={<AdminCinemaPage />} />
                 <Route path="rooms" element={<RoomManagementPage />} />
+                <Route path="showtimes" element={<ShowtimeManagementPage />} />
             </Route>
         </Routes>
     );
