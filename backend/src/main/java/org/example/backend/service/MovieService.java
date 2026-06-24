@@ -3,8 +3,10 @@ package org.example.backend.service;
 import org.example.backend.dto.request.MovieRequest;
 import org.example.backend.dto.request.MovieStatusRequest;
 import org.example.backend.dto.response.MovieDeleteResponse;
+import org.example.backend.dto.response.MovieHomeResponse;
 import org.example.backend.dto.response.MoviePageResponse;
 import org.example.backend.dto.response.MovieResponse;
+import org.example.backend.dto.response.MovieSummaryResponse;
 import org.example.backend.entity.Genre;
 import org.example.backend.entity.Movie;
 import org.example.backend.enums.AgeRating;
@@ -99,13 +101,37 @@ public class MovieService {
     }
 
     @Transactional(readOnly = true)
-    public List<MovieResponse> getMoviesByStatus(MovieStatus status) {
+    public List<MovieSummaryResponse> getMoviesByStatus(MovieStatus status) {
         if (status == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trạng thái phim không được để trống");
         }
         return movieRepository.findByStatusOrderByReleaseDateDesc(status).stream()
-                .map(this::toResponse)
+                .map(this::toSummaryResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public MovieHomeResponse getHomeMovies() {
+        List<Movie> movies = movieRepository.findByStatusInOrderByReleaseDateDesc(
+                List.of(MovieStatus.NOW_SHOWING, MovieStatus.COMING_SOON)
+        );
+
+        List<MovieSummaryResponse> nowShowing = new ArrayList<>();
+        List<MovieSummaryResponse> comingSoon = new ArrayList<>();
+
+        for (Movie movie : movies) {
+            MovieSummaryResponse summary = toSummaryResponse(movie);
+            if (movie.getStatus() == MovieStatus.NOW_SHOWING) {
+                nowShowing.add(summary);
+            } else if (movie.getStatus() == MovieStatus.COMING_SOON) {
+                comingSoon.add(summary);
+            }
+        }
+
+        return MovieHomeResponse.builder()
+                .nowShowing(nowShowing)
+                .comingSoon(comingSoon)
+                .build();
     }
 
     @Transactional
@@ -287,6 +313,18 @@ public class MovieService {
             return null;
         }
         return List.of(status);
+    }
+
+    private MovieSummaryResponse toSummaryResponse(Movie movie) {
+        return MovieSummaryResponse.builder()
+                .id(movie.getId())
+                .title(movie.getTitle())
+                .posterUrl(movie.getImages())
+                .duration(movie.getDuration())
+                .releaseDate(movie.getReleaseDate())
+                .ageRestriction(movie.getAgeRating())
+                .status(movie.getStatus())
+                .build();
     }
 
     private MovieResponse toResponse(Movie movie) {
