@@ -98,6 +98,16 @@ public class MovieService {
         return toResponse(findMovieWithGenres(id));
     }
 
+    @Transactional(readOnly = true)
+    public List<MovieResponse> getMoviesByStatus(MovieStatus status) {
+        if (status == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trạng thái phim không được để trống");
+        }
+        return movieRepository.findByStatusOrderByReleaseDateDesc(status).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     @Transactional
     public MovieResponse createMovie(MovieRequest request) {
         validateMovieRequest(request, true);
