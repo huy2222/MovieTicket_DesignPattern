@@ -21,6 +21,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @EntityGraph(attributePaths = {"genres"})
     List<Movie> findByStatusOrderByReleaseDateDesc(MovieStatus status);
 
+    List<Movie> findByStatusInOrderByReleaseDateDesc(Collection<MovieStatus> statuses);
+
     @Query("""
             SELECT m FROM Movie m
             WHERE (:search IS NULL OR :search = '' OR LOWER(m.title) LIKE LOWER(CONCAT('%', :search, '%'))

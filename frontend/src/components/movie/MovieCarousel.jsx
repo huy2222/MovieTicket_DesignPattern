@@ -16,6 +16,7 @@ function MovieCarouselCard({ movie }) {
           alt={movie.title}
           className="carousel-poster"
           loading="lazy"
+          decoding="async"
           draggable={false}
         />
         <div className="carousel-poster-overlay" />

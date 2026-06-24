@@ -1,38 +1,58 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage/HomePage";
-import MovieDetailPage from "../pages/MovieDetailPage/MovieDetailPage";
-import LoginPage from "../pages/LoginPage/LoginPage";
-import RegisterPage from "../pages/RegisterPage/RegisterPage";
-import ProfilePage from "../pages/ProfilePage/ProfilePage";
-import AdminCinemaPage from "../pages/AdminCinemaPage/AdminCinemaPage";
 
-// Admin
-import AdminLayout from "../components/layout/AdminLayout";
-import VoucherManagementPage from "../pages/Admin/VoucherManagementPage";
-import MovieManagementPage from "../pages/Admin/MovieManagementPage";
-import RoomManagementPage from "../pages/Admin/RoomManagementPage";
-import ShowtimeManagementPage from "../pages/Admin/ShowtimeManagementPage";
+const MovieDetailPage = lazy(
+  () => import("../pages/MovieDetailPage/MovieDetailPage")
+);
+const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
+const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
+const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
+const AdminCinemaPage = lazy(
+  () => import("../pages/AdminCinemaPage/AdminCinemaPage")
+);
+const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
+const VoucherManagementPage = lazy(
+  () => import("../pages/Admin/VoucherManagementPage")
+);
+const MovieManagementPage = lazy(
+  () => import("../pages/Admin/MovieManagementPage")
+);
+const RoomManagementPage = lazy(
+  () => import("../pages/Admin/RoomManagementPage")
+);
+const ShowtimeManagementPage = lazy(
+  () => import("../pages/Admin/ShowtimeManagementPage")
+);
+
+function PageLoader() {
+  return (
+    <div className="page-loader">
+      <div className="page-loader-spinner" />
+    </div>
+  );
+}
 
 export default function AppRoutes() {
-    return (
-        <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/movies/:id" element={<MovieDetailPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/account" element={<ProfilePage />} />
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/movies/:id" element={<MovieDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/account" element={<ProfilePage />} />
 
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<VoucherManagementPage />} />
-                <Route path="vouchers" element={<VoucherManagementPage />} />
-                <Route path="movies" element={<MovieManagementPage />} />
-                <Route path="cinemas" element={<AdminCinemaPage />} />
-                <Route path="rooms" element={<RoomManagementPage />} />
-                <Route path="showtimes" element={<ShowtimeManagementPage />} />
-            </Route>
-        </Routes>
-    );
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<VoucherManagementPage />} />
+          <Route path="vouchers" element={<VoucherManagementPage />} />
+          <Route path="movies" element={<MovieManagementPage />} />
+          <Route path="cinemas" element={<AdminCinemaPage />} />
+          <Route path="rooms" element={<RoomManagementPage />} />
+          <Route path="showtimes" element={<ShowtimeManagementPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
 }

@@ -3,6 +3,7 @@ package org.example.backend.controller;
 import org.example.backend.dto.request.MovieRequest;
 import org.example.backend.dto.request.MovieStatusRequest;
 import org.example.backend.dto.response.MovieDeleteResponse;
+import org.example.backend.dto.response.MovieHomeResponse;
 import org.example.backend.dto.response.MovieResponse;
 import org.example.backend.enums.MovieStatus;
 import org.example.backend.service.MovieService;
@@ -28,6 +29,11 @@ public class MovieController {
 
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
+    }
+
+    @GetMapping("/home")
+    public MovieHomeResponse getHomeMovies() {
+        return movieService.getHomeMovies();
     }
 
     @GetMapping

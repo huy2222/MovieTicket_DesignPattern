@@ -75,6 +75,54 @@
   padding-bottom: 2rem;
 }
 
+.carousel-skeleton-section {
+  margin-bottom: 3rem;
+}
+
+.carousel-skeleton-title {
+  width: 220px;
+  height: 2rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 25%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.carousel-skeleton-track {
+  display: flex;
+  gap: 1.25rem;
+  overflow: hidden;
+}
+
+.carousel-skeleton-card {
+  flex: 0 0 200px;
+  height: 320px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .cinema-promo {
   padding: 4rem 0;
   background: linear-gradient(
