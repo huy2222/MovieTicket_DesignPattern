@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./HomePage.css";
 
-import { getNowShowing, getComingSoon } from "../../services/movieService.js";
+import { getHomeMovies } from "../../services/movieService.js";
 
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
@@ -16,12 +16,9 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [nowRes, soonRes] = await Promise.all([
-          getNowShowing(),
-          getComingSoon(),
-        ]);
-        setNowShowing(nowRes.data ?? []);
-        setComingSoon(soonRes.data ?? []);
+        const { data } = await getHomeMovies();
+        setNowShowing(data.nowShowing ?? []);
+        setComingSoon(data.comingSoon ?? []);
       } catch (err) {
         console.error("Failed to load movies:", err);
       } finally {
@@ -55,11 +52,24 @@ export default function HomePage() {
 
       <main className="container cinema-main">
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-danger" role="status">
-              <span className="visually-hidden">Đang tải...</span>
+          <>
+            <div className="carousel-skeleton-section">
+              <div className="carousel-skeleton-title" />
+              <div className="carousel-skeleton-track">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="carousel-skeleton-card" />
+                ))}
+              </div>
             </div>
-          </div>
+            <div className="carousel-skeleton-section">
+              <div className="carousel-skeleton-title" />
+              <div className="carousel-skeleton-track">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={`soon-${i}`} className="carousel-skeleton-card" />
+                ))}
+              </div>
+            </div>
+          </>
         ) : (
           <>
             <MovieCarousel

@@ -4,8 +4,8 @@
   --cinema-dark: #161616;
   --cinema-red: #e50914;
   --cinema-white: #ffffff;
-  --font-body: "Inter", "Noto Sans", "Roboto", sans-serif;
-  --font-heading: "Poppins", "Inter", "Noto Sans", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-heading: "Poppins", "Inter", system-ui, sans-serif;
 }
 
 body {
@@ -41,4 +41,27 @@ h1, h2, h3, h4, h5, h6 {
 
 .spinner-border.text-danger {
   color: #e50914 !important;
+}
+
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  background: #0f0f0f;
+}
+
+.page-loader-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgba(229, 9, 20, 0.2);
+  border-top-color: #e50914;
+  border-radius: 50%;
+  animation: page-loader-spin 0.7s linear infinite;
+}
+
+@keyframes page-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -1,5 +1,7 @@
 import api from "../api/axiosConfig";
 
+export const getHomeMovies = () => api.get("/movies/home");
+
 export const getNowShowing = () =>
   api.get("/movies", { params: { status: "NOW_SHOWING" } });
 
