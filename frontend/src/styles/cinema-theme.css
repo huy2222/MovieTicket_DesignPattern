@@ -6,6 +6,20 @@
   --cinema-white: #ffffff;
   --font-body: "Inter", system-ui, sans-serif;
   --font-heading: "Poppins", "Inter", system-ui, sans-serif;
+
+  /* Global variables used in vanilla CSS layouts and components */
+  --primary-dark: #0a0a0a;
+  --primary-darker: #111111;
+  --secondary-dark: #1a1a1a;
+  
+  --accent-red: #ff3847;       /* Brighter red for premium design and high contrast */
+  --accent-gold: #ffc83b;      /* Vibrant gold/yellow for excellent visibility */
+  
+  --text-light: #ffffff;       /* Bright text */
+  --text-muted: #b0b0b8;       /* More readable gray on dark backgrounds */
+  
+  --mono: "SFMono-Regular", Consolas, Menlo, monospace;
+  --sans: var(--font-body);
 }
 
 body {
@@ -36,11 +50,77 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-muted {
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: rgba(255, 255, 255, 0.68) !important; /* Made brighter for better UX */
 }
 
 .spinner-border.text-danger {
   color: #e50914 !important;
+}
+
+/* ==========================================================================
+   Admin Search Box & Select Input Overrides (Brightened for Premium UX/UI)
+   ========================================================================== */
+
+/* Target common input/select styling patterns across all admin dashboards */
+.voucher-search input,
+.movie-search input,
+.room-search input,
+.showtime-search input,
+.cinema-search input,
+.form-input,
+.form-select,
+.form-textarea,
+.voucher-filter-select,
+.movie-filter-select,
+.room-filter-select,
+.showtime-filter-select,
+.cinema-filter-select {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: var(--text-light) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Brighter placeholders */
+.voucher-search input::placeholder,
+.movie-search input::placeholder,
+.room-search input::placeholder,
+.showtime-search input::placeholder,
+.cinema-search input::placeholder,
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* High-contrast focus state with subtle red glow */
+.voucher-search input:focus,
+.movie-search input:focus,
+.room-search input:focus,
+.showtime-search input:focus,
+.cinema-search input:focus,
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.voucher-filter-select:focus,
+.movie-filter-select:focus,
+.room-filter-select:focus,
+.showtime-filter-select:focus,
+.cinema-filter-select:focus {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--accent-red) !important;
+  box-shadow: 0 0 0 3px rgba(255, 56, 71, 0.15) !important;
+  outline: none !important;
+}
+
+/* Styling dropdown options */
+.voucher-filter-select option,
+.movie-filter-select option,
+.room-filter-select option,
+.showtime-filter-select option,
+.cinema-filter-select option,
+.form-select option {
+  background-color: #1a1a1a !important;
+  color: var(--text-light) !important;
 }
 
 .page-loader {
