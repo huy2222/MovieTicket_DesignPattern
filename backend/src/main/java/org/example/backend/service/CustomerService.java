@@ -1,10 +1,13 @@
 package org.example.backend.service;
 
 import org.example.backend.dto.response.CustomerResponse;
+import org.example.backend.dto.response.CustomerResponseAdmin;
 import org.example.backend.dto.response.LocationResponse;
 import org.example.backend.dto.response.ProfileCardResponse;
 import org.example.backend.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CustomerService {
@@ -33,6 +36,28 @@ public class CustomerService {
                                     .build() : null)
                         .build())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+    public CustomerResponseAdmin getCustomerByIdForAdmin(Long id) {
+        return customerRepository.findById(id)
+                .map(customer -> CustomerResponseAdmin.builder()
+                        .id(customer.getId())
+                        .email(customer.getEmail())
+                        .fullName(customer.getProfileCard() != null ? customer.getProfileCard().getDisplayName() : null)
+                        .status(customer.getStatus() != null ? customer.getStatus().name() : null)
+                        .createdAt(customer.getCreatedAt() != null ? customer.getCreatedAt().toString() : null)
+                        .build())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+    public List<CustomerResponseAdmin> getAllCustomersForAdmin() {
+        return customerRepository.findAll().stream()
+                .map(customer -> CustomerResponseAdmin.builder()
+                        .id(customer.getId())
+                        .email(customer.getEmail())
+                        .fullName(customer.getProfileCard() != null ? customer.getProfileCard().getDisplayName() : null)
+                        .status(customer.getStatus() != null ? customer.getStatus().name() : null)
+                        .createdAt(customer.getCreatedAt() != null ? customer.getCreatedAt().toString() : null)
+                        .build())
+                .toList();
     }
 
 }

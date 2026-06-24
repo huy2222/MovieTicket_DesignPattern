@@ -4,8 +4,8 @@ import {
   activateVoucher,
   suspendVoucher,
   deleteVoucher,
-} from "../../services/voucherService";
-import VoucherFormModal from "../../components/voucher/VoucherFormModal";
+} from "../../../services/voucherService";
+import VoucherFormModal from "../../../components/voucher/VoucherFormModal";
 import "./VoucherManagementPage.css";
 
 // ============================================

@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAdminCinemas } from "../../services/cinemaAdminService";
-import { getAdminMovies } from "../../services/movieAdminService";
-import { getAdminRooms } from "../../services/roomAdminService";
+import { getAdminCinemas } from "../../../services/cinemaAdminService";
+import { getAdminMovies } from "../../../services/movieAdminService";
+import { getAdminRooms } from "../../../services/roomAdminService";
 import {
   createAdminShowtime,
   deleteAdminShowtime,
   getAdminShowtimes,
   updateAdminShowtime,
-} from "../../services/showtimeAdminService";
-import { getApiErrorMessage } from "../../utils/apiError";
+} from "../../../services/showtimeAdminService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 import "./ShowtimeManagementPage.css";
 
 const STATUS_OPTIONS = [
