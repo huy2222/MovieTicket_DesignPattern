@@ -5,6 +5,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   if (!token) {
+    console.log("No token found. Redirecting to login.");
     return <Navigate to="/login" replace />;
   }
 

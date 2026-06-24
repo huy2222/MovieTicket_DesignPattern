@@ -48,16 +48,23 @@ export default function LoginPage() {
       // Lưu thông tin user
       localStorage.setItem("token", user.token);
       // Lưu thông tin user vào localStorage
-      localStorage.setItem("user", JSON.stringify({
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        role: user.role
-      }));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          role: user.role,
+        }),
+      );
+      console.log(response.data);
+      console.log(response.data.token);
+      // navigate("/");
       if (user.role === "ADMIN") {
         navigate("/admin");
       } else {
+        console.log("User role:", user.role);
         navigate("/");
       }
     } catch (err) {
