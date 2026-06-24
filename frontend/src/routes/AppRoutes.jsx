@@ -9,21 +9,26 @@ const MovieDetailPage = lazy(
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
+
+
 const AdminCinemaPage = lazy(
   () => import("../pages/AdminCinemaPage/AdminCinemaPage")
 );
 const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
 const VoucherManagementPage = lazy(
-  () => import("../pages/Admin/VoucherManagementPage")
+  () => import("../pages/Admin/VoucherManagement/VoucherManagementPage")
 );
 const MovieManagementPage = lazy(
-  () => import("../pages/Admin/MovieManagementPage")
+  () => import("../pages/Admin/MovieManagement/MovieManagementPage")
 );
 const RoomManagementPage = lazy(
-  () => import("../pages/Admin/RoomManagementPage")
+  () => import("../pages/Admin/RoomManagement/RoomManagementPage")
 );
 const ShowtimeManagementPage = lazy(
-  () => import("../pages/Admin/ShowtimeManagementPage")
+  () => import("../pages/Admin/ShowtimeManagement/ShowtimeManagementPage")
+);
+const UserManagementPage = lazy(
+  () => import("../pages/Admin/CustomerManagement/CustomerManagementPage")
 );
 
 function PageLoader() {
@@ -51,6 +56,7 @@ export default function AppRoutes() {
           <Route path="cinemas" element={<AdminCinemaPage />} />
           <Route path="rooms" element={<RoomManagementPage />} />
           <Route path="showtimes" element={<ShowtimeManagementPage />} />
+          <Route path="users" element={<UserManagementPage />} />
         </Route>
       </Routes>
     </Suspense>
