@@ -51,6 +51,7 @@ export default function ProfilePage() {
   };
 
   return (
+    
     <div className="min-h-screen bg-slate-50 py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white shadow-sm border border-slate-100 rounded-2xl overflow-hidden transition-all">
         
