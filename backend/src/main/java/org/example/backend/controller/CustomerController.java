@@ -20,6 +20,13 @@ public class CustomerController {
         return customerService.getCustomerByEmail(email);
     }
 
+    @PutMapping("/me")
+    public CustomerResponse updateMyProfile(Authentication auth, @RequestBody CustomerResponse updatedProfile) {
+        String email = auth.getName();
+        return customerService.updateCustomerProfile(email, updatedProfile);
+    }
+
+
 
 
 }

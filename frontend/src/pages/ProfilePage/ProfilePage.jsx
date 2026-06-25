@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCustomerById } from "../../services/customerService";
+import { getProfile } from "../../services/customerService";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import EditProfilePage from "./EditProfilePage";
@@ -11,12 +11,12 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getCustomerById();
+        const response = await getProfile();
         const result = response.data;
-        console.log("Fetched customer data:", result);
+        console.log("Fetched profile data:", result);
         setData(result);
       } catch (error) {
-        console.error("Error fetching customer data:", error);
+        console.error("Error fetching profile data:", error);
       }
     };
     fetchData();
@@ -34,28 +34,10 @@ export default function ProfilePage() {
     </div>
   );
 
-  const handleSave = (updatedForm) => {
-    const updatedData = {
-      ...data,
-      profileCard: {
-        ...data.profileCard,
-        displayName: updatedForm.displayName,
-        age: parseInt(updatedForm.age, 10) || 0
-      },
-      currentLocation: {
-        ...data.currentLocation,
-        address: updatedForm.address,
-        ward: updatedForm.ward,
-        district: updatedForm.district,
-        city: updatedForm.city,
-        country: updatedForm.country
-      }
-    };
-    console.log("Dữ liệu lưu lại:", updatedData);
+  const handleSave = (updatedData) => {
     setData(updatedData);
     setEditMode(false);
-    // Ở đây có thể tích hợp gọi API cập nhật thông tin khách hàng nếu cần
-  };
+};
 
   const handleCancel = () => {
     setEditMode(false);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { updateProfile } from "../../services/customerService";
 
 export default function EditProfilePage({ data, onSave, onCancel }) {
   const [form, setForm] = useState({
@@ -18,28 +19,59 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Chống reload trang bất ngờ
-    onSave(form);
+    // onSave(form); // Gọi callback onSave nếu có
+    try {
+      const payload = {
+        profileCard: {
+          displayName: form.displayName,
+          age: Number(form.age),
+        },
+        currentLocation: {
+          address: form.address,
+          ward: form.ward,
+          district: form.district,
+          city: form.city,
+          country: form.country,
+        },
+      };
+
+      const response = await updateProfile(payload);
+      const updatedData = response.data;
+      setForm(updatedData);
+      if (onSave) {
+        onSave(updatedData);
+      }
+      console.log("Profile updated successfully:", updatedData);
+    } catch (error) {
+      console.error("Error updating profile data:", error);
+    }
   };
 
   return (
     <div className="w-full max-w-xl bg-[#141414] border border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8">
-      
       <div className="mb-6 border-b border-white/5 pb-4">
-        <h2 className="text-2xl font-extrabold text-white tracking-wide">Chỉnh sửa thông tin hồ sơ</h2>
-        <p className="text-xs text-slate-400 mt-1.5">Cập nhật thông tin thẻ thành viên và địa chỉ liên lạc của bạn.</p>
+        <h2 className="text-2xl font-extrabold text-white tracking-wide">
+          Chỉnh sửa thông tin hồ sơ
+        </h2>
+        <p className="text-xs text-slate-400 mt-1.5">
+          Cập nhật thông tin thẻ thành viên và địa chỉ liên lạc của bạn.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        
         {/* PHẦN THÔNG TIN CÁ NHÂN */}
         <div className="space-y-4">
-          <h3 className="text-xs font-bold text-[#ffc83b] uppercase tracking-widest">Thẻ thành viên</h3>
-          
+          <h3 className="text-xs font-bold text-[#ffc83b] uppercase tracking-widest">
+            Thẻ thành viên
+          </h3>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Tên hiển thị</label>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Tên hiển thị
+              </label>
               <input
                 name="displayName"
                 value={form.displayName}
@@ -50,7 +82,9 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Tuổi</label>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Tuổi
+              </label>
               <input
                 name="age"
                 type="number"
@@ -67,11 +101,15 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
 
         {/* PHẦN ĐỊA CHỈ */}
         <div className="space-y-4">
-          <h3 className="text-xs font-bold text-[#ffc83b] uppercase tracking-widest">Địa chỉ liên hệ</h3>
-          
+          <h3 className="text-xs font-bold text-[#ffc83b] uppercase tracking-widest">
+            Địa chỉ liên hệ
+          </h3>
+
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Địa chỉ đường</label>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Địa chỉ đường
+              </label>
               <input
                 name="address"
                 value={form.address}
@@ -83,7 +121,9 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Phường / Xã</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                  Phường / Xã
+                </label>
                 <input
                   name="ward"
                   value={form.ward}
@@ -93,7 +133,9 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Quận / Huyện</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                  Quận / Huyện
+                </label>
                 <input
                   name="district"
                   value={form.district}
@@ -106,7 +148,9 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Thành phố</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                  Thành phố
+                </label>
                 <input
                   name="city"
                   value={form.city}
@@ -116,7 +160,9 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Quốc gia</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+                  Quốc gia
+                </label>
                 <input
                   name="country"
                   value={form.country}
@@ -147,7 +193,6 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
             Lưu thay đổi
           </button>
         </div>
-
       </form>
     </div>
   );
