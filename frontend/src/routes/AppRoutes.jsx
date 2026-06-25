@@ -9,6 +9,7 @@ const MovieDetailPage = lazy(
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
+const CineMeetPage = lazy(() => import("../pages/CineMeetPage/CineMeetPage"));
 
 
 const AdminCinemaPage = lazy(
@@ -48,6 +49,7 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<ProfilePage />} />
+        <Route path="/cinemeet" element={<CineMeetPage />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<VoucherManagementPage />} />

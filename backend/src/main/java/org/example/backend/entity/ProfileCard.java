@@ -25,6 +25,10 @@ public class ProfileCard {
 
     private boolean isVisibleToCustomer;
 
+    private String bio;
+
+    private boolean cineMeetEnabled;
+
     @OneToOne(mappedBy = "profileCard")
     private Customer ownerCustomer;
 
