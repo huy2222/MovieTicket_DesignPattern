@@ -3,9 +3,9 @@ import {
   getAdminMovies,
   updateAdminMovieStatus,
   deleteAdminMovie,
-} from "../../services/movieAdminService";
-import MovieFormModal from "../../components/movie/MovieFormModal";
-import { getApiErrorMessage } from "../../utils/apiError";
+} from "../../../services/movieAdminService";
+import MovieFormModal from "../../../components/movie/MovieFormModal";
+import { getApiErrorMessage } from "../../../utils/apiError";
 import {
   DEFAULT_POSTER,
   MOVIE_STATUS_LABELS,
@@ -15,7 +15,7 @@ import {
   getPosterUrl,
   getAdminDisplayStatus,
   getAgeRatingLabel,
-} from "../../utils/movieUtils";
+} from "../../../utils/movieUtils";
 import "./MovieManagementPage.css";
 
 const STATUS_OPTIONS = [

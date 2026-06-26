@@ -18,12 +18,16 @@ public class ProfileCard {
     private Long id; // profileCardId
 
     private int age;
-    private String avatarUrl;      // bỏ
+    private String avatarUrl;
     private double compatibilityScore;
     private String displayName;
     private double distanceInKm;
 
     private boolean isVisibleToCustomer;
+
+    private String bio;
+
+    private boolean cineMeetEnabled;
 
     @OneToOne(mappedBy = "profileCard")
     private Customer ownerCustomer;

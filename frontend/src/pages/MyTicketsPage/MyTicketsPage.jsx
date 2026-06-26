@@ -26,7 +26,6 @@ const TABS = [
   { key: "ALL", label: "Tất cả" },
   { key: "UPCOMING", label: "Sắp chiếu" },
   { key: "WATCHED", label: "Đã xem" },
-  { key: "CANCELLED", label: "Đã huỷ" },
 ];
 
 // ============================================
@@ -43,7 +42,9 @@ export default function MyTicketsPage() {
       try {
         setLoading(true);
         const res = await getMyBookings();
-        setBookings(res.data);
+        // Chỉ lấy những vé đã thanh toán thành công
+        const successfulBookings = res.data.filter(b => b.status === "CONFIRMED" || b.status === "USED");
+        setBookings(successfulBookings);
       } catch (err) {
         console.error("Failed to load bookings:", err);
       } finally {
@@ -60,11 +61,9 @@ export default function MyTicketsPage() {
 
     switch (activeTab) {
       case "UPCOMING":
-        return showDate >= now && (b.status === "CONFIRMED" || b.status === "PENDING");
+        return showDate >= now;
       case "WATCHED":
-        return showDate < now || b.status === "USED";
-      case "CANCELLED":
-        return b.status === "CANCELLED";
+        return showDate < now;
       default:
         return true;
     }
@@ -73,13 +72,8 @@ export default function MyTicketsPage() {
   // Count per tab for badges
   const tabCounts = {
     ALL: bookings.length,
-    UPCOMING: bookings.filter(
-      (b) => parseDateStr(b.showDate) >= now && (b.status === "CONFIRMED" || b.status === "PENDING")
-    ).length,
-    WATCHED: bookings.filter(
-      (b) => parseDateStr(b.showDate) < now || b.status === "USED"
-    ).length,
-    CANCELLED: bookings.filter((b) => b.status === "CANCELLED").length,
+    UPCOMING: bookings.filter((b) => parseDateStr(b.showDate) >= now).length,
+    WATCHED: bookings.filter((b) => parseDateStr(b.showDate) < now).length,
   };
 
   return (
@@ -126,13 +120,7 @@ export default function MyTicketsPage() {
             <h3>
               {activeTab === "ALL"
                 ? "Bạn chưa đặt vé nào"
-                : `Không có vé nào ${
-                    activeTab === "UPCOMING"
-                      ? "sắp chiếu"
-                      : activeTab === "WATCHED"
-                      ? "đã xem"
-                      : "đã huỷ"
-                  }`}
+                : `Không có vé nào ${activeTab === "UPCOMING" ? "sắp chiếu" : "đã xem"}`}
             </h3>
             <p>Hãy khám phá những bộ phim hấp dẫn tại CINEMAX!</p>
             <Link to="/" className="my-tickets-empty-cta">

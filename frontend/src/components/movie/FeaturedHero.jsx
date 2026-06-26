@@ -1,6 +1,13 @@
 import './FeaturedHero.css'
+import { useNavigate } from 'react-router-dom';
 
-export default function FeaturedHero({ movie, onBook }) {
+export default function FeaturedHero({ movie }) {
+  const navigate = useNavigate();
+
+  const handleBookTicket = () => {
+    navigate(`/booking/${movie.id}`);
+  };
+
   return (
     <section className="featured-hero">
       <div
@@ -16,8 +23,8 @@ export default function FeaturedHero({ movie, onBook }) {
           <span>⏱️ {movie.duration || '2h 30m'}</span>
           <span>🎬 {movie.genre}</span>
         </div>
-        <button className="btn btn-primary" onClick={() => onBook(movie)}>
-          Book Now
+        <button className="btn btn-primary" onClick={handleBookTicket}>
+          🎟️ MUA VÉ NGAY
         </button>
       </div>
     </section>

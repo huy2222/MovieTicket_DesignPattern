@@ -174,6 +174,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             <SidebarIcon name="room" />
             Phòng chiếu
           </NavLink>
+
           <NavLink
             to="/admin/showtimes"
             className={({ isActive }) =>
@@ -191,6 +192,16 @@ export default function AdminSidebar({ isOpen, onToggle }) {
           >
             <SidebarIcon name="ticket" />
             Quản lý Đặt Vé
+          </NavLink>
+
+          <NavLink
+            to="/admin/users"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="showtime" />
+            Tài khoản khách hàng
           </NavLink>
         </nav>
 
