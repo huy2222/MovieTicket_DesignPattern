@@ -26,19 +26,19 @@ public class Match {
     @Enumerated(EnumType.STRING)
     private MatchStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_a_id")
     private Customer customerA;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_b_id")
     private Customer customerB;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "swipe_a_id", referencedColumnName = "id")
     private Swipe swipeA;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "swipe_b_id", referencedColumnName = "id")
     private Swipe swipeB;
 

@@ -19,27 +19,28 @@ public class MovieDate {
     private Long id; // movieDateId
 
     private LocalDateTime proposedAt;
+    private LocalDateTime expiresAt;
 
     @Enumerated(EnumType.STRING)
     private MovieDateStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proposer_id")
     private Customer proposer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id")
     private Showtime showtime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "match_id")
     private Match match;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_booking_session_id")
     private GroupBookingSession groupBookingSession;
 }

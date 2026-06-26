@@ -1,8 +1,10 @@
 import ProfileCard from "./ProfileCard";
 
 export default function DiscoverSection({ profiles, loading, locationStatus, onUseCurrentLocation, onSkip, onLike }) {
+  const activeProfile = profiles[0];
+
   return (
-    <section className="rounded-2xl border border-[#2a2a2a] bg-[#1a1a1a] p-4 md:p-5">
+    <section className="cinemeet-panel cinemeet-discover-card">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">CineMeet Discover</h1>
@@ -14,32 +16,28 @@ export default function DiscoverSection({ profiles, loading, locationStatus, onU
             onClick={onUseCurrentLocation}
             className="rounded-lg border border-[#3a3a3a] bg-[#2a2a2a] px-3 py-2 text-sm text-white transition hover:bg-[#333]"
           >
-            Use Current Location
+            Cập nhật vị trí hiện tại
           </button>
           <span className="text-xs text-[#8a8a8a]">{locationStatus}</span>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex gap-3 overflow-x-auto pb-2">
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <div key={idx} className="h-[410px] w-[280px] shrink-0 animate-pulse rounded-2xl bg-[#222]" />
-          ))}
+        <div className="flex justify-center pb-2">
+          <div className="h-[410px] w-full max-w-[360px] animate-pulse rounded-2xl bg-[#222]" />
         </div>
-      ) : profiles.length === 0 ? (
+      ) : !activeProfile ? (
         <div className="rounded-xl border border-[#2a2a2a] bg-[#121212] p-6 text-sm text-[#b3b3b3]">
-          Hiện chưa có hồ sơ phù hợp.
+          Hiện chưa có hồ sơ phù hợp lân cận.
         </div>
       ) : (
-        <div className="cinemeet-scroll flex gap-3 overflow-x-auto pb-2">
-          {profiles.map((profile) => (
-            <ProfileCard
-              key={profile.customerId}
-              profile={profile}
-              onSkip={() => onSkip(profile)}
-              onLike={() => onLike(profile)}
-            />
-          ))}
+        <div className="flex justify-center pb-2">
+          <ProfileCard
+            key={activeProfile.customerId}
+            profile={activeProfile}
+            onSkip={() => onSkip(activeProfile)}
+            onLike={() => onLike(activeProfile)}
+          />
         </div>
       )}
     </section>

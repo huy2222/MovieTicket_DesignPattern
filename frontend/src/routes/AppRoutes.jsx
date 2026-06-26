@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage/HomePage";
+import ProtectedRoute from "./ProtectedRoute";
 
 const MovieDetailPage = lazy(
   () => import("../pages/MovieDetailPage/MovieDetailPage")
@@ -32,12 +33,6 @@ const ShowtimeManagementPage = lazy(
 const UserManagementPage = lazy(
   () => import("../pages/Admin/CustomerManagement/CustomerManagementPage")
 );
-const BookingManagementPage = lazy(
-  () => import("../pages/Admin/BookingManagementPage")
-);
-const MyTicketsPage = lazy(
-  () => import("../pages/MyTicketsPage/MyTicketsPage")
-);
 
 function PageLoader() {
   return (
@@ -56,10 +51,16 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<ProfilePage />} />
-        <Route path="/my-tickets" element={<MyTicketsPage />} />
-        <Route path="/cinemeet" element={<CineMeetPage />} />
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/payment/result" element={<PaymentResultPage />} />
+        <Route
+          path="/cinemeet"
+          element={
+            <ProtectedRoute>
+              <CineMeetPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<VoucherManagementPage />} />
@@ -68,11 +69,9 @@ export default function AppRoutes() {
           <Route path="cinemas" element={<AdminCinemaPage />} />
           <Route path="rooms" element={<RoomManagementPage />} />
           <Route path="showtimes" element={<ShowtimeManagementPage />} />
-          <Route path="bookings" element={<BookingManagementPage />} />
           <Route path="users" element={<UserManagementPage />} />
         </Route>
       </Routes>
     </Suspense>
   );
 }
-
