@@ -169,6 +169,15 @@ public class BookingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Một số ghế không hợp lệ");
         }
 
+        // Check if any seats are already booked (CONFIRMED/ISSUED/USED)
+        List<Long> alreadyBookedSeatIds = ticketRepository.findBookedSeatIdsByShowtimeId(request.getShowtimeId());
+        List<Long> conflictingSeatIds = request.getSeatIds().stream()
+                .filter(alreadyBookedSeatIds::contains)
+                .toList();
+        if (!conflictingSeatIds.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ghế đã được đặt: " + conflictingSeatIds);
+        }
+
         // 2. Calculate initial price
         double basePrice = showtime.getBasePrice() * seats.size();
         double discountedPrice = basePrice;

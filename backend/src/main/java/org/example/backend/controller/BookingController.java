@@ -52,9 +52,25 @@ public class BookingController {
     }
 
     @GetMapping("/vnpay-return")
-    public org.springframework.http.ResponseEntity<String> handleVNPayReturn(@org.springframework.web.bind.annotation.RequestParam java.util.Map<String, String> params) {
-        bookingService.handleVNPayReturn(params);
-        return org.springframework.http.ResponseEntity.ok("Thanh toán hoàn tất. Trạng thái giao dịch đã được cập nhật.");
+    public org.springframework.http.ResponseEntity<Void> handleVNPayReturn(@org.springframework.web.bind.annotation.RequestParam java.util.Map<String, String> params) {
+        String frontendUrl = "http://localhost:5173/payment/result";
+        try {
+            bookingService.handleVNPayReturn(params);
+            String responseCode = params.get("vnp_ResponseCode");
+            if ("00".equals(responseCode)) {
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FOUND)
+                        .location(java.net.URI.create(frontendUrl + "?status=success"))
+                        .build();
+            } else {
+                return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FOUND)
+                        .location(java.net.URI.create(frontendUrl + "?status=failed"))
+                        .build();
+            }
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FOUND)
+                    .location(java.net.URI.create(frontendUrl + "?status=error"))
+                    .build();
+        }
     }
 
     @GetMapping("/debug/seats-count")

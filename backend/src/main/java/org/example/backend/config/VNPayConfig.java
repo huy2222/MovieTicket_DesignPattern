@@ -46,6 +46,9 @@ public class VNPayConfig {
         if (ipAdress == null) {
             ipAdress = request.getRemoteAddr();
         }
+        if ("0:0:0:0:0:0:0:1".equals(ipAdress) || "::1".equals(ipAdress)) {
+            ipAdress = "127.0.0.1";
+        }
         return ipAdress;
     }
 }

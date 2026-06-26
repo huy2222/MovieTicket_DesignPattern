@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    @Query("SELECT t.seat.id FROM Ticket t WHERE t.showtime.id = :showtimeId AND t.status <> 'CANCELLED'")
+    @Query("SELECT t.seat.id FROM Ticket t WHERE t.showtime.id = :showtimeId AND t.status IN ('CONFIRMED', 'ISSUED', 'USED')")
     List<Long> findBookedSeatIdsByShowtimeId(@Param("showtimeId") Long showtimeId);
 
     List<Ticket> findByBookingId(Long bookingId);
