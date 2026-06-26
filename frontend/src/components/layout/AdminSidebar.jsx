@@ -77,6 +77,14 @@ function SidebarIcon({ name }) {
         <path d="m19 4 2 2" />
       </svg>
     ),
+    ticket: (
+      <svg {...commonProps}>
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+        <path d="M13 5v2" />
+        <path d="M13 17v2" />
+        <path d="M13 11v2" />
+      </svg>
+    ),
     logout: (
       <svg {...commonProps}>
         <path d="M10 17 15 12 10 7" />
@@ -174,6 +182,15 @@ export default function AdminSidebar({ isOpen, onToggle }) {
           >
             <SidebarIcon name="showtime" />
             Lịch chiếu
+          </NavLink>
+          <NavLink
+            to="/admin/bookings"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="ticket" />
+            Quản lý Đặt Vé
           </NavLink>
         </nav>
 

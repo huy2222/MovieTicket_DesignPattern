@@ -44,6 +44,9 @@ export default function Header() {
                   <Link to="/bookings" className="nav-link">
                     Đặt vé
                   </Link>
+                  <Link to="/my-tickets" className="nav-link">
+                    🎫 Vé của tôi
+                  </Link>
                   <Link to="/account" className="nav-link">
                     {user.fullName || "Tài khoản"}
                   </Link>

@@ -25,6 +25,12 @@ const RoomManagementPage = lazy(
 const ShowtimeManagementPage = lazy(
   () => import("../pages/Admin/ShowtimeManagementPage")
 );
+const BookingManagementPage = lazy(
+  () => import("../pages/Admin/BookingManagementPage")
+);
+const MyTicketsPage = lazy(
+  () => import("../pages/MyTicketsPage/MyTicketsPage")
+);
 
 function PageLoader() {
   return (
@@ -43,6 +49,7 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<ProfilePage />} />
+        <Route path="/my-tickets" element={<MyTicketsPage />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<VoucherManagementPage />} />
@@ -51,8 +58,10 @@ export default function AppRoutes() {
           <Route path="cinemas" element={<AdminCinemaPage />} />
           <Route path="rooms" element={<RoomManagementPage />} />
           <Route path="showtimes" element={<ShowtimeManagementPage />} />
+          <Route path="bookings" element={<BookingManagementPage />} />
         </Route>
       </Routes>
     </Suspense>
   );
 }
+
