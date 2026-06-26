@@ -32,6 +32,26 @@ const emptyForm = {
   status: "AVAILABLE",
 };
 
+const isActiveItem = (item) => !item.status || item.status === "ACTIVE";
+
+function findFirstRoomForCinema(rooms, cinemaId) {
+  return rooms.find((room) => Number(room.cinemaId) === Number(cinemaId) && isActiveItem(room));
+}
+
+function buildCreateForm({ movies, cinemas, rooms, preferredCinemaId }) {
+  const cinemaId = preferredCinemaId && preferredCinemaId !== "ALL"
+    ? preferredCinemaId
+    : cinemas.find(isActiveItem)?.id || cinemas[0]?.id || "";
+  const roomId = cinemaId ? findFirstRoomForCinema(rooms, cinemaId)?.id || "" : "";
+
+  return {
+    ...emptyForm,
+    movieId: movies[0]?.id || "",
+    cinemaId,
+    roomId,
+  };
+}
+
 function toDateInputValue(date = new Date()) {
   return date.toISOString().slice(0, 10);
 }
@@ -91,20 +111,25 @@ export default function ShowtimeManagementPage() {
 
       const cinemaList = cinemaResponse.data || [];
       const roomList = roomResponse.data || [];
-      const movieList = movieResponse.data?.content || [];
+      const movieList = (movieResponse.data?.content || []).filter((movie) => movie.status !== "ENDED");
 
       setCinemas(cinemaList);
       setRooms(roomList);
-      setMovies(movieList.filter((movie) => movie.status !== "ENDED"));
+      setMovies(movieList);
       setForm((current) => ({
         ...current,
-        cinemaId: current.cinemaId || cinemaList[0]?.id || "",
+        ...(current.cinemaId ? {} : buildCreateForm({
+          movies: movieList,
+          cinemas: cinemaList,
+          rooms: roomList,
+          preferredCinemaId: filters.cinemaId,
+        })),
       }));
     } catch (err) {
       console.error("Không thể tải dữ liệu nền cho lịch chiếu:", err);
       showToast("Không thể tải dữ liệu phim, rạp hoặc phòng", "error");
     }
-  }, [showToast]);
+  }, [filters.cinemaId, showToast]);
 
   const fetchShowtimes = useCallback(async () => {
     try {
@@ -135,8 +160,8 @@ export default function ShowtimeManagementPage() {
   }, [fetchShowtimes]);
 
   const formRooms = useMemo(() => {
-    if (!form.cinemaId) return rooms;
-    return rooms.filter((room) => Number(room.cinemaId) === Number(form.cinemaId));
+    if (!form.cinemaId) return rooms.filter(isActiveItem);
+    return rooms.filter((room) => Number(room.cinemaId) === Number(form.cinemaId) && isActiveItem(room));
   }, [form.cinemaId, rooms]);
 
   const filterRooms = useMemo(() => {
@@ -177,19 +202,30 @@ export default function ShowtimeManagementPage() {
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
+    if (name === "cinemaId") {
+      const firstRoom = findFirstRoomForCinema(rooms, value);
+      setForm((current) => ({
+        ...current,
+        cinemaId: value,
+        roomId: firstRoom?.id || "",
+      }));
+      return;
+    }
+
     setForm((current) => ({
       ...current,
       [name]: value,
-      ...(name === "cinemaId" ? { roomId: "" } : {}),
     }));
   };
 
   const openCreateModal = () => {
     setEditingShowtime(null);
-    setForm({
-      ...emptyForm,
-      cinemaId: filters.cinemaId !== "ALL" ? filters.cinemaId : cinemas[0]?.id || "",
-    });
+    setForm(buildCreateForm({
+      movies,
+      cinemas,
+      rooms,
+      preferredCinemaId: filters.cinemaId,
+    }));
     setModalOpen(true);
   };
 
@@ -214,6 +250,10 @@ export default function ShowtimeManagementPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!form.movieId || !form.cinemaId || !form.roomId || !form.startTime) {
+      showToast("Vui lòng chọn đầy đủ phim, rạp, phòng và giờ bắt đầu", "error");
+      return;
+    }
     setSaving(true);
 
     const payload = {
@@ -417,6 +457,9 @@ export default function ShowtimeManagementPage() {
                   required
                 >
                   <option value="">Chọn phim</option>
+                  {movies.length === 0 ? (
+                    <option value="" disabled>Không có phim đang chiếu/sắp chiếu</option>
+                  ) : null}
                   {movies.map((movie) => (
                     <option key={movie.id} value={movie.id}>
                       {movie.title} ({movie.duration} phút)
@@ -436,6 +479,9 @@ export default function ShowtimeManagementPage() {
                     required
                   >
                     <option value="">Chọn rạp</option>
+                    {cinemas.length === 0 ? (
+                      <option value="" disabled>Không có rạp hoạt động</option>
+                    ) : null}
                     {cinemas.map((cinema) => (
                       <option key={cinema.id} value={cinema.id}>
                         {cinema.name}
@@ -454,6 +500,9 @@ export default function ShowtimeManagementPage() {
                     required
                   >
                     <option value="">Chọn phòng</option>
+                    {formRooms.length === 0 ? (
+                      <option value="" disabled>Rạp này chưa có phòng hoạt động</option>
+                    ) : null}
                     {formRooms.map((room) => (
                       <option key={room.id} value={room.id}>
                         {room.roomCode} - {room.name}
@@ -512,7 +561,11 @@ export default function ShowtimeManagementPage() {
                 <button type="button" className="btn-showtime-cancel" onClick={closeModal}>
                   Hủy
                 </button>
-                <button className="btn-showtime-submit" type="submit" disabled={saving}>
+                <button
+                  className="btn-showtime-submit"
+                  type="submit"
+                  disabled={saving || movies.length === 0 || cinemas.length === 0 || formRooms.length === 0}
+                >
                   {saving ? "Đang lưu..." : editingShowtime ? "Lưu thay đổi" : "Tạo lịch chiếu"}
                 </button>
               </div>

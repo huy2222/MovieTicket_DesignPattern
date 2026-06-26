@@ -61,7 +61,9 @@ public class CustomerService {
                             customer.getProfileCard().setBio(updatedProfile.getProfileCard().getBio());
                         }
                         if (updatedProfile.getProfileCard().getCineMeetEnabled() != null) {
-                            customer.getProfileCard().setCineMeetEnabled(updatedProfile.getProfileCard().getCineMeetEnabled());
+                            boolean enabled = updatedProfile.getProfileCard().getCineMeetEnabled();
+                            customer.getProfileCard().setCineMeetEnabled(enabled);
+                            customer.getProfileCard().setVisibleToCustomer(enabled);
                         }
                     }
                     if (updatedProfile.getCurrentLocation() != null) {

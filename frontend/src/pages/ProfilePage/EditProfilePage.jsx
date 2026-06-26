@@ -8,12 +8,13 @@ import {
   getWardsByDistrictCode,
 } from "sub-vn";
 
+const MAX_AVATAR_SIZE = 15 * 1024 * 1024;
+
 export default function EditProfilePage({ data, onSave, onCancel }) {
   const [form, setForm] = useState({
     fullName: data?.fullName || "",
     age: data?.profileCard?.age || "",
     bio: data?.profileCard?.bio || "",
-    cineMeetEnabled: data?.profileCard?.cineMeetEnabled ?? false,
     address: data?.currentLocation?.address || "",
     ward: data?.currentLocation?.ward || "",
     district: data?.currentLocation?.district || "",
@@ -29,6 +30,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
   // Avatar states
   const [avatar, setAvatar] = useState(null); // Sửa chính tả từ avata -> avatar
   const [preview, setPreview] = useState(data?.profileCard?.avatarUrl || null);
+  const [avatarError, setAvatarError] = useState("");
 
   // Khởi tạo danh sách Tỉnh/Thành phố khi component mount
   useEffect(() => {
@@ -108,6 +110,13 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    if (file.size > MAX_AVATAR_SIZE) {
+      setAvatar(null);
+      setAvatarError("Ảnh đại diện không được vượt quá 15MB.");
+      e.target.value = "";
+      return;
+    }
+    setAvatarError("");
     setAvatar(file);
     setPreview(URL.createObjectURL(file));
   };
@@ -123,7 +132,6 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
         ...data?.profileCard,
         age: Number(form.age) || 0,
         bio: form.bio,
-        cineMeetEnabled: form.cineMeetEnabled,
         avatarUrl: preview,
       },
       currentLocation: {
@@ -144,7 +152,6 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
         profileCard: {
           age: Number(form.age) || 0,
           bio: form.bio,
-          cineMeetEnabled: form.cineMeetEnabled,
         },
         currentLocation: {
           address: form.address,
@@ -194,18 +201,25 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
           </h3>
 
           {/* Giao diện hiển thị và chọn Avatar */}
-          <div className="flex flex-col items-center mb-6">
+          <div className="flex flex-col items-center mb-6 rounded-xl border border-white/10 bg-[#1a1a1a] p-4">
             <img
               src={preview || "/default-avatar.png"}
               alt="Avatar Preview"
               className="w-32 h-32 rounded-full object-cover border border-white/10 shadow-md"
             />
+            <p className="mt-3 text-xs font-semibold text-slate-300">Ảnh đại diện</p>
+            <p className="mt-1 text-[11px] text-slate-500">
+              Hỗ trợ ảnh JPG, PNG, WEBP. Dung lượng tối đa 15MB.
+            </p>
             <input
               type="file"
               accept="image/*"
               onChange={handleAvatarChange}
               className="mt-3 text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-white/5 file:text-slate-300 hover:file:bg-white/10 cursor-pointer"
             />
+            {avatarError ? (
+              <p className="mt-2 text-xs font-semibold text-[#ff6b74]">{avatarError}</p>
+            ) : null}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -250,36 +264,6 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
               placeholder="Viết vài điều về bạn..."
               className="w-full px-3.5 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-[#ff3847] focus:ring-2 focus:ring-[#ff3847]/10 transition-all text-sm font-semibold resize-none"
             />
-          </div>
-
-          {/* CineMeet Toggle */}
-          <div className={`flex items-center justify-between rounded-xl px-4 py-3.5 border transition-colors duration-300 ${
-            form.cineMeetEnabled
-              ? "bg-[#e50914]/10 border-[#e50914]/30"
-              : "bg-[#1a1a1a] border-white/10"
-          }`}>
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🎬</span>
-              <div>
-                <p className="text-sm font-bold text-white">CineMeet</p>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  {form.cineMeetEnabled ? "Đang bật — Hệ thống sẽ ghép bạn với người cùng sở thích" : "Bật để kết nối với người xem phim gần bạn"}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setForm({ ...form, cineMeetEnabled: !form.cineMeetEnabled })}
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-300 focus:outline-none ${
-                form.cineMeetEnabled ? "bg-[#e50914]" : "bg-white/10"
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                  form.cineMeetEnabled ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
           </div>
 
         </div>

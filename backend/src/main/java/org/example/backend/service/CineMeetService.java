@@ -21,6 +21,7 @@ import org.example.backend.repository.LocationRepository;
 import org.example.backend.repository.MatchRepository;
 import org.example.backend.repository.NotificationRepository;
 import org.example.backend.repository.SwipeRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,10 @@ import java.util.Set;
 @Service
 public class CineMeetService {
 
-    private static final int DISCOVER_LIMIT = 10;
+    private static final int DISCOVER_CANDIDATE_LIMIT = 10;
+    private static final int DISCOVER_RESPONSE_LIMIT = 5;
+    private static final double DISCOVER_RADIUS_KM = 10d;
+    private static final double KM_PER_LATITUDE_DEGREE = 111.32d;
     private static final double MIN_COMPATIBILITY_SCORE = 40d;
     private static final long LEFT_SWIPE_COOLDOWN_DAYS = 3L;
     private static final Set<MatchStatus> ALL_MATCH_STATUSES = EnumSet.of(MatchStatus.ACTIVE, MatchStatus.BLOCKED, MatchStatus.CLOSED);
@@ -73,13 +77,25 @@ public class CineMeetService {
     public List<CineMeetDiscoverItemResponse> discover(String email) {
         Customer me = findCustomerByEmail(email);
         LocalDateTime leftCooldownThreshold = LocalDateTime.now().minusDays(LEFT_SWIPE_COOLDOWN_DAYS);
+        Location center = me.getCurrentLocation();
+        double centerLatitude = center != null ? center.getLatitude() : FALLBACK_LATITUDE;
+        double centerLongitude = center != null ? center.getLongitude() : FALLBACK_LONGITUDE;
+        BoundingBox box = createBoundingBox(centerLatitude, centerLongitude, DISCOVER_RADIUS_KM);
 
         List<CineMeetDiscoverItemResponse> items = new ArrayList<>();
-        for (Customer candidate : customerRepository.findAll()) {
-            if (!isDiscoverCandidate(me, candidate, leftCooldownThreshold)) {
-                continue;
-            }
-
+        List<Customer> candidates = customerRepository.findNearbyDiscoverCandidates(
+                me.getId(),
+                leftCooldownThreshold,
+                List.copyOf(BLOCKING_DISCOVER_STATUSES),
+                box.minLatitude(),
+                box.maxLatitude(),
+                box.minLongitude(),
+                box.maxLongitude(),
+                centerLatitude,
+                centerLongitude,
+                PageRequest.of(0, DISCOVER_CANDIDATE_LIMIT)
+        );
+        for (Customer candidate : candidates) {
             double score = compatibilityService.calculateScore(me, candidate);
             if (score < MIN_COMPATIBILITY_SCORE) {
                 continue;
@@ -100,7 +116,7 @@ public class CineMeetService {
 
         return items.stream()
                 .sorted(Comparator.comparing(CineMeetDiscoverItemResponse::getCompatibilityScore).reversed())
-                .limit(DISCOVER_LIMIT)
+                .limit(DISCOVER_RESPONSE_LIMIT)
                 .toList();
     }
 
@@ -420,5 +436,37 @@ public class CineMeetService {
 
     private double round2(double value) {
         return Math.round(value * 100d) / 100d;
+    }
+
+    private BoundingBox createBoundingBox(double latitude, double longitude, double radiusKm) {
+        double latitudeDelta = radiusKm / KM_PER_LATITUDE_DEGREE;
+        double cosLatitude = Math.cos(Math.toRadians(latitude));
+        double longitudeDelta = Math.abs(cosLatitude) < 0.000001d
+                ? 180d
+                : radiusKm / (KM_PER_LATITUDE_DEGREE * Math.abs(cosLatitude));
+
+        return new BoundingBox(
+                clampLatitude(latitude - latitudeDelta),
+                clampLatitude(latitude + latitudeDelta),
+                clampLongitude(longitude - longitudeDelta),
+                clampLongitude(longitude + longitudeDelta)
+        );
+    }
+
+    private double clampLatitude(double latitude) {
+        return Math.max(-90d, Math.min(90d, latitude));
+    }
+
+    private double clampLongitude(double longitude) {
+        if (longitude < -180d) {
+            return -180d;
+        }
+        if (longitude > 180d) {
+            return 180d;
+        }
+        return longitude;
+    }
+
+    private record BoundingBox(double minLatitude, double maxLatitude, double minLongitude, double maxLongitude) {
     }
 }

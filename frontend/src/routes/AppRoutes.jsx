@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage/HomePage";
+import ProtectedRoute from "./ProtectedRoute";
 
 const MovieDetailPage = lazy(
   () => import("../pages/MovieDetailPage/MovieDetailPage")
@@ -49,7 +50,14 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<ProfilePage />} />
-        <Route path="/cinemeet" element={<CineMeetPage />} />
+        <Route
+          path="/cinemeet"
+          element={
+            <ProtectedRoute>
+              <CineMeetPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<VoucherManagementPage />} />
