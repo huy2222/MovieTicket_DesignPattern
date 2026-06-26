@@ -44,6 +44,9 @@ export default function Header() {
                   <Link to="/bookings" className="nav-link">
                     Đặt vé
                   </Link>
+                  <Link to="/my-tickets" className="nav-link">
+                    🎫 Vé của tôi
+                  </Link>
                   <NavLink
                     to="/cinemeet"
                     className={({ isActive }) => `nav-link ${isActive ? "text-[#e50914]" : ""}`}

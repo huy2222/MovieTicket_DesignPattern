@@ -1,0 +1,488 @@
+/* ============================================
+   Booking Management Page — Admin Dashboard
+   ============================================ */
+
+/* Page Header */
+.booking-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.booking-page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.booking-page-title-icon {
+  font-size: 1.5rem;
+}
+
+/* ============================================
+   Filter Bar
+   ============================================ */
+.booking-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+}
+
+.booking-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.booking-filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.booking-filter-select {
+  padding: 0.55rem 2rem 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  transition: all 0.2s ease;
+  min-width: 90px;
+}
+
+.booking-filter-select:focus {
+  border-color: rgba(229, 9, 20, 0.4);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.08);
+}
+
+.booking-filter-select option {
+  background: #1a1a1a;
+  color: var(--text-light);
+}
+
+/* ============================================
+   Summary Cards
+   ============================================ */
+.booking-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.875rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0.875rem 0.875rem 0 0;
+}
+
+.summary-card.tickets::before {
+  background: linear-gradient(90deg, #e50914, #ff6b6b);
+}
+
+.summary-card.revenue::before {
+  background: linear-gradient(90deg, #ffc83b, #ffaa00);
+}
+
+.summary-card.fillrate::before {
+  background: linear-gradient(90deg, #34d399, #06b6d4);
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.summary-card.tickets .summary-card-icon {
+  background: rgba(229, 9, 20, 0.12);
+}
+
+.summary-card.revenue .summary-card-icon {
+  background: rgba(255, 200, 59, 0.12);
+}
+
+.summary-card.fillrate .summary-card-icon {
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.summary-card-info {
+  flex: 1;
+}
+
+.summary-card-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.35rem;
+}
+
+.summary-card-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-light);
+  line-height: 1.2;
+  font-family: var(--font-heading);
+}
+
+.summary-card-unit {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 0.25rem;
+}
+
+/* ============================================
+   Charts Section
+   ============================================ */
+.booking-charts-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.booking-chart-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.875rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.booking-chart-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.booking-chart-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin: 0 0 1.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.booking-chart-title-icon {
+  font-size: 1.1rem;
+}
+
+/* Custom Recharts overrides */
+.booking-chart-card .recharts-text {
+  fill: var(--text-muted) !important;
+  font-size: 0.7rem;
+}
+
+.booking-chart-card .recharts-cartesian-axis-line,
+.booking-chart-card .recharts-cartesian-axis-tick-line {
+  stroke: rgba(255, 255, 255, 0.08) !important;
+}
+
+.booking-chart-card .recharts-cartesian-grid-horizontal line,
+.booking-chart-card .recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Custom Tooltip */
+.chart-custom-tooltip {
+  background: rgba(26, 26, 26, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+}
+
+.chart-tooltip-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 0.35rem;
+}
+
+.chart-tooltip-row {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chart-tooltip-row span {
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* ============================================
+   Booking Table
+   ============================================ */
+.booking-table-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.875rem;
+  overflow: hidden;
+}
+
+.booking-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.booking-table-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.booking-table-filter {
+  padding: 0.45rem 1.5rem 0.45rem 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.4rem;
+  color: var(--text-light);
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+}
+
+.booking-table-filter option {
+  background: #1a1a1a;
+  color: var(--text-light);
+}
+
+.booking-table-wrapper {
+  overflow-x: auto;
+}
+
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.booking-table thead {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.booking-table th {
+  padding: 0.75rem 1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.booking-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.booking-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.booking-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.booking-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status badges (reuse from voucher) */
+.booking-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.booking-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.booking-status.confirmed {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+}
+.booking-status.confirmed::before { background: #34d399; }
+
+.booking-status.pending {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+.booking-status.pending::before { background: #fbbf24; }
+
+.booking-status.cancelled {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+.booking-status.cancelled::before { background: #f87171; }
+
+.booking-status.expired {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
+}
+.booking-status.expired::before { background: #6b7280; }
+
+/* Seat labels in table */
+.booking-seats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.seat-tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  background: rgba(255, 200, 59, 0.08);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.2rem;
+}
+
+.booking-table-amount {
+  font-weight: 700;
+  color: var(--text-light);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+
+/* ============================================
+   Loading & Empty States
+   ============================================ */
+.booking-loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+
+.booking-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent-red);
+  border-radius: 50%;
+  animation: booking-spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes booking-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1200px) {
+  .booking-charts-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-filter-group {
+    width: 100%;
+  }
+
+  .booking-filter-select {
+    flex: 1;
+  }
+
+  .booking-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .booking-table {
+    min-width: 900px;
+  }
+}
