@@ -40,7 +40,9 @@ export default function ProfilePage() {
     setEditMode(false);
   };
 
-  const initials = data.profileCard?.displayName?.charAt(0).toUpperCase() || "U";
+  const handleCancel = () => setEditMode(false);
+
+  const initials = data.fullName?.charAt(0).toUpperCase() || "U";
   const hasLocation = data.currentLocation?.city || data.currentLocation?.district || data.currentLocation?.address;
 
   return (
@@ -82,8 +84,8 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="mb-4">
-                  <h1 className="mb-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
-                    {data.profileCard?.displayName || "Chưa đặt tên"}
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
+                    {data.fullName || "Chưa đặt tên"}
                   </h1>
                   <div className="flex flex-wrap gap-2">
                     {data.profileCard?.age > 0 ? (

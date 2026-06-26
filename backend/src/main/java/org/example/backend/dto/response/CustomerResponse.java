@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CustomerResponse {
     private Long id;
+    private String fullName;
     private ProfileCardResponse profileCard;
     private LocationResponse currentLocation;
 
