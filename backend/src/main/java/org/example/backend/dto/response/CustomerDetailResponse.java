@@ -1,6 +1,5 @@
 package org.example.backend.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +12,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerResponseAdmin {
+public class CustomerDetailResponse {
     private Long id;
     private String email;
     private String fullName;
+    private Integer age;
+    private String bio;
+    private Integer loyaltyPoints;
     private AccountStatus status;
     private LocalDateTime createdAt;
+    private String avatar;
 }

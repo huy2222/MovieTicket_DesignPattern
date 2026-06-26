@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class ProfileCardResponse {
     private Long id; // profileCardId
     private Integer age;
-    private String displayName;
     private String avatarUrl;
     @JsonProperty("cineMeetEnabled")
     private Boolean cineMeetEnabled;
