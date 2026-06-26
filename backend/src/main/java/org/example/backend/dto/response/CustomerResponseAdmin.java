@@ -1,5 +1,6 @@
 package org.example.backend.dto.response;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,13 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LocationResponse {
+public class CustomerResponseAdmin {
     private Long id;
-    private String address;
-    private String ward;
-    private String district;
-    private String city;
-    private String country;
-    private Double latitude;
-    private Double longitude;
+    private String email;
+    private String fullName;
+    private String status;
+    private String createdAt;
 }

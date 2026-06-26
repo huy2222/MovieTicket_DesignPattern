@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAdminCinemas } from "../../services/cinemaAdminService";
+import { getAdminCinemas } from "../../../services/cinemaAdminService";
 import {
   createAdminRoom,
   deleteAdminRoom,
   getAdminRooms,
   updateAdminRoom,
-} from "../../services/roomAdminService";
-import { getApiErrorMessage } from "../../utils/apiError";
+} from "../../../services/roomAdminService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 import "./RoomManagementPage.css";
 
 const ROOM_TYPE_OPTIONS = [

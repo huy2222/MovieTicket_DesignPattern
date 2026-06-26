@@ -9,21 +9,27 @@ const MovieDetailPage = lazy(
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
+const CineMeetPage = lazy(() => import("../pages/CineMeetPage/CineMeetPage"));
+
+
 const AdminCinemaPage = lazy(
   () => import("../pages/AdminCinemaPage/AdminCinemaPage")
 );
 const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
 const VoucherManagementPage = lazy(
-  () => import("../pages/Admin/VoucherManagementPage")
+  () => import("../pages/Admin/VoucherManagement/VoucherManagementPage")
 );
 const MovieManagementPage = lazy(
-  () => import("../pages/Admin/MovieManagementPage")
+  () => import("../pages/Admin/MovieManagement/MovieManagementPage")
 );
 const RoomManagementPage = lazy(
-  () => import("../pages/Admin/RoomManagementPage")
+  () => import("../pages/Admin/RoomManagement/RoomManagementPage")
 );
 const ShowtimeManagementPage = lazy(
-  () => import("../pages/Admin/ShowtimeManagementPage")
+  () => import("../pages/Admin/ShowtimeManagement/ShowtimeManagementPage")
+);
+const UserManagementPage = lazy(
+  () => import("../pages/Admin/CustomerManagement/CustomerManagementPage")
 );
 const BookingManagementPage = lazy(
   () => import("../pages/Admin/BookingManagementPage")
@@ -50,6 +56,7 @@ export default function AppRoutes() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<ProfilePage />} />
         <Route path="/my-tickets" element={<MyTicketsPage />} />
+        <Route path="/cinemeet" element={<CineMeetPage />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<VoucherManagementPage />} />
@@ -59,6 +66,7 @@ export default function AppRoutes() {
           <Route path="rooms" element={<RoomManagementPage />} />
           <Route path="showtimes" element={<ShowtimeManagementPage />} />
           <Route path="bookings" element={<BookingManagementPage />} />
+          <Route path="users" element={<UserManagementPage />} />
         </Route>
       </Routes>
     </Suspense>

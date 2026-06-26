@@ -1,0 +1,13 @@
+.cinemeet-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #383838 #1a1a1a;
+}
+
+.cinemeet-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cinemeet-scroll::-webkit-scrollbar-thumb {
+  background: #383838;
+  border-radius: 999px;
+}

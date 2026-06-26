@@ -1,5 +1,5 @@
 import './Header.css'
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -47,6 +47,12 @@ export default function Header() {
                   <Link to="/my-tickets" className="nav-link">
                     🎫 Vé của tôi
                   </Link>
+                  <NavLink
+                    to="/cinemeet"
+                    className={({ isActive }) => `nav-link ${isActive ? "text-[#e50914]" : ""}`}
+                  >
+                    CineMeet
+                  </NavLink>
                   <Link to="/account" className="nav-link">
                     {user.fullName || "Tài khoản"}
                   </Link>
