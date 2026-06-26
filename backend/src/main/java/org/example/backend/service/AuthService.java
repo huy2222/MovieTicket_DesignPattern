@@ -5,6 +5,7 @@ import org.example.backend.dto.request.RegisterRequest;
 import org.example.backend.dto.response.AuthResponse;
 import org.example.backend.dto.response.UserResponse;
 import org.example.backend.entity.Customer;
+import org.example.backend.entity.ProfileCard;
 import org.example.backend.entity.User;
 import org.example.backend.enums.AccountStatus;
 import org.example.backend.enums.Role;
@@ -47,6 +48,15 @@ public class AuthService {
         user.setRole(Role.CUSTOMER);
         user.setStatus(AccountStatus.ACTIVE);
         user.setCreatedAt(LocalDateTime.now());
+
+        ProfileCard profile = new ProfileCard();
+        profile.setDisplayName(req.getFullName());
+        profile.setAge(0);
+        profile.setCineMeetEnabled(false);
+        profile.setVisibleToCustomer(false);
+        profile.setOwnerCustomer(user);
+        user.setProfileCard(profile);
+
         userRepository.save(user);
         return UserResponse.builder()
                 .id(user.getId())

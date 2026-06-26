@@ -25,8 +25,8 @@ import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
-@Component
-@Order(4)
+//@Component
+//@Order(4)
 public class ShowtimeDataInitializer implements CommandLineRunner {
     private static final int SAMPLE_DAY_OFFSET = 1;
 
@@ -53,7 +53,7 @@ public class ShowtimeDataInitializer implements CommandLineRunner {
         List<Movie> movies = movieRepository.findAll().stream()
                 .filter(movie -> movie.getStatus() == MovieStatus.NOW_SHOWING || movie.getStatus() == MovieStatus.COMING_SOON)
                 .filter(movie -> movie.getDuration() > 0)
-                .limit(5)
+                // Đã xóa .limit(5) để lấy TOÀN BỘ phim
                 .toList();
 
         if (movies.isEmpty()) {
@@ -65,51 +65,62 @@ public class ShowtimeDataInitializer implements CommandLineRunner {
                 .filter(cinema -> cinema.getStatus() == CinemaStatus.ACTIVE)
                 .filter(cinema -> cinema.getRooms() != null && cinema.getRooms().stream().anyMatch(this::isActiveRoom))
                 .sorted(Comparator.comparing(Cinema::getName))
-                .limit(2)
+                // Đã xóa .limit(2) để lấy TOÀN BỘ rạp
                 .toList();
 
         int created = 0;
-        for (int cinemaIndex = 0; cinemaIndex < cinemas.size(); cinemaIndex++) {
-            Cinema cinema = cinemas.get(cinemaIndex);
-            List<Room> rooms = cinema.getRooms().stream()
-                    .filter(this::isActiveRoom)
-                    .sorted(Comparator.comparing(Room::getRoomCode))
-                    .limit(2)
-                    .toList();
+        int movieIndexCounter = 0; // Biến xoay vòng phim để rải đều
+        List<Showtime> showtimesToSave = new java.util.ArrayList<>();
 
-            for (int roomIndex = 0; roomIndex < rooms.size(); roomIndex++) {
-                Room room = rooms.get(roomIndex);
-                Movie movie = movies.get((cinemaIndex + roomIndex) % movies.size());
-                LocalDateTime startTime = LocalDate.now()
-                        .plusDays(SAMPLE_DAY_OFFSET)
-                        .atTime(slotFor(roomIndex));
+        // Rút gọn vòng lặp chỉ còn 3 ngày (Hôm nay, ngày mai, mốt) để DB không bị quá tải
+        for (int dayOffset = 0; dayOffset <= 2; dayOffset++) {
+            // Giới hạn 3 rạp đầu tiên để tránh bị treo DB trên Cloud
+            List<Cinema> limitedCinemas = cinemas.stream().limit(3).toList();
+            for (Cinema cinema : limitedCinemas) {
+                List<Room> rooms = cinema.getRooms().stream()
+                        .filter(this::isActiveRoom)
+                        .sorted(Comparator.comparing(Room::getRoomCode))
+                        .limit(2) // Giới hạn 2 phòng mỗi rạp
+                        .toList();
 
-                LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
-                if (showtimeRepository.existsOverlappingShowtime(
-                        room.getId(),
-                        startTime.minusMinutes(15),
-                        endTime.plusMinutes(15),
-                        null
-                )) {
-                    continue;
+                for (Room room : rooms) {
+                    for (int slotIndex = 0; slotIndex < 4; slotIndex++) {
+                        Movie movie = movies.get(movieIndexCounter % movies.size());
+                        movieIndexCounter++;
+
+                        LocalDateTime startTime = LocalDate.now()
+                                .plusDays(dayOffset)
+                                .atTime(slotFor(slotIndex));
+
+                        LocalDateTime endTime = startTime.plusMinutes(movie.getDuration());
+                        
+                        if (showtimeRepository.existsOverlappingShowtime(
+                                room.getId(),
+                                startTime.minusMinutes(15),
+                                endTime.plusMinutes(15),
+                                null
+                        )) {
+                            continue;
+                        }
+
+                        ShowtimeRequest request = new ShowtimeRequest();
+                        request.setMovieId(movie.getId());
+                        request.setCinemaId(cinema.getId());
+                        request.setRoomId(room.getId());
+                        request.setStartTime(startTime);
+                        request.setBasePrice(priceFor(room));
+                        request.setStatus(ShowtimeStatus.AVAILABLE);
+
+                        Showtime showtime = showtimeFactory.createShowtime(request, movie, cinema, room);
+                        showtimesToSave.add(showtime);
+                    }
                 }
-
-                ShowtimeRequest request = new ShowtimeRequest();
-                request.setMovieId(movie.getId());
-                request.setCinemaId(cinema.getId());
-                request.setRoomId(room.getId());
-                request.setStartTime(startTime);
-                request.setBasePrice(priceFor(room));
-                request.setStatus(ShowtimeStatus.AVAILABLE);
-
-                Showtime showtime = showtimeFactory.createShowtime(request, movie, cinema, room);
-                showtimeRepository.save(showtime);
-                created++;
             }
         }
 
-        if (created > 0) {
-            System.out.println("[Seed] Created " + created + " sample showtimes for one day");
+        if (!showtimesToSave.isEmpty()) {
+            showtimeRepository.saveAll(showtimesToSave);
+            System.out.println("[Seed] Created " + showtimesToSave.size() + " sample showtimes");
         }
     }
 

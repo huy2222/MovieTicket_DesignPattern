@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.backend.enums.GroupMemberStatus;
 
 import java.util.List;
 
@@ -19,17 +20,24 @@ public class ParticipantPayment {
 
     private double amount;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    private GroupMemberStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_booking_session_id")
     private GroupBookingSession groupBookingSession;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_hold_id")
     private SeatHold seatHold;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id")
+    private Seat seat;
 
     // TODO: Liên kết với Payment nếu cần chi tiết giao dịch cụ thể
     @OneToMany(mappedBy = "participantPayment")

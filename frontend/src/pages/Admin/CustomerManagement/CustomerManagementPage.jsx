@@ -3,13 +3,10 @@ import {
   getAllUsers,
   blockUser,
   unblockUser,
-} from "../../../services/userAdminService"; // Giả định service của bạn
-// import UserFormModal from "../../../components/user/UserFormModal"; // Modal nếu cần sửa/xem chi tiết
-import "./CustomerManagementPage.css"; // CSS riêng cho trang này
+} from "../../../services/userAdminService";
+import UserDetailModal from "../../../components/user/UserDetailModal";
+import "./CustomerManagementPage.css"; 
 
-// ============================================
-// Helpers
-// ============================================
 
 const STATUS_LABELS = {
   ACTIVE: "Đang hoạt động",
@@ -67,22 +64,29 @@ export default function UserManagementPage() {
 
   // ---- Hành động Khóa / Mở khóa ----
   const handleBlock = async (id) => {
-    if (!window.confirm("Bạn có chắc chắn muốn KHÓA tài khoản này?")) return;
+    if (!window.confirm("Bạn có chắc chắn muốn khóa tài khoản này?")) return;
     try {
       await blockUser(id);
+      setUsers((prevUsers) =>
+        prevUsers.map((u) => (u.id === id ? { ...u, status: "BLOCKED" } : u))
+      );
       showToast("Đã khóa tài khoản thành công!");
-      fetchUsers();
     } catch (err) {
+      console.error("Lỗi khi khóa tài khoản:", err);
       showToast("Lỗi khi khóa tài khoản", "error");
     }
   };
 
   const handleUnblock = async (id) => {
+    if (!window.confirm("Bạn có chắc chắn muốn mở khóa tài khoản này?")) return;
     try {
       await unblockUser(id);
+      setUsers((prevUsers) =>
+        prevUsers.map((u) => (u.id === id ? { ...u, status: "ACTIVE" } : u))
+      );
       showToast("Đã mở khóa tài khoản thành công!");
-      fetchUsers();
     } catch (err) {
+      console.error("Lỗi khi mở khóa tài khoản:", err);
       showToast("Lỗi khi mở khóa tài khoản", "error");
     }
   };
@@ -238,14 +242,13 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      {/* Modal chi tiết người dùng nếu cần */}
-      {/* {modalOpen && (
-        <UserFormModal
-          user={selectedUser}
+      {/* Modal chi tiết người dùng */}
+      {modalOpen && selectedUser && (
+        <UserDetailModal
+          userId={selectedUser.id}
           onClose={handleModalClose}
-          onSuccess={fetchUsers}
         />
-      )} */}
+      )}
     </div>
   );
 }
