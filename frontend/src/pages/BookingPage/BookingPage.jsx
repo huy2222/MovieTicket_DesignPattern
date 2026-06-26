@@ -201,7 +201,7 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="booking-page container">
+    <div className="booking-page container-fluid">
       {movie && (
         <div className="booking-header">
           <h2>{movie.title}</h2>
@@ -211,7 +211,10 @@ export default function BookingPage() {
 
       {step === 1 && (
         <div className="booking-step step-1">
-          <h3>Chọn Ngày & Rạp</h3>
+          <div className="step-header">
+            <button className="back-btn" onClick={() => navigate('/')}>← Quay lại trang chủ</button>
+            <h3>Chọn Ngày & Rạp</h3>
+          </div>
           
           <div className="date-selector">
             {dates.map(dateStr => {

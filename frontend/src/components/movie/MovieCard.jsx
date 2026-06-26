@@ -20,7 +20,7 @@ export default function MovieCard({ movie, onClick }) {
       <div className="movie-image">
         <img src={movie.image} alt={movie.title} />
         <div className="movie-overlay">
-          <button className="btn btn-primary" onClick={handleBookTicket}>
+          <button className="btn-cinema" style={{padding: '8px 16px', marginBottom: '10px'}} onClick={handleBookTicket}>
             🎟️ MUA VÉ
           </button>
           <button className="btn btn-secondary" onClick={handleDetails}>
