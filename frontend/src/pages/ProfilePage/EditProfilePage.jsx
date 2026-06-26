@@ -12,7 +12,7 @@ const MAX_AVATAR_SIZE = 15 * 1024 * 1024;
 
 export default function EditProfilePage({ data, onSave, onCancel }) {
   const [form, setForm] = useState({
-    displayName: data?.profileCard?.displayName || "",
+    fullName: data?.fullName || "",
     age: data?.profileCard?.age || "",
     bio: data?.profileCard?.bio || "",
     address: data?.currentLocation?.address || "",
@@ -127,9 +127,9 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
     // Optimistic update: đóng form ngay lập tức với dữ liệu local
     const optimisticData = {
       ...data,
+      fullName: form.fullName,
       profileCard: {
         ...data?.profileCard,
-        displayName: form.displayName,
         age: Number(form.age) || 0,
         bio: form.bio,
         avatarUrl: preview,
@@ -148,8 +148,8 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
     // Gọi API trong background
     try {
       const payload = {
+        fullName: form.fullName,
         profileCard: {
-          displayName: form.displayName,
           age: Number(form.age) || 0,
           bio: form.bio,
         },
@@ -228,8 +228,8 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                 Tên hiển thị
               </label>
               <input
-                name="displayName"
-                value={form.displayName}
+                name="fullName"
+                value={form.fullName}
                 onChange={handleChange}
                 placeholder="Nhập tên hiển thị..."
                 className="w-full px-3.5 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-[#ff3847] focus:ring-2 focus:ring-[#ff3847]/10 transition-all text-sm font-semibold"

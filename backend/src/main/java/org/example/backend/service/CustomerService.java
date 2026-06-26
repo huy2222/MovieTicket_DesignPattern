@@ -3,11 +3,13 @@ package org.example.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.backend.dto.response.CustomerResponse;
 import org.example.backend.dto.response.CustomerResponseAdmin;
+import org.example.backend.dto.response.CustomerDetailResponse;
 import org.example.backend.dto.response.LocationResponse;
 import org.example.backend.dto.response.ProfileCardResponse;
 import org.example.backend.entity.Customer;
 import org.example.backend.entity.Location;
 import org.example.backend.entity.ProfileCard;
+import org.example.backend.enums.AccountStatus;
 import org.example.backend.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,11 +25,11 @@ public class CustomerService {
         return customerRepository.findByEmail(email)
                 .map(customer -> CustomerResponse.builder()
                         .id(customer.getId())
+                        .fullName(customer.getFullName())
                         .profileCard(customer.getProfileCard() != null ?
                             ProfileCardResponse.builder()
                                 .id(customer.getProfileCard().getId())
                                 .age(customer.getProfileCard().getAge())
-                                .displayName(customer.getProfileCard().getDisplayName())
                                 .bio(customer.getProfileCard().getBio())
                                 .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
                                 .avatarUrl(customer.getProfileCard().getAvatarUrl())
@@ -52,9 +54,9 @@ public class CustomerService {
                         if (customer.getProfileCard() == null) {
                             customer.setProfileCard(new ProfileCard());
                         }
+                        customer.setFullName(updatedProfile.getFullName() != null ? updatedProfile.getFullName() : customer.getFullName());
                         customer.getProfileCard().setAge(updatedProfile.getProfileCard().getAge() != null
                                 ? updatedProfile.getProfileCard().getAge() : 0);
-                        customer.getProfileCard().setDisplayName(updatedProfile.getProfileCard().getDisplayName());
                         if (updatedProfile.getProfileCard().getBio() != null) {
                             customer.getProfileCard().setBio(updatedProfile.getProfileCard().getBio());
                         }
@@ -77,11 +79,11 @@ public class CustomerService {
                     customerRepository.save(customer);
                     return CustomerResponse.builder()
                             .id(customer.getId())
+                            .fullName(customer.getFullName())
                             .profileCard(customer.getProfileCard() != null ?
                                     ProfileCardResponse.builder()
                                             .id(customer.getProfileCard().getId())
                                             .age(customer.getProfileCard().getAge())
-                                            .displayName(customer.getProfileCard().getDisplayName())
                                             .bio(customer.getProfileCard().getBio())
                                             .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
                                             .avatarUrl(customer.getProfileCard().getAvatarUrl())
@@ -100,27 +102,52 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
     }
 
-    public CustomerResponseAdmin getCustomerByIdForAdmin(Long id) {
-        return customerRepository.findById(id)
-                .map(customer -> CustomerResponseAdmin.builder()
-                        .id(customer.getId())
-                        .email(customer.getEmail())
-                        .fullName(customer.getProfileCard() != null ? customer.getProfileCard().getDisplayName() : null)
-                        .status(customer.getStatus() != null ? customer.getStatus().name() : null)
-                        .createdAt(customer.getCreatedAt() != null ? customer.getCreatedAt().toString() : null)
-                        .build())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-    }
     public List<CustomerResponseAdmin> getAllCustomersForAdmin() {
-        return customerRepository.findAll().stream()
-                .map(customer -> CustomerResponseAdmin.builder()
-                        .id(customer.getId())
-                        .email(customer.getEmail())
-                        .fullName(customer.getProfileCard() != null ? customer.getProfileCard().getDisplayName() : null)
-                        .status(customer.getStatus() != null ? customer.getStatus().name() : null)
-                        .createdAt(customer.getCreatedAt() != null ? customer.getCreatedAt().toString() : null)
-                        .build())
-                .toList();
+        return customerRepository.getCustomersForAdmin();
+    }
+
+    public void BlockCustomerAccount(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        customer.setStatus(AccountStatus.LOCKED);
+        customerRepository.save(customer);
+    }
+    public void UnBlockCustomerAccount(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        customer.setStatus(AccountStatus.ACTIVE);
+        customerRepository.save(customer);
+    }
+
+    public CustomerDetailResponse getCustomerDetail(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        
+        Integer age = null;
+        String bio = null;
+        String avatar = null;
+        
+        if (customer.getProfileCard() != null) {
+            age = customer.getProfileCard().getAge();
+            bio = customer.getProfileCard().getBio();
+            avatar = customer.getProfileCard().getAvatarUrl();
+        }
+        
+        if (avatar == null || avatar.isEmpty()) {
+            avatar = customer.getAvatarUrl();
+        }
+
+        return CustomerDetailResponse.builder()
+                .id(customer.getId())
+                .email(customer.getEmail())
+                .fullName(customer.getFullName())
+                .age(age)
+                .bio(bio)
+                .loyaltyPoints(customer.getLoyaltyPoints())
+                .status(customer.getStatus())
+                .createdAt(customer.getCreatedAt())
+                .avatar(avatar)
+                .build();
     }
 
     public CustomerResponse updateAvatar(String email, MultipartFile avatar) {
@@ -130,15 +157,16 @@ public class CustomerService {
         if (customer.getProfileCard() == null) {
             customer.setProfileCard(new ProfileCard());
         }
+        customer.setFullName(customer.getFullName()); // Keep the existing full name
         customer.getProfileCard().setAvatarUrl(avatarUrl);
         customerRepository.save(customer);
         return CustomerResponse.builder()
                 .id(customer.getId())
+                .fullName(customer.getFullName())
                 .profileCard(customer.getProfileCard() != null ?
                         ProfileCardResponse.builder()
                                 .id(customer.getProfileCard().getId())
                                 .age(customer.getProfileCard().getAge())
-                                .displayName(customer.getProfileCard().getDisplayName())
                                 .bio(customer.getProfileCard().getBio())
                                 .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
                                 .avatarUrl(customer.getProfileCard().getAvatarUrl())
