@@ -33,4 +33,8 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "shared_movie_id")
     private Movie sharedMovie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_booking_session_id")
+    private GroupBookingSession groupBookingSession;
 }

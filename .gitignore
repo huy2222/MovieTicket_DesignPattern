@@ -10,6 +10,7 @@ frontend/dist/
 # ========================
 backend/target/
 backend/*.log
+backend/uploads/
 
 # ========================
 # IDE
