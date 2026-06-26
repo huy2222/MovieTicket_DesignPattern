@@ -11,3 +11,375 @@
   background: #383838;
   border-radius: 999px;
 }
+
+.cinemeet-seat-picker {
+  overflow-x: auto;
+  border: 1px solid rgba(98, 217, 139, 0.18);
+  border-radius: 12px;
+  background: rgba(4, 12, 8, 0.34);
+  padding: 12px;
+}
+
+.cinemeet-screen {
+  position: relative;
+  margin: 0 auto 14px;
+  width: min(360px, 82%);
+  height: 24px;
+  border-top: 3px solid #d8dde5;
+  border-radius: 50% 50% 0 0;
+  color: #b7c7bd;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.cinemeet-seat-map {
+  display: grid;
+  gap: 7px;
+  min-width: max-content;
+}
+
+.cinemeet-seat-row {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.cinemeet-seat-row-label {
+  color: #8cf0ad;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cinemeet-seat-row-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 34px;
+  gap: 6px;
+}
+
+.cinemeet-seat {
+  display: grid;
+  width: 34px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 7px 7px 11px 11px;
+  background: #25362b;
+  color: #ecfff2;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.cinemeet-seat:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: #8cf0ad;
+}
+
+.cinemeet-seat.vip {
+  background: #2d3144;
+  border-color: rgba(116, 167, 255, 0.42);
+}
+
+.cinemeet-seat.couple {
+  width: 46px;
+  background: #403025;
+  border-color: rgba(255, 194, 116, 0.48);
+}
+
+.cinemeet-seat.is-mine {
+  background: #e50914;
+  border-color: #ff9ba0;
+  box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.24);
+}
+
+.cinemeet-seat.is-companion {
+  background: #26834a;
+  border-color: #8cf0ad;
+}
+
+.cinemeet-seat.is-recommended {
+  border-color: #ffc83b;
+  box-shadow: 0 0 0 2px rgba(255, 200, 59, 0.26);
+}
+
+.cinemeet-seat.is-unavailable:not(.is-mine):not(.is-companion) {
+  cursor: not-allowed;
+  background: #303030;
+  color: #8f8f8f;
+  opacity: 0.72;
+}
+
+.cinemeet-seat-hint {
+  margin: 10px 0 0;
+  color: #ffd86b;
+  font-size: 11px;
+}
+
+.cinemeet-seat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 12px;
+  color: #b7c7bd;
+  font-size: 11px;
+}
+
+.cinemeet-seat-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cinemeet-seat-swatch {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: #25362b;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.cinemeet-seat-swatch.is-mine {
+  background: #e50914;
+}
+
+.cinemeet-seat-swatch.is-companion {
+  background: #26834a;
+}
+
+.cinemeet-seat-swatch.is-recommended {
+  background: #25362b;
+  border-color: #ffc83b;
+  box-shadow: 0 0 0 2px rgba(255, 200, 59, 0.22);
+}
+
+.cinemeet-seat-swatch.is-unavailable {
+  background: #303030;
+}
+
+.cinemeet-seat-empty {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.cinemeet-toggle-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 22px 26px;
+  background:
+    linear-gradient(120deg, rgba(229, 9, 20, 0.16), rgba(255, 200, 59, 0.08)),
+    #151515;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.cinemeet-toggle-card.is-disabled {
+  background:
+    linear-gradient(120deg, rgba(60, 24, 28, 0.55), rgba(20, 20, 20, 0.92)),
+    #121212;
+}
+
+.cinemeet-toggle-icon {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(229, 9, 20, 0.42);
+  border-radius: 14px;
+  background: rgba(229, 9, 20, 0.16);
+  color: #ffc83b;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.cinemeet-switch {
+  position: relative;
+  width: 64px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 220ms ease, opacity 220ms ease;
+}
+
+.cinemeet-switch:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.cinemeet-switch span {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 240ms ease;
+}
+
+.cinemeet-switch.is-on {
+  background: #e50914;
+}
+
+.cinemeet-switch.is-on span {
+  transform: translateX(30px);
+}
+
+.cinemeet-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.cinemeet-layout {
+  display: grid;
+  grid-template-areas:
+    "discover matches"
+    "history matches";
+  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.85fr);
+  gap: 18px;
+  transition: filter 320ms ease, transform 320ms ease;
+}
+
+.cinemeet-panel {
+  border: 1px solid #2a2a2a;
+  border-radius: 18px;
+  background: #1a1a1a;
+  padding: 20px;
+}
+
+.cinemeet-discover-card {
+  grid-area: discover;
+  min-height: 360px;
+}
+
+.cinemeet-history-card {
+  grid-area: history;
+  min-height: 210px;
+  opacity: 0.9;
+}
+
+.cinemeet-match-card {
+  grid-area: matches;
+  min-height: 100%;
+}
+
+.cinemeet-curtain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.cinemeet-curtain::before,
+.cinemeet-curtain::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background:
+    linear-gradient(90deg, rgba(20, 3, 5, 0.98), rgba(88, 7, 13, 0.95)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 34px);
+  box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.5);
+  transition: transform 560ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.cinemeet-curtain::before {
+  left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cinemeet-curtain::after {
+  right: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.curtain-open .cinemeet-curtain::before {
+  transform: translateX(-102%);
+}
+
+.curtain-open .cinemeet-curtain::after {
+  transform: translateX(102%);
+}
+
+.curtain-closed .cinemeet-layout {
+  filter: blur(2px) brightness(0.42);
+  transform: scale(0.985);
+}
+
+.cinemeet-curtain-message {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 11;
+  width: min(420px, calc(100% - 32px));
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(18, 18, 18, 0.92);
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
+}
+
+.cinemeet-curtain-message h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.cinemeet-curtain-message p {
+  margin: 8px 0 0;
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.curtain-open .cinemeet-curtain-message {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .cinemeet-layout {
+    grid-template-areas:
+      "discover"
+      "matches"
+      "history";
+    grid-template-columns: 1fr;
+  }
+
+  .cinemeet-match-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .cinemeet-toggle-card {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .cinemeet-toggle-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .cinemeet-panel {
+    padding: 16px;
+  }
+}

@@ -14,6 +14,22 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     @Query("""
             SELECT m
             FROM Match m
+            WHERE m.customerA.id = :customerId OR m.customerB.id = :customerId
+            ORDER BY m.matchedAt DESC
+            """)
+    List<Match> findAllForCustomer(@Param("customerId") Long customerId);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END
+            FROM Match m
+            WHERE m.id = :matchId
+              AND (m.customerA.email = :email OR m.customerB.email = :email)
+            """)
+    boolean canAccess(@Param("matchId") Long matchId, @Param("email") String email);
+
+    @Query("""
+            SELECT m
+            FROM Match m
             WHERE m.id = :matchId
               AND m.status = :status
               AND (m.customerA.id = :customerId OR m.customerB.id = :customerId)

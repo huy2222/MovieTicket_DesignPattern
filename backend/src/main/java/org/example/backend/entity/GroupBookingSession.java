@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.backend.enums.GroupBookingStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,9 +24,20 @@ public class GroupBookingSession {
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    private GroupBookingStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id")
     private Showtime showtime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "match_id")
+    private Match match;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movie_date_id", unique = true)
+    private MovieDate invitation;
 
     @ManyToMany
     @JoinTable(

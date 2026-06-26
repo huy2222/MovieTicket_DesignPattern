@@ -24,6 +24,7 @@ public class Notification {
     private boolean isRead;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private NotificationType type;
 
     @ManyToOne
