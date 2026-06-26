@@ -22,10 +22,30 @@
   --sans: var(--font-body);
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+  background-color: #0f0f0f;
+}
+
+html {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 h1, h2, h3, h4, h5, h6 {
