@@ -78,4 +78,15 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
             where h.showtime.id = :showtimeId
             """)
     boolean existsSeatHoldByShowtimeId(@Param("showtimeId") Long showtimeId);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Showtime s
+            WHERE s.startTime >= :start
+              AND s.startTime < :end
+            """)
+    long countByStartTimeBetween(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }
