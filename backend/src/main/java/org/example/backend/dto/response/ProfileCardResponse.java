@@ -1,5 +1,6 @@
 package org.example.backend.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProfileCardResponse {
     private Long id; // profileCardId
-    private int age;
+    private Integer age;
     private String displayName;
+    private String avatarUrl;
+    @JsonProperty("cineMeetEnabled")
+    private Boolean cineMeetEnabled;
+    private String bio;
 
 }

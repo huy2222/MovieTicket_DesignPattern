@@ -1,22 +1,24 @@
 package org.example.backend.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.dto.response.CustomerResponse;
 import org.example.backend.dto.response.CustomerResponseAdmin;
 import org.example.backend.dto.response.LocationResponse;
 import org.example.backend.dto.response.ProfileCardResponse;
+import org.example.backend.entity.Customer;
 import org.example.backend.entity.Location;
 import org.example.backend.entity.ProfileCard;
 import org.example.backend.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    public  CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    private final CloudinaryService cloudinaryService;
     public CustomerResponse getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email)
                 .map(customer -> CustomerResponse.builder()
@@ -26,6 +28,9 @@ public class CustomerService {
                                 .id(customer.getProfileCard().getId())
                                 .age(customer.getProfileCard().getAge())
                                 .displayName(customer.getProfileCard().getDisplayName())
+                                .bio(customer.getProfileCard().getBio())
+                                .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
+                                .avatarUrl(customer.getProfileCard().getAvatarUrl())
                                 .build() : null)
                         .currentLocation(customer.getCurrentLocation() != null ?
                             LocationResponse.builder()
@@ -47,8 +52,15 @@ public class CustomerService {
                         if (customer.getProfileCard() == null) {
                             customer.setProfileCard(new ProfileCard());
                         }
-                        customer.getProfileCard().setAge(updatedProfile.getProfileCard().getAge());
+                        customer.getProfileCard().setAge(updatedProfile.getProfileCard().getAge() != null
+                                ? updatedProfile.getProfileCard().getAge() : 0);
                         customer.getProfileCard().setDisplayName(updatedProfile.getProfileCard().getDisplayName());
+                        if (updatedProfile.getProfileCard().getBio() != null) {
+                            customer.getProfileCard().setBio(updatedProfile.getProfileCard().getBio());
+                        }
+                        if (updatedProfile.getProfileCard().getCineMeetEnabled() != null) {
+                            customer.getProfileCard().setCineMeetEnabled(updatedProfile.getProfileCard().getCineMeetEnabled());
+                        }
                     }
                     if (updatedProfile.getCurrentLocation() != null) {
                         if (customer.getCurrentLocation() == null) {
@@ -68,6 +80,9 @@ public class CustomerService {
                                             .id(customer.getProfileCard().getId())
                                             .age(customer.getProfileCard().getAge())
                                             .displayName(customer.getProfileCard().getDisplayName())
+                                            .bio(customer.getProfileCard().getBio())
+                                            .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
+                                            .avatarUrl(customer.getProfileCard().getAvatarUrl())
                                             .build() : null)
                             .currentLocation(customer.getCurrentLocation() != null ?
                                     LocationResponse.builder()
@@ -106,4 +121,35 @@ public class CustomerService {
                 .toList();
     }
 
+    public CustomerResponse updateAvatar(String email, MultipartFile avatar) {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        String avatarUrl = cloudinaryService.upload(avatar);
+        if (customer.getProfileCard() == null) {
+            customer.setProfileCard(new ProfileCard());
+        }
+        customer.getProfileCard().setAvatarUrl(avatarUrl);
+        customerRepository.save(customer);
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .profileCard(customer.getProfileCard() != null ?
+                        ProfileCardResponse.builder()
+                                .id(customer.getProfileCard().getId())
+                                .age(customer.getProfileCard().getAge())
+                                .displayName(customer.getProfileCard().getDisplayName())
+                                .bio(customer.getProfileCard().getBio())
+                                .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
+                                .avatarUrl(customer.getProfileCard().getAvatarUrl())
+                        .build() : null)
+                .currentLocation(customer.getCurrentLocation() != null ?
+                        LocationResponse.builder()
+                                .id(customer.getCurrentLocation().getId())
+                                .address(customer.getCurrentLocation().getAddress())
+                                .ward(customer.getCurrentLocation().getWard())
+                                .district(customer.getCurrentLocation().getDistrict())
+                                .city(customer.getCurrentLocation().getCity())
+                                .country(customer.getCurrentLocation().getCountry())
+                                .build() : null)
+                .build();
+    }
 }
