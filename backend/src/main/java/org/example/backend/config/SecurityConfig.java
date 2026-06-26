@@ -43,7 +43,8 @@ public class SecurityConfig {
                         // admin
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/movies/**").hasRole("ADMIN")
-                        // phải đăng nhập (đã chuyển thành permitAll để dễ test)
+                        // phải đăng nhập
+                        .requestMatchers("/api/customer/**").authenticated()
                         .requestMatchers("/api/customers/**", "/api/bookings/**", "/api/cinemeet/**", "/home").permitAll()
                         .anyRequest().permitAll()
                 )
