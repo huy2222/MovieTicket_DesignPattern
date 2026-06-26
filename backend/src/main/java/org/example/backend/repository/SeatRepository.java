@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
@@ -18,4 +20,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     Optional<Seat> findByIdWithRoom(@Param("seatId") Long seatId);
 
     List<Seat> findByRoom_IdOrderByRowLabelAscColumnNumberAsc(Long roomId);
+
+    List<Seat> findByRoomId(Long roomId);
 }
