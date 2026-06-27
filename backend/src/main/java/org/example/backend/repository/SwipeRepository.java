@@ -15,4 +15,5 @@ public interface SwipeRepository extends JpaRepository<Swipe, Long> {
     Optional<Swipe> findTopBySwiper_IdAndTarget_IdOrderBySwipedAtDesc(Long swiperId, Long targetId);
     Optional<Swipe> findTopBySwiper_IdAndTarget_IdAndDirectionOrderBySwipedAtDesc(Long swiperId, Long targetId, SwipeDirection direction);
     List<Swipe> findBySwiper_IdAndDirectionAndSwipedAtAfter(Long swiperId, SwipeDirection direction, LocalDateTime swipedAt);
+    List<Swipe> findBySwiper_IdAndDirectionOrderBySwipedAtDesc(Long swiperId, SwipeDirection direction);
 }

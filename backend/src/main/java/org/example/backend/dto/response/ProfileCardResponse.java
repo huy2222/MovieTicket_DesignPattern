@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,5 +19,6 @@ public class ProfileCardResponse {
     @JsonProperty("cineMeetEnabled")
     private Boolean cineMeetEnabled;
     private String bio;
-
+    private List<Long> favoriteGenreIds;
+    private List<GenreResponse> favoriteGenres;
 }

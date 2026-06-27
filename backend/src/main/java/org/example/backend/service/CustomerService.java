@@ -4,16 +4,23 @@ import lombok.RequiredArgsConstructor;
 import org.example.backend.dto.response.CustomerResponse;
 import org.example.backend.dto.response.CustomerResponseAdmin;
 import org.example.backend.dto.response.CustomerDetailResponse;
+import org.example.backend.dto.response.GenreResponse;
 import org.example.backend.dto.response.LocationResponse;
 import org.example.backend.dto.response.ProfileCardResponse;
 import org.example.backend.entity.Customer;
+import org.example.backend.entity.Genre;
 import org.example.backend.entity.Location;
 import org.example.backend.entity.ProfileCard;
 import org.example.backend.enums.AccountStatus;
 import org.example.backend.repository.CustomerRepository;
+import org.example.backend.repository.GenreRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @Service
@@ -21,19 +28,15 @@ import java.util.List;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CloudinaryService cloudinaryService;
+    private final GenreRepository genreRepository;
+
+    @Transactional(readOnly = true)
     public CustomerResponse getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email)
                 .map(customer -> CustomerResponse.builder()
                         .id(customer.getId())
                         .fullName(customer.getFullName())
-                        .profileCard(customer.getProfileCard() != null ?
-                            ProfileCardResponse.builder()
-                                .id(customer.getProfileCard().getId())
-                                .age(customer.getProfileCard().getAge())
-                                .bio(customer.getProfileCard().getBio())
-                                .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
-                                .avatarUrl(customer.getProfileCard().getAvatarUrl())
-                                .build() : null)
+                        .profileCard(toProfileCardResponse(customer.getProfileCard()))
                         .currentLocation(customer.getCurrentLocation() != null ?
                             LocationResponse.builder()
                                 .id(customer.getCurrentLocation().getId())
@@ -47,6 +50,7 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
     }
 
+    @Transactional
     public CustomerResponse updateCustomerProfile(String email, CustomerResponse updatedProfile) {
         return customerRepository.findByEmail(email)
                 .map(customer -> {
@@ -64,6 +68,19 @@ public class CustomerService {
                             boolean enabled = updatedProfile.getProfileCard().getCineMeetEnabled();
                             customer.getProfileCard().setCineMeetEnabled(enabled);
                             customer.getProfileCard().setVisibleToCustomer(enabled);
+                        }
+                        if (updatedProfile.getProfileCard().getFavoriteGenreIds() != null) {
+                            List<Long> requestedIds = new LinkedHashSet<>(
+                                    updatedProfile.getProfileCard().getFavoriteGenreIds()
+                            ).stream().toList();
+                            List<Genre> genres = genreRepository.findAllById(requestedIds);
+                            if (genres.size() != requestedIds.size()) {
+                                throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "Danh sách thể loại yêu thích không hợp lệ"
+                                );
+                            }
+                            customer.getProfileCard().setFavoriteGenres(genres);
                         }
                     }
                     if (updatedProfile.getCurrentLocation() != null) {
@@ -86,14 +103,7 @@ public class CustomerService {
                     return CustomerResponse.builder()
                             .id(customer.getId())
                             .fullName(customer.getFullName())
-                            .profileCard(customer.getProfileCard() != null ?
-                                    ProfileCardResponse.builder()
-                                            .id(customer.getProfileCard().getId())
-                                            .age(customer.getProfileCard().getAge())
-                                            .bio(customer.getProfileCard().getBio())
-                                            .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
-                                            .avatarUrl(customer.getProfileCard().getAvatarUrl())
-                                            .build() : null)
+                            .profileCard(toProfileCardResponse(customer.getProfileCard()))
                             .currentLocation(customer.getCurrentLocation() != null ?
                                     LocationResponse.builder()
                                             .id(customer.getCurrentLocation().getId())
@@ -169,14 +179,7 @@ public class CustomerService {
         return CustomerResponse.builder()
                 .id(customer.getId())
                 .fullName(customer.getFullName())
-                .profileCard(customer.getProfileCard() != null ?
-                        ProfileCardResponse.builder()
-                                .id(customer.getProfileCard().getId())
-                                .age(customer.getProfileCard().getAge())
-                                .bio(customer.getProfileCard().getBio())
-                                .cineMeetEnabled(customer.getProfileCard().isCineMeetEnabled())
-                                .avatarUrl(customer.getProfileCard().getAvatarUrl())
-                        .build() : null)
+                .profileCard(toProfileCardResponse(customer.getProfileCard()))
                 .currentLocation(customer.getCurrentLocation() != null ?
                         LocationResponse.builder()
                                 .id(customer.getCurrentLocation().getId())
@@ -186,6 +189,30 @@ public class CustomerService {
                                 .city(customer.getCurrentLocation().getCity())
                                 .country(customer.getCurrentLocation().getCountry())
                                 .build() : null)
+                .build();
+    }
+
+    private ProfileCardResponse toProfileCardResponse(ProfileCard profile) {
+        if (profile == null) {
+            return null;
+        }
+
+        List<Genre> genres = profile.getFavoriteGenres() == null
+                ? List.of()
+                : profile.getFavoriteGenres();
+        return ProfileCardResponse.builder()
+                .id(profile.getId())
+                .age(profile.getAge())
+                .bio(profile.getBio())
+                .cineMeetEnabled(profile.isCineMeetEnabled())
+                .avatarUrl(profile.getAvatarUrl())
+                .favoriteGenreIds(genres.stream().map(Genre::getId).toList())
+                .favoriteGenres(genres.stream()
+                        .map(genre -> GenreResponse.builder()
+                                .id(genre.getId())
+                                .name(genre.getName())
+                                .build())
+                        .toList())
                 .build();
     }
 }

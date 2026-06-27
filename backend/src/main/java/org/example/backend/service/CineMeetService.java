@@ -2,6 +2,7 @@ package org.example.backend.service;
 
 import org.example.backend.dto.request.UpdateLocationRequest;
 import org.example.backend.dto.response.CineMeetDiscoverItemResponse;
+import org.example.backend.dto.response.CineMeetLikedProfileResponse;
 import org.example.backend.dto.response.CineMeetMatchResponse;
 import org.example.backend.dto.response.CineMeetPeerResponse;
 import org.example.backend.dto.response.CineMeetSwipeResponse;
@@ -32,7 +33,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -268,6 +271,28 @@ public class CineMeetService {
     }
 
     @Transactional(readOnly = true)
+    public List<CineMeetLikedProfileResponse> getLikedProfiles(String email) {
+        Customer me = findCustomerByEmail(email);
+        Map<Long, Swipe> latestLikes = new LinkedHashMap<>();
+        swipeRepository.findBySwiper_IdAndDirectionOrderBySwipedAtDesc(me.getId(), SwipeDirection.RIGHT)
+                .forEach(swipe -> latestLikes.putIfAbsent(swipe.getTarget().getId(), swipe));
+
+        return latestLikes.values().stream()
+                .map(swipe -> {
+                    Customer target = swipe.getTarget();
+                    return CineMeetLikedProfileResponse.builder()
+                            .customerId(target.getId())
+                            .avatar(resolveAvatar(target))
+                            .name(resolveDisplayName(target))
+                            .age(resolveAge(target))
+                            .favoriteGenres(resolveGenres(target))
+                            .likedAt(swipe.getSwipedAt())
+                            .build();
+                })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public CineMeetMatchResponse getMatchById(String email, Long matchId) {
         Customer me = findCustomerByEmail(email);
         Match match = matchRepository.findById(matchId)
@@ -401,13 +426,15 @@ public class CineMeetService {
 
     private List<String> resolveGenres(Customer customer) {
         Set<String> genres = new LinkedHashSet<>();
-        if (customer.getFavoriteGenres() != null) {
-            customer.getFavoriteGenres().stream()
-                    .map(Genre::getName)
-                    .forEach(genres::add);
-        }
         if (customer.getProfileCard() != null && customer.getProfileCard().getFavoriteGenres() != null) {
             customer.getProfileCard().getFavoriteGenres().stream()
+                    .map(Genre::getName)
+                    .forEach(genres::add);
+            return List.copyOf(genres);
+        }
+
+        if (customer.getFavoriteGenres() != null) {
+            customer.getFavoriteGenres().stream()
                     .map(Genre::getName)
                     .forEach(genres::add);
         }

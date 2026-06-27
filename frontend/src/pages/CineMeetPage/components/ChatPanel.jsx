@@ -292,6 +292,30 @@ export default function ChatPanel({ match, onClose }) {
     if (Number(right.customerId) === Number(currentUser.id)) return 1;
     return 0;
   });
+  const timelineItems = [
+    ...messages.map((message) => ({
+      type: "message",
+      id: message.id,
+      occurredAt: message.sentAt,
+      data: message,
+    })),
+    ...invitations.map((invitation) => ({
+      type: "invitation",
+      id: invitation.id,
+      occurredAt: invitation.proposedAt,
+      data: invitation,
+    })),
+    ...(group ? [{
+      type: "group",
+      id: group.id,
+      occurredAt: group.createdAt,
+      data: group,
+    }] : []),
+  ].sort((left, right) => {
+    const leftTime = new Date(left.occurredAt).getTime();
+    const rightTime = new Date(right.occurredAt).getTime();
+    return (Number.isNaN(leftTime) ? 0 : leftTime) - (Number.isNaN(rightTime) ? 0 : rightTime);
+  });
 
   return (
     <div className="fixed inset-0 z-[2100] flex items-center justify-center bg-black/75 p-4" onMouseDown={onClose}>
@@ -365,9 +389,11 @@ export default function ChatPanel({ match, onClose }) {
             </button>
           ) : null}
           {loading ? <p className="text-center text-sm text-[#8f8f8f]">Đang tải cuộc trò chuyện...</p> : null}
-          {messages.map((message) => {
-            const mine = Number(message.senderId) === Number(currentUser.id);
-            return (
+          {timelineItems.map((item) => {
+            if (item.type === "message") {
+              const message = item.data;
+              const mine = Number(message.senderId) === Number(currentUser.id);
+              return (
               <div key={`message-${message.id}`} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[78%] rounded-2xl px-3 py-2 ${mine ? "bg-[#e50914] text-white" : "bg-[#292929] text-white"}`}>
                   {!mine ? <p className="mb-1 text-[11px] font-semibold text-[#ff8a91]">{message.senderName}</p> : null}
@@ -377,12 +403,13 @@ export default function ChatPanel({ match, onClose }) {
                   </p>
                 </div>
               </div>
-            );
-          })}
+              );
+            }
 
-          {invitations.map((invitation) => {
-            const mine = Number(invitation.proposerId) === Number(currentUser.id);
-            return (
+            if (item.type === "invitation") {
+              const invitation = item.data;
+              const mine = Number(invitation.proposerId) === Number(currentUser.id);
+              return (
               <div key={`invitation-${invitation.id}`} className="rounded-xl border border-[#5a4520] bg-[#282015] p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -413,10 +440,12 @@ export default function ChatPanel({ match, onClose }) {
                   </div>
                 ) : null}
               </div>
-            );
-          })}
+              );
+            }
 
-          {group ? (
+            if (item.type === "group") {
+              const group = item.data;
+              return (
             <div className="rounded-xl border border-[#27543a] bg-[#15251c] p-3">
               <div className="flex justify-between gap-3">
                 <div>
@@ -517,7 +546,11 @@ export default function ChatPanel({ match, onClose }) {
                 </div>
               ) : null}
             </div>
-          ) : null}
+              );
+            }
+
+            return null;
+          })}
           <div ref={bottomRef} />
         </div>
 

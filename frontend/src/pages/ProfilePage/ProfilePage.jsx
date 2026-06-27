@@ -40,8 +40,6 @@ export default function ProfilePage() {
     setEditMode(false);
   };
 
-  const handleCancel = () => setEditMode(false);
-
   const initials = data.fullName?.charAt(0).toUpperCase() || "U";
   const hasLocation = data.currentLocation?.city || data.currentLocation?.district || data.currentLocation?.address;
 
@@ -118,6 +116,32 @@ export default function ProfilePage() {
                     Chưa có giới thiệu, nhấn để thêm bio
                   </button>
                 )}
+
+                <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+                    Thể loại phim yêu thích
+                  </p>
+                  {data.profileCard?.favoriteGenres?.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {data.profileCard.favoriteGenres.map((genre) => (
+                        <span
+                          key={genre.id}
+                          className="rounded-full border border-[#e50914]/30 bg-[#e50914]/10 px-3 py-1.5 text-xs font-semibold text-[#ff7d85]"
+                        >
+                          {genre.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setEditMode(true)}
+                      className="text-sm text-slate-500 transition hover:text-slate-300"
+                    >
+                      Chưa chọn thể loại yêu thích, nhấn để thêm
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
