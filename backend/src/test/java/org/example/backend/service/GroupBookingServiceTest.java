@@ -41,6 +41,8 @@ class GroupBookingServiceTest {
     @Mock BookingRepository bookingRepository;
     @Mock CineMeetRealtimePublisher realtimePublisher;
 
+    @Mock VNPayService vnPayService;
+
     private GroupBookingService service;
 
     @BeforeEach
@@ -53,7 +55,8 @@ class GroupBookingServiceTest {
                 seatHoldRepository,
                 ticketRepository,
                 bookingRepository,
-                realtimePublisher
+                realtimePublisher,
+                vnPayService
         );
     }
 

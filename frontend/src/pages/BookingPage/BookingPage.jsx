@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCitiesWithShowtimes, getCinemasAndShowtimes, getShowtimeSeats, checkout } from '../../services/bookingService';
 import { getMovieById } from '../../services/movieService';
+import { getApplicableVouchers } from '../../services/voucherService';
 import './BookingPage.css';
 
 export default function BookingPage() {
@@ -30,6 +31,7 @@ export default function BookingPage() {
 
   // --- Step 3 States ---
   const [voucherCode, setVoucherCode] = useState('');
+  const [applicableVouchers, setApplicableVouchers] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // 1. Initialize Dates & Fetch Movie
@@ -46,6 +48,17 @@ export default function BookingPage() {
     // Fetch movie
     getMovieById(movieId).then(res => setMovie(res.data)).catch(console.error);
   }, [movieId]);
+
+  // Fetch applicable vouchers when entering step 3
+  useEffect(() => {
+    if (step === 3) {
+      const originalPrice = calculateTotal();
+      const ticketCount = selectedSeats.length;
+      getApplicableVouchers(originalPrice, ticketCount)
+        .then(res => setApplicableVouchers(res.data))
+        .catch(console.error);
+    }
+  }, [step, selectedSeats]);
 
   // 2. Fetch Cities when Date changes
   useEffect(() => {
@@ -330,6 +343,27 @@ export default function BookingPage() {
                 />
               </div>
               <small className="text-muted">Tổng tiền thực tế sẽ được áp dụng trực tiếp bên trang thanh toán VNPay.</small>
+              
+              {applicableVouchers.length > 0 && (
+                <div className="voucher-suggestions">
+                  <p className="voucher-suggestions-title">Voucher khả dụng cho đơn hàng này:</p>
+                  <div className="voucher-list">
+                    {applicableVouchers.map(v => (
+                      <div key={v.id} className="voucher-suggestion-item">
+                        <div className="voucher-info">
+                          <strong>{v.code}</strong> - {v.decoratorDescription || v.description}
+                        </div>
+                        <button 
+                          className="btn-apply-voucher" 
+                          onClick={() => setVoucherCode(v.code)}
+                        >
+                          Áp dụng
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="checkout-actions">

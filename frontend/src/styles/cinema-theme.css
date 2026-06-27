@@ -118,7 +118,9 @@ h1, h2, h3, h4, h5, h6 {
 .movie-filter-select,
 .room-filter-select,
 .showtime-filter-select,
-.cinema-filter-select {
+.cinema-filter-select,
+.booking-filter-select,
+.booking-table-filter {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
   color: var(--text-light) !important;
@@ -149,7 +151,9 @@ h1, h2, h3, h4, h5, h6 {
 .movie-filter-select:focus,
 .room-filter-select:focus,
 .showtime-filter-select:focus,
-.cinema-filter-select:focus {
+.cinema-filter-select:focus,
+.booking-filter-select:focus,
+.booking-table-filter:focus {
   background: rgba(255, 255, 255, 0.12) !important;
   border-color: var(--accent-red) !important;
   box-shadow: 0 0 0 3px rgba(255, 56, 71, 0.15) !important;
@@ -162,6 +166,8 @@ h1, h2, h3, h4, h5, h6 {
 .room-filter-select option,
 .showtime-filter-select option,
 .cinema-filter-select option,
+.booking-filter-select option,
+.booking-table-filter option,
 .form-select option {
   background-color: #1a1a1a !important;
   color: var(--text-light) !important;

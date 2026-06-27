@@ -146,6 +146,22 @@ public class VoucherService {
         return component.calculatePrice(originalPrice, ticketCount);
     }
 
+    // 9. Gợi ý voucher
+    public List<VoucherResponse> getApplicableVouchers(double originalPrice, int ticketCount) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Voucher> potentialVouchers = voucherRepository.findApplicableVouchers(now, originalPrice);
+
+        return potentialVouchers.stream()
+                .filter(v -> v.getUsageLimit() == 0 || v.getUsedCount() < v.getUsageLimit()) // Filter out out-of-stock
+                .filter(v -> {
+                    VoucherComponent component = voucherFactory.createVoucherComponent(v);
+                    double discounted = component.calculatePrice(originalPrice, ticketCount);
+                    return discounted < originalPrice; // Must actually give a discount
+                })
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     // Helpers
     private VoucherResponse mapToResponse(Voucher voucher) {
         VoucherComponent component = voucherFactory.createVoucherComponent(voucher);
