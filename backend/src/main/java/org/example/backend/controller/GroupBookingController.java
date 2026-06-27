@@ -27,6 +27,11 @@ public class GroupBookingController {
         return groupBookingService.getGroup(principal.getName(), groupId);
     }
 
+    @GetMapping("/{groupId}/seats")
+    public org.example.backend.dto.response.GroupBookingSeatResponse getGroupSeats(Principal principal, @PathVariable Long groupId) {
+        return groupBookingService.getGroupSeats(principal.getName(), groupId);
+    }
+
     @PostMapping("/{groupId}/seats/{seatId}")
     public GroupBookingResponse selectSeat(
             Principal principal,

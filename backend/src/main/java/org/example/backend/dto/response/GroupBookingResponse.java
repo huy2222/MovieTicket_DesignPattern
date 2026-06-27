@@ -25,7 +25,6 @@ public class GroupBookingResponse {
     private String roomName;
     private LocalDateTime startTime;
     private List<MemberItem> members;
-    private List<SeatItem> availableSeats;
 
     @Data
     @Builder

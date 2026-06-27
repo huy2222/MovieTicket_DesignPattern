@@ -65,3 +65,5 @@ export const getGroupVNPayUrl = (groupId) =>
   api.post(`/cinemeet/group-bookings/${groupId}/payment/vnpay-url`);
 export const cancelCineMeetGroup = (groupId) =>
   api.delete(`/cinemeet/group-bookings/${groupId}`);
+export const getGroupSeats = (groupId) =>
+  api.get(`/cinemeet/group-bookings/${groupId}/seats`);

@@ -418,19 +418,6 @@ public class GroupBookingService {
                         .build())
                 .toList();
 
-        Set<Long> bookedSeatIds = new HashSet<>(ticketRepository.findBookedSeatIdsByShowtime(showtime.getId()));
-        Set<Long> heldSeatIds = new HashSet<>(seatHoldRepository.findActiveHeldSeatIdsByShowtime(showtime.getId(), LocalDateTime.now()));
-
-        List<GroupBookingResponse.SeatItem> seats = showtime.getRoom() == null ? List.of()
-                : seatRepository.findByRoom_IdOrderByRowLabelAscColumnNumberAsc(showtime.getRoom().getId()).stream()
-                    .map(seat -> GroupBookingResponse.SeatItem.builder()
-                            .id(seat.getId())
-                            .label(seatLabel(seat))
-                            .seatType(seat.getSeatType() != null ? seat.getSeatType().name() : null)
-                            .available(isSeatAvailable(seat, bookedSeatIds, heldSeatIds))
-                            .build())
-                    .toList();
-
         return GroupBookingResponse.builder()
                 .id(group.getId())
                 .matchId(group.getMatch() != null ? group.getMatch().getId() : null)
@@ -446,6 +433,29 @@ public class GroupBookingService {
                 .roomName(showtime.getRoom() != null ? showtime.getRoom().getName() : null)
                 .startTime(showtime.getStartTime())
                 .members(memberItems)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public org.example.backend.dto.response.GroupBookingSeatResponse getGroupSeats(String email, Long groupId) {
+        Customer customer = findCustomer(email);
+        GroupBookingSession group = findAccessible(groupId, customer);
+        Showtime showtime = group.getShowtime();
+
+        Set<Long> bookedSeatIds = new HashSet<>(ticketRepository.findBookedSeatIdsByShowtime(showtime.getId()));
+        Set<Long> heldSeatIds = new HashSet<>(seatHoldRepository.findActiveHeldSeatIdsByShowtime(showtime.getId(), LocalDateTime.now()));
+
+        List<GroupBookingResponse.SeatItem> seats = showtime.getRoom() == null ? List.of()
+                : seatRepository.findByRoom_IdOrderByRowLabelAscColumnNumberAsc(showtime.getRoom().getId()).stream()
+                    .map(seat -> GroupBookingResponse.SeatItem.builder()
+                            .id(seat.getId())
+                            .label(seatLabel(seat))
+                            .seatType(seat.getSeatType() != null ? seat.getSeatType().name() : null)
+                            .available(isSeatAvailable(seat, bookedSeatIds, heldSeatIds))
+                            .build())
+                    .toList();
+
+        return org.example.backend.dto.response.GroupBookingSeatResponse.builder()
                 .availableSeats(seats)
                 .build();
     }

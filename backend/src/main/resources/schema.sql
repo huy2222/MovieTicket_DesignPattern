@@ -87,3 +87,7 @@ CREATE TABLE IF NOT EXISTS voucher_cinemas (
     CONSTRAINT fk_voucher_cinemas_cinema
         FOREIGN KEY (cinema_id) REFERENCES cinemas (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Performance Indexes for CineMeet Realtime Seating
+CREATE INDEX IF NOT EXISTS idx_ticket_showtime ON tickets(showtime_id, status);
+CREATE INDEX IF NOT EXISTS idx_seathold_showtime_expires ON seat_holds(showtime_id, expires_at);

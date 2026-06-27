@@ -86,6 +86,11 @@ public class CineMeetGroupController {
         return groupBookingService.getGroup(principal.getName(), groupId);
     }
 
+    @GetMapping("/groups/{groupId}/seats")
+    public org.example.backend.dto.response.GroupBookingSeatResponse getGroupSeats(Principal principal, @PathVariable Long groupId) {
+        return groupBookingService.getGroupSeats(principal.getName(), groupId);
+    }
+
     @PostMapping("/groups/{groupId}/seat")
     public GroupBookingResponse selectSeat(
             Principal principal, @PathVariable Long groupId, @RequestBody SeatSelectionRequest request) {
