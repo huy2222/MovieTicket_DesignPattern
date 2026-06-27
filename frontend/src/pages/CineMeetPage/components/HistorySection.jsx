@@ -1,42 +1,7 @@
-const tabs = [
-  { key: "all", label: "Tất cả" },
-  { key: "like", label: "Đã thích" },
-  { key: "skip", label: "Đã bỏ qua" },
-  { key: "match", label: "Đã match" },
-];
-
-const badgeClasses = {
-  like: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  skip: "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
-  match: "bg-red-500/15 text-red-400 border-red-500/30",
-};
-
-const labelByType = {
-  like: "Đã thích",
-  skip: "Đã bỏ qua",
-  match: "Đã match",
-};
-
-export default function HistorySection({ activeTab, onTabChange, activities }) {
+export default function HistorySection({ activities }) {
   return (
     <section className="cinemeet-panel cinemeet-history-card">
-      <h2 className="text-base font-semibold text-white">Lịch sử hoạt động</h2>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => onTabChange(tab.key)}
-            className={`rounded-full border px-3 py-1.5 text-xs transition ${
-              activeTab === tab.key
-                ? "border-[#e50914] bg-[#e50914]/15 text-[#ff6b74]"
-                : "border-[#2f2f2f] bg-[#151515] text-[#b3b3b3] hover:text-white"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <h2 className="text-base font-semibold text-white">Đã thích</h2>
 
       <div className="mt-4 max-h-56 space-y-2 overflow-y-auto pr-1 cinemeet-scroll">
         {activities.length === 0 ? (
@@ -60,8 +25,8 @@ export default function HistorySection({ activeTab, onTabChange, activities }) {
                   <div className="text-xs text-[#b3b3b3]">{item.relativeTime}</div>
                 </div>
               </div>
-              <span className={`ml-2 flex-shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${badgeClasses[item.type]}`}>
-                {labelByType[item.type]}
+              <span className="ml-2 flex-shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-400">
+                Đã thích
               </span>
             </div>
           ))

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { updateProfile } from "../../services/customerService";
 import { updateAvatar } from "../../services/customerService"; // Import hàm updateAvatar
+import { getGenres } from "../../services/genreService";
 // Import các hàm lấy dữ liệu từ thư viện sub-vn
 import {
   getProvinces,
@@ -11,6 +12,9 @@ import {
 const MAX_AVATAR_SIZE = 15 * 1024 * 1024;
 
 export default function EditProfilePage({ data, onSave, onCancel }) {
+  const initialFavoriteGenreIds = data?.profileCard?.favoriteGenreIds
+    ?? data?.profileCard?.favoriteGenres?.map((genre) => genre.id)
+    ?? [];
   const [form, setForm] = useState({
     fullName: data?.fullName || "",
     age: data?.profileCard?.age || "",
@@ -23,39 +27,40 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
   });
 
   // Quản lý danh sách để hiển thị ra thẻ <select>
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
+  const [provinces] = useState(() => getProvinces());
+  const [districts, setDistricts] = useState(() => {
+    const province = getProvinces().find((item) => item.name === data?.currentLocation?.city);
+    return province ? getDistrictsByProvinceCode(province.code) : [];
+  });
+  const [wards, setWards] = useState(() => {
+    const province = getProvinces().find((item) => item.name === data?.currentLocation?.city);
+    if (!province) return [];
+    const district = getDistrictsByProvinceCode(province.code)
+      .find((item) => item.name === data?.currentLocation?.district);
+    return district ? getWardsByDistrictCode(district.code) : [];
+  });
+  const [genreOptions, setGenreOptions] = useState(data?.profileCard?.favoriteGenres ?? []);
+  const [favoriteGenreIds, setFavoriteGenreIds] = useState(initialFavoriteGenreIds);
+  const [genreError, setGenreError] = useState("");
 
   // Avatar states
   const [avatar, setAvatar] = useState(null); // Sửa chính tả từ avata -> avatar
   const [preview, setPreview] = useState(data?.profileCard?.avatarUrl || null);
   const [avatarError, setAvatarError] = useState("");
 
-  // Khởi tạo danh sách Tỉnh/Thành phố khi component mount
   useEffect(() => {
-    setProvinces(getProvinces());
+    let active = true;
+    getGenres()
+      .then(({ data: genres }) => {
+        if (active) setGenreOptions(genres ?? []);
+      })
+      .catch(() => {
+        if (active) setGenreError("Không tải được danh sách thể loại phim.");
+      });
+    return () => {
+      active = false;
+    };
   }, []);
-
-  // Xử lý load lại danh sách Huyện/Xã nếu ban đầu `data` truyền vào đã có sẵn địa chỉ
-  useEffect(() => {
-    if (form.city) {
-      const selectedProvince = getProvinces().find((p) => p.name === form.city);
-      if (selectedProvince) {
-        const districtList = getDistrictsByProvinceCode(selectedProvince.code);
-        setDistricts(districtList);
-
-        if (form.district) {
-          const selectedDistrict = districtList.find(
-            (d) => d.name === form.district,
-          );
-          if (selectedDistrict) {
-            setWards(getWardsByDistrictCode(selectedDistrict.code));
-          }
-        }
-      }
-    }
-  }, [data]);
 
   const handleChange = (e) => {
     setForm({
@@ -121,6 +126,14 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
     setPreview(URL.createObjectURL(file));
   };
 
+  const toggleFavoriteGenre = (genreId) => {
+    setFavoriteGenreIds((current) =>
+      current.includes(genreId)
+        ? current.filter((id) => id !== genreId)
+        : [...current, genreId],
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -133,6 +146,8 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
         age: Number(form.age) || 0,
         bio: form.bio,
         avatarUrl: preview,
+        favoriteGenreIds,
+        favoriteGenres: genreOptions.filter((genre) => favoriteGenreIds.includes(genre.id)),
       },
       currentLocation: {
         ...data?.currentLocation,
@@ -152,6 +167,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
         profileCard: {
           age: Number(form.age) || 0,
           bio: form.bio,
+          favoriteGenreIds,
         },
         currentLocation: {
           address: form.address,
@@ -264,6 +280,39 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
               placeholder="Viết vài điều về bạn..."
               className="w-full px-3.5 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-[#ff3847] focus:ring-2 focus:ring-[#ff3847]/10 transition-all text-sm font-semibold resize-none"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
+              Thể loại phim yêu thích
+            </label>
+            <p className="mb-3 text-xs text-slate-500">
+              Sở thích này sẽ được hiển thị cho người khác khi khám phá hoặc match trên CineMeet.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {genreOptions.map((genre) => {
+                const selected = favoriteGenreIds.includes(genre.id);
+                return (
+                  <button
+                    key={genre.id}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleFavoriteGenre(genre.id)}
+                    className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${
+                      selected
+                        ? "border-[#e50914] bg-[#e50914]/20 text-[#ff7d85]"
+                        : "border-white/10 bg-[#1a1a1a] text-slate-400 hover:border-white/20 hover:text-white"
+                    }`}
+                  >
+                    {genre.name}
+                  </button>
+                );
+              })}
+            </div>
+            {genreOptions.length === 0 && !genreError ? (
+              <p className="text-xs text-slate-500">Đang tải danh sách thể loại...</p>
+            ) : null}
+            {genreError ? <p className="mt-2 text-xs text-[#ff6b74]">{genreError}</p> : null}
           </div>
 
         </div>
