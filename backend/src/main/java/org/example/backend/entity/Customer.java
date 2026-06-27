@@ -24,7 +24,7 @@ public class Customer extends User{
 
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL) // Thêm cascade ở đây
     @JoinColumn(name = "current_location_id")
     private Location currentLocation;
 
