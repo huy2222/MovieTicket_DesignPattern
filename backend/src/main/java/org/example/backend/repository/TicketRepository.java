@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    boolean existsBySeat_IdAndShowtime_Id(Long seatId, Long showtimeId);
 
     @Query("SELECT COUNT(t) FROM Ticket t")
     long countAllTickets();
@@ -26,8 +25,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-    @Query("SELECT t.seat.id FROM Ticket t WHERE t.showtime.id = :showtimeId AND t.status IN ('CONFIRMED', 'ISSUED', 'USED')")
-    List<Long> findBookedSeatIdsByShowtimeId(@Param("showtimeId") Long showtimeId);
 
     @Query("""
             SELECT m.id AS movieId,
@@ -59,6 +56,14 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+import java.util.List;
+
+public interface TicketRepository extends JpaRepository<Ticket, Long> {
+    boolean existsBySeat_IdAndShowtime_Id(Long seatId, Long showtimeId);
+
+    @Query("SELECT t.seat.id FROM Ticket t WHERE t.showtime.id = :showtimeId AND t.status IN ('CONFIRMED', 'ISSUED', 'USED')")
+    List<Long> findBookedSeatIdsByShowtimeId(@Param("showtimeId") Long showtimeId);
+
     List<Ticket> findByBookingId(Long bookingId);
     @Query("SELECT t.seat.id FROM Ticket t WHERE t.showtime.id = :showtimeId")
     List<Long> findBookedSeatIdsByShowtime(@Param("showtimeId") Long showtimeId);
