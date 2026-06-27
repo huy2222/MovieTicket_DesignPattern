@@ -31,7 +31,7 @@ public class VNPayService {
     @Value("${vnpay.command}")
     private String vnp_Command;
 
-    public String createPaymentUrl(HttpServletRequest request, long amount, String orderInfo, String txnRef) {
+    public String createPaymentUrl(HttpServletRequest request, long amount, String orderInfo, String txnRef, String returnUrl) {
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
@@ -42,7 +42,7 @@ public class VNPayService {
         vnp_Params.put("vnp_OrderInfo", orderInfo);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", returnUrl);
         vnp_Params.put("vnp_IpAddr", VNPayConfig.getIpAddress(request));
 
         TimeZone vnpayTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
