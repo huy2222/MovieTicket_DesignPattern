@@ -27,3 +27,12 @@ export const suspendVoucher = (id) =>
 
 // Xoá voucher (chỉ khi DRAFT)
 export const deleteVoucher = (id) => api.delete(`/admin/vouchers/${id}`);
+
+// ============================================
+// Public API calls
+// ============================================
+
+// Lấy danh sách voucher có thể áp dụng cho đơn hàng hiện tại
+export const getApplicableVouchers = (originalPrice, ticketCount) => 
+  api.get(`/vouchers/applicable`, { params: { originalPrice, ticketCount } });
+

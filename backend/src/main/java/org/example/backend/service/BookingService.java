@@ -36,10 +36,14 @@ public class BookingService {
     private final org.example.backend.repository.BookingRepository bookingRepository;
     private final org.example.backend.repository.PaymentRepository paymentRepository;
     private final VoucherService voucherService;
+    private final org.example.backend.repository.VoucherRepository voucherRepository;
     private final VNPayService vnPayService;
     private final org.example.backend.repository.CustomerRepository customerRepository;
 
-    public BookingService(LocationRepository locationRepository, ShowtimeRepository showtimeRepository, SeatHoldRepository seatHoldRepository, TicketRepository ticketRepository, SeatRepository seatRepository, org.example.backend.repository.BookingRepository bookingRepository, org.example.backend.repository.PaymentRepository paymentRepository, VoucherService voucherService, VNPayService vnPayService, org.example.backend.repository.CustomerRepository customerRepository) {
+    @org.springframework.beans.factory.annotation.Value("${vnpay.returnUrl}")
+    private String bookingReturnUrl;
+
+    public BookingService(LocationRepository locationRepository, ShowtimeRepository showtimeRepository, SeatHoldRepository seatHoldRepository, TicketRepository ticketRepository, SeatRepository seatRepository, org.example.backend.repository.BookingRepository bookingRepository, org.example.backend.repository.PaymentRepository paymentRepository, VoucherService voucherService, org.example.backend.repository.VoucherRepository voucherRepository, VNPayService vnPayService, org.example.backend.repository.CustomerRepository customerRepository) {
         this.locationRepository = locationRepository;
         this.showtimeRepository = showtimeRepository;
         this.seatHoldRepository = seatHoldRepository;
@@ -48,6 +52,7 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
         this.paymentRepository = paymentRepository;
         this.voucherService = voucherService;
+        this.voucherRepository = voucherRepository;
         this.vnPayService = vnPayService;
         this.customerRepository = customerRepository;
     }
@@ -186,12 +191,7 @@ public class BookingService {
         if (request.getVoucherCode() != null && !request.getVoucherCode().trim().isEmpty()) {
             try {
                 discountedPrice = voucherService.applyVoucher(request.getVoucherCode(), basePrice, seats.size());
-                // Voucher logic validates and calculates the price.
-                // We need to fetch the voucher to link to booking.
-                // Normally voucherService should provide a way to get the voucher, we use a custom method or just repository.
-                // For now, since applyVoucher throws if invalid, we assume it's valid.
-                // Note: The VoucherRepository is not injected here directly, but we can't easily get it without injecting.
-                // Let's use the code to fetch it since we know it exists if applyVoucher succeeded.
+                voucher = voucherRepository.findByCode(request.getVoucherCode()).orElse(null);
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
@@ -208,7 +208,7 @@ public class BookingService {
         booking.setSubtotal(basePrice);
         booking.setTotalAmount(discountedPrice);
         booking.setStatus(org.example.backend.enums.BookingStatus.PENDING);
-        // We skip setting voucher entity directly for now because we'd need VoucherRepository. We will just record amounts.
+        booking.setVoucher(voucher);
 
         booking = bookingRepository.save(booking);
 
@@ -236,7 +236,7 @@ public class BookingService {
 
         // 6. Generate VNPay URL
         String orderInfo = "Thanh toan ve xem phim Booking ID: " + booking.getId();
-        String paymentUrl = vnPayService.createPaymentUrl(httpRequest, (long) discountedPrice, orderInfo, txnRef);
+        String paymentUrl = vnPayService.createPaymentUrl(httpRequest, (long) discountedPrice, orderInfo, txnRef, bookingReturnUrl);
 
         return org.example.backend.dto.response.CheckoutResponse.builder()
                 .bookingId(booking.getId())
@@ -266,6 +266,12 @@ public class BookingService {
 
             booking.setStatus(org.example.backend.enums.BookingStatus.CONFIRMED);
             bookingRepository.save(booking);
+            
+            if (booking.getVoucher() != null) {
+                org.example.backend.entity.Voucher appliedVoucher = booking.getVoucher();
+                appliedVoucher.setUsedCount(appliedVoucher.getUsedCount() + 1);
+                voucherRepository.save(appliedVoucher);
+            }
 
             List<org.example.backend.entity.Ticket> tickets = ticketRepository.findByBookingId(booking.getId());
             tickets.forEach(t -> t.setStatus(org.example.backend.enums.TicketStatus.CONFIRMED));

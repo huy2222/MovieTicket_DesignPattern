@@ -50,6 +50,9 @@ public class GroupBookingService {
     private final CineMeetRealtimePublisher realtimePublisher;
     private final VNPayService vnPayService;
 
+    @org.springframework.beans.factory.annotation.Value("${vnpay.cinemeetReturnUrl}")
+    private String cinemeetReturnUrl;
+
     public GroupBookingService(
             GroupBookingSessionRepository groupRepository,
             ParticipantPaymentRepository participantRepository,
@@ -207,9 +210,8 @@ public class GroupBookingService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Thành viên đã thanh toán");
         }
         if (status == GroupMemberStatus.PAID) {
-            if (member.getSeat() == null || member.getSeatHold() == null
-                    || member.getSeatHold().getExpiresAt().isBefore(LocalDateTime.now())) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Ghế chưa được chọn hoặc đã hết thời gian giữ");
+            if (member.getSeat() == null || member.getSeatHold() == null) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Ghế chưa được chọn hoặc bị lỗi dữ liệu");
             }
             if (ticketRepository.existsBySeat_IdAndShowtime_Id(
                     member.getSeat().getId(), group.getShowtime().getId())) {
@@ -242,7 +244,7 @@ public class GroupBookingService {
         String txnRef = "CM_" + groupId + "_" + customer.getId() + "_" + System.currentTimeMillis();
         String orderInfo = "Thanh toan ve nhom CineMeet " + groupId;
         
-        return vnPayService.createPaymentUrl(request, (long) member.getAmount(), orderInfo, txnRef);
+        return vnPayService.createPaymentUrl(request, (long) member.getAmount(), orderInfo, txnRef, cinemeetReturnUrl);
     }
 
     @Transactional

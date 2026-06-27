@@ -60,6 +60,7 @@ export default function AppRoutes() {
         <Route path="/account" element={<ProfilePage />} />
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/payment/result" element={<PaymentResultPage />} />
+        <Route path="/cinemeet/payment/result" element={<PaymentResultPage />} />
         <Route path="/my-tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
         <Route
           path="/cinemeet"
