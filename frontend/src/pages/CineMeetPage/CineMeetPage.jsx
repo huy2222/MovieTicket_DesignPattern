@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import { getProfile, updateProfile } from "../../services/customerService";
@@ -6,6 +6,7 @@ import {
   blockMatch,
   closeMatch,
   discoverProfiles,
+  getLikedProfiles,
   getMatches,
   swipeLeft,
   swipeRight,
@@ -18,6 +19,16 @@ import ChatPanel from "./components/ChatPanel";
 import "./CineMeetPage.css";
 
 const DISCOVER_REFILL_THRESHOLD = 2;
+const formatLikedAt = (value) =>
+  value
+    ? new Date(value).toLocaleString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "Đã thích trước đó";
 
 export default function CineMeetPage() {
   const [profileData, setProfileData] = useState(null);
@@ -26,7 +37,6 @@ export default function CineMeetPage() {
   const [discoverList, setDiscoverList] = useState([]);
   const [matches, setMatches] = useState([]);
   const [activities, setActivities] = useState([]);
-  const [activeHistoryTab, setActiveHistoryTab] = useState("all");
   const [loadingDiscover, setLoadingDiscover] = useState(true);
   const [loadingMatches, setLoadingMatches] = useState(true);
   const [error, setError] = useState("");
@@ -35,13 +45,6 @@ export default function CineMeetPage() {
   const [activeChat, setActiveChat] = useState(null);
   const [discoverExhausted, setDiscoverExhausted] = useState(false);
   const discoverFetchInFlightRef = useRef(false);
-
-  const visibleActivities = useMemo(() => {
-    if (activeHistoryTab === "all") {
-      return activities;
-    }
-    return activities.filter((activity) => activity.type === activeHistoryTab);
-  }, [activities, activeHistoryTab]);
 
   const buildProfilePayload = (data, enabled) => ({
     profileCard: {
@@ -106,6 +109,26 @@ export default function CineMeetPage() {
     }
   }, []);
 
+  const fetchLikes = useCallback(async () => {
+    try {
+      const { data } = await getLikedProfiles();
+      setActivities((data ?? []).map((profile) => ({
+        id: `like-${profile.customerId}`,
+        customerId: profile.customerId,
+        name: profile.name ?? "Người dùng",
+        avatar: profile.avatar ?? null,
+        type: "like",
+        relativeTime: formatLikedAt(profile.likedAt),
+      })));
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        setActivities([]);
+        return;
+      }
+      setError(err?.response?.data?.message ?? "Không tải được danh sách đã thích.");
+    }
+  }, []);
+
   useEffect(() => {
     const bootstrap = async () => {
       let enabled = true;
@@ -134,10 +157,11 @@ export default function CineMeetPage() {
         setDiscoverExhausted(false);
         fetchDiscover();
         fetchMatches();
+        fetchLikes();
       }
     };
     bootstrap();
-  }, [fetchDiscover, fetchMatches]);
+  }, [fetchDiscover, fetchLikes, fetchMatches]);
 
   useEffect(() => {
     if (!cineMeetEnabled || loadingDiscover || discoverExhausted || discoverFetchInFlightRef.current) {
@@ -155,6 +179,7 @@ export default function CineMeetPage() {
     setLocationStatus("Đã cập nhật vị trí hiện tại");
     fetchDiscover();
     fetchMatches();
+    fetchLikes();
   };
 
   const handleToggleCineMeet = async () => {
@@ -172,6 +197,7 @@ export default function CineMeetPage() {
     if (!nextEnabled) {
       setMatches([]);
       setDiscoverList([]);
+      setActivities([]);
       setLoadingDiscover(false);
       setLoadingMatches(false);
     }
@@ -191,16 +217,20 @@ export default function CineMeetPage() {
   };
 
   const pushActivity = (profile, type) => {
-    setActivities((prev) => [
-      {
+    setActivities((prev) => {
+      const activity = {
         id: `${Date.now()}-${Math.random()}`,
+        customerId: profile.customerId,
         name: profile.name ?? "Unknown",
         avatar: profile.avatar ?? null,
         type,
         relativeTime: "Vừa xong",
-      },
-      ...prev,
-    ]);
+      };
+      return [
+        activity,
+        ...prev.filter((item) => item.customerId !== profile.customerId),
+      ];
+    });
   };
 
   const handleUseCurrentLocation = async () => {
@@ -221,8 +251,10 @@ export default function CineMeetPage() {
     if (!profile || !cineMeetEnabled) return;
     try {
       await swipeLeft(profile.customerId);
-      setDiscoverList((prev) => prev.filter((it) => it.customerId !== profile.customerId));
-      pushActivity(profile, "skip");
+      setDiscoverList((prev) => {
+        const remainingProfiles = prev.filter((it) => it.customerId !== profile.customerId);
+        return [...remainingProfiles, profile];
+      });
     } catch (err) {
       setError(err?.response?.data?.message ?? "Không thể bỏ qua hồ sơ này.");
     }
@@ -233,13 +265,14 @@ export default function CineMeetPage() {
     try {
       const { data } = await swipeRight(profile.customerId);
       setDiscoverList((prev) => prev.filter((it) => it.customerId !== profile.customerId));
-      pushActivity(profile, data?.matched ? "match" : "like");
+      pushActivity(profile, "like");
       if (data?.matched) {
         setPopup({
           matchId: data.matchId,
           conversationId: data.conversationId,
           message: data.message ?? "It's a Match!",
           name: profile.name,
+          favoriteGenres: profile.favoriteGenres ?? [],
         });
         fetchMatches();
       }
@@ -323,9 +356,7 @@ export default function CineMeetPage() {
             />
 
             <HistorySection
-              activeTab={activeHistoryTab}
-              onTabChange={setActiveHistoryTab}
-              activities={visibleActivities}
+              activities={activities}
             />
 
             <MatchSection
@@ -345,6 +376,23 @@ export default function CineMeetPage() {
           <div className="w-full max-w-md rounded-2xl border border-[#2a2a2a] bg-[#171717] p-5">
             <h3 className="text-2xl font-bold text-white">It's a Match!</h3>
             <p className="mt-2 text-sm text-[#b3b3b3]">Bạn và {popup.name} đã quan tâm lẫn nhau.</p>
+            <div className="mt-3">
+              <p className="mb-1.5 text-xs text-[#8f8f8f]">Thể loại phim {popup.name} yêu thích</p>
+              {popup.favoriteGenres?.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {popup.favoriteGenres.map((genre) => (
+                    <span
+                      key={`popup-genre-${genre}`}
+                      className="rounded-full border border-[#444] bg-[#252525] px-2 py-1 text-xs text-[#d6d6d6]"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-[#777]">Chưa cập nhật</p>
+              )}
+            </div>
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => setPopup(null)}

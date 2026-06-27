@@ -3,6 +3,7 @@ package org.example.backend.controller;
 import org.example.backend.dto.request.SwipeActionRequest;
 import org.example.backend.dto.request.UpdateLocationRequest;
 import org.example.backend.dto.response.CineMeetDiscoverItemResponse;
+import org.example.backend.dto.response.CineMeetLikedProfileResponse;
 import org.example.backend.dto.response.CineMeetMatchResponse;
 import org.example.backend.dto.response.CineMeetSwipeResponse;
 import org.example.backend.dto.response.LocationResponse;
@@ -64,6 +65,11 @@ public class CineMeetController {
     @GetMapping("/matches")
     public List<CineMeetMatchResponse> getMatches(Principal principal) {
         return cineMeetService.getMatches(principal.getName());
+    }
+
+    @GetMapping("/likes")
+    public List<CineMeetLikedProfileResponse> getLikedProfiles(Principal principal) {
+        return cineMeetService.getLikedProfiles(principal.getName());
     }
 
     @GetMapping("/matches/{id}")

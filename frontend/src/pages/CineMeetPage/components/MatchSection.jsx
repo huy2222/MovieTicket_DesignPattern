@@ -17,7 +17,10 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
             Bạn chưa có Match ACTIVE nào.
           </div>
         ) : (
-          matches.map((match) => (
+          matches.map((match) => {
+            const favoriteGenres = match.favoriteGenres ?? match.peer?.favoriteGenres ?? [];
+
+            return (
             <div key={match.matchId} className="rounded-xl border border-[#2a2a2a] bg-[#131313] p-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -29,9 +32,8 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                   <div className="min-w-0">
                     <div className="truncate font-medium text-white">{match.peer?.name}</div>
                     <div className="text-xs text-[#b3b3b3]">
-                      {`"${(match.favoriteGenres?.[0] && `Hẹn xem phim ${match.favoriteGenres[0]} nhé!`) || "Hẹn xem phim cuối tuần nhé!"}"`}
+                      {`"${(favoriteGenres[0] && `Hẹn xem phim ${favoriteGenres[0]} nhé!`) || "Hẹn xem phim cuối tuần nhé!"}"`}
                     </div>
-                    <div className="mt-1 text-[11px] text-[#8f8f8f]">Match ID: {match.matchId}</div>
                   </div>
                 </div>
                 <button
@@ -41,6 +43,24 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                 >
                   Chat
                 </button>
+              </div>
+
+              <div className="mt-3">
+                <p className="mb-1.5 text-[11px] font-medium text-[#8f8f8f]">Thể loại phim yêu thích</p>
+                {favoriteGenres.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {favoriteGenres.map((genre) => (
+                      <span
+                        key={`${match.matchId}-${genre}`}
+                        className="rounded-full border border-[#444] bg-[#252525] px-2 py-1 text-[11px] text-[#d6d6d6]"
+                      >
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#777]">Chưa cập nhật</p>
+                )}
               </div>
 
               <div className="mt-3 flex gap-2">
@@ -60,7 +80,8 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                 </button>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </section>

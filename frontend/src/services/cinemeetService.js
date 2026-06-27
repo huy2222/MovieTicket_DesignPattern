@@ -38,6 +38,7 @@ export const discoverProfiles = () => api.get("/cinemeet/discover");
 export const swipeLeft = (targetCustomerId) => api.post("/cinemeet/swipe/left", { targetCustomerId });
 export const swipeRight = (targetCustomerId) => api.post("/cinemeet/swipe/right", { targetCustomerId });
 export const getMatches = () => api.get("/cinemeet/matches");
+export const getLikedProfiles = () => api.get("/cinemeet/likes");
 export const blockMatch = (matchId) => api.post(`/cinemeet/matches/${matchId}/block`);
 export const closeMatch = (matchId) => api.post(`/cinemeet/matches/${matchId}/close`);
 export const getMatchMessages = (matchId, beforeId, limit = 50) =>

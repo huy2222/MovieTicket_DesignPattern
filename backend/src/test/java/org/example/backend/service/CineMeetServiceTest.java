@@ -1,6 +1,7 @@
 package org.example.backend.service;
 
 import org.example.backend.dto.response.CineMeetSwipeResponse;
+import org.example.backend.dto.response.CineMeetLikedProfileResponse;
 import org.example.backend.entity.Customer;
 import org.example.backend.entity.Match;
 import org.example.backend.entity.ProfileCard;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,6 +87,30 @@ class CineMeetServiceTest {
         assertTrue(response.isMatched());
         assertEquals(20L, response.getMatchId());
         assertEquals("RIGHT", response.getSwipeStatus());
+    }
+
+    @Test
+    void likedProfilesReturnsRightSwipesFromNewestToOldest() {
+        Customer first = customer(1L, "first@example.com", "An");
+        Customer second = customer(2L, "second@example.com", "Bình");
+        LocalDateTime likedAt = LocalDateTime.of(2026, 6, 27, 15, 30);
+        Swipe like = new Swipe();
+        like.setSwiper(first);
+        like.setTarget(second);
+        like.setDirection(SwipeDirection.RIGHT);
+        like.setSwipedAt(likedAt);
+
+        when(customerRepository.findByEmail(first.getEmail())).thenReturn(Optional.of(first));
+        when(swipeRepository.findBySwiper_IdAndDirectionOrderBySwipedAtDesc(
+                first.getId(), SwipeDirection.RIGHT
+        )).thenReturn(List.of(like));
+
+        List<CineMeetLikedProfileResponse> result = service.getLikedProfiles(first.getEmail());
+
+        assertEquals(1, result.size());
+        assertEquals(second.getId(), result.get(0).getCustomerId());
+        assertEquals("Bình", result.get(0).getName());
+        assertEquals(likedAt, result.get(0).getLikedAt());
     }
 
     private Customer customer(Long id, String email, String name) {
