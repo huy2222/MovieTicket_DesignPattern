@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("""
@@ -103,4 +104,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+    Optional<Payment> findByTransactionCode(String transactionCode);
 }

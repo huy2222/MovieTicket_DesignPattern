@@ -1,10 +1,14 @@
-export default function MatchSection({ matches, loading, onCloseMatch, onBlockMatch }) {
+export default function MatchSection({ matches, loading, disabled, onCloseMatch, onBlockMatch, onOpenChat }) {
   return (
-    <section className="rounded-2xl border border-[#2a2a2a] bg-[#1a1a1a] p-4 md:p-5">
+    <section className="cinemeet-panel cinemeet-match-card">
       <h2 className="text-xl font-semibold text-white">Match của bạn</h2>
 
       <div className="mt-4 space-y-3">
-        {loading ? (
+        {disabled ? (
+          <div className="rounded-xl border border-[#2a2a2a] bg-[#121212] p-4 text-sm text-[#b3b3b3]">
+            Bật CineMeet để xem các match của bạn.
+          </div>
+        ) : loading ? (
           <div className="rounded-xl border border-[#2a2a2a] bg-[#121212] p-4 text-sm text-[#b3b3b3]">
             Đang tải match...
           </div>
@@ -16,14 +20,14 @@ export default function MatchSection({ matches, loading, onCloseMatch, onBlockMa
           matches.map((match) => (
             <div key={match.matchId} className="rounded-xl border border-[#2a2a2a] bg-[#131313] p-3">
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-11 w-11 overflow-hidden rounded-full bg-[#2a2a2a]">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full bg-[#2a2a2a]">
                     {match.peer?.avatar ? (
                       <img src={match.peer.avatar} alt={match.peer.name} className="h-full w-full object-cover" />
                     ) : null}
                   </div>
-                  <div>
-                    <div className="font-medium text-white">{match.peer?.name}</div>
+                  <div className="min-w-0">
+                    <div className="truncate font-medium text-white">{match.peer?.name}</div>
                     <div className="text-xs text-[#b3b3b3]">
                       {`"${(match.favoriteGenres?.[0] && `Hẹn xem phim ${match.favoriteGenres[0]} nhé!`) || "Hẹn xem phim cuối tuần nhé!"}"`}
                     </div>
@@ -32,6 +36,7 @@ export default function MatchSection({ matches, loading, onCloseMatch, onBlockMa
                 </div>
                 <button
                   type="button"
+                  onClick={() => onOpenChat(match)}
                   className="rounded-lg border border-[#e50914]/60 px-3 py-1.5 text-xs font-medium text-[#ff6b74] transition hover:bg-[#e50914]/15"
                 >
                   Chat
@@ -44,14 +49,14 @@ export default function MatchSection({ matches, loading, onCloseMatch, onBlockMa
                   onClick={() => onCloseMatch(match.matchId)}
                   className="rounded-lg border border-[#3a3a3a] bg-[#252525] px-3 py-1.5 text-xs text-white hover:bg-[#303030]"
                 >
-                  Close
+                  Đóng
                 </button>
                 <button
                   type="button"
                   onClick={() => onBlockMatch(match.matchId)}
                   className="rounded-lg border border-[#e50914]/60 bg-[#321417] px-3 py-1.5 text-xs text-[#ff7d85] hover:bg-[#3e1a1f]"
                 >
-                  Block
+                  Chặn
                 </button>
               </div>
             </div>

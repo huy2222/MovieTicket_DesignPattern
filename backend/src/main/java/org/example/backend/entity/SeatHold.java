@@ -18,6 +18,7 @@ public class SeatHold {
     private Long id; // seatHoldId
 
     private LocalDateTime holdTime;
+    private LocalDateTime expiresAt;
 
     @ManyToOne
     @JoinColumn(name = "seat_id")

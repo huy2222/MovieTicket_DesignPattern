@@ -89,7 +89,10 @@ public class GlobalExceptionHandler {
             return "Bảng voucher_cinemas chưa tồn tại. Vui lòng restart backend để tự tạo bảng hoặc chạy migration V3__create_voucher_join_tables.sql";
         }
         if (raw.contains("Data truncated for column 'status'")) {
-            return "Trạng thái phim không hợp lệ. Chỉ chấp nhận: COMING_SOON, NOW_SHOWING, ENDED";
+            return "Lỗi cấu trúc DB: Dữ liệu trạng thái quá dài (Data truncated for column 'status'). Vui lòng khởi động lại Backend để tự sửa lỗi.";
+        }
+        if (raw.contains("Data truncated for column 'type'") && raw.contains("notifications")) {
+            return "Cấu hình thông báo CineMeet chưa được cập nhật. Vui lòng restart backend để đồng bộ schema.";
         }
         if (raw.contains("foreign key constraint fails") && raw.contains("movie_genres")) {
             return "Thể loại hoặc phim không tồn tại. Vui lòng chọn lại thể loại hợp lệ";

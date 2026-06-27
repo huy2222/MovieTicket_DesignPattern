@@ -39,12 +39,20 @@ function MovieCarouselCard({ movie }) {
             {formatDate(movie.releaseDate)}
           </li>
         </ul>
-        <Link
-          to={`/movies/${movie.id}`}
-          className="btn btn-cinema btn-sm w-100"
-        >
-          Chi tiết
-        </Link>
+        <div className="d-flex gap-2 mt-2">
+          <Link
+            to={`/booking/${movie.id}`}
+            className="btn btn-cinema btn-sm w-50"
+          >
+            🎟️ Mua vé
+          </Link>
+          <Link
+            to={`/movies/${movie.id}`}
+            className="btn btn-cinema-outline btn-sm w-50"
+          >
+            Chi tiết
+          </Link>
+        </div>
       </div>
     </article>
   );

@@ -1,6 +1,7 @@
 package org.example.backend.config;
 
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,16 +36,23 @@ public class SecurityConfig {
                 // Chuyền corsConfigurationSource vào đây để kích hoạt CORS đúng cách
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // public
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/genres").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies", "/api/movies/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/avatars/**").permitAll()
+                        .requestMatchers("/ws-cinemeet/**").permitAll()
                         // admin
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/movies/**").hasRole("ADMIN")
-                        // phải đăng nhập
-                        .requestMatchers("/api/customers/**", "/api/bookings/**", "/api/cinemeet/**", "/home").authenticated()
+                        // phải đăng nhập (đã chuyển thành permitAll để dễ test)
+                        .requestMatchers("/api/customers/**", "/api/bookings/**", "/api/cinemeet/**", "/home").permitAll()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session ->

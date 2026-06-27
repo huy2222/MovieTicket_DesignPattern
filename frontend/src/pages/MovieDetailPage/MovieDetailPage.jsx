@@ -303,6 +303,16 @@ export default function MovieDetailPage() {
                     }
                   />
                 </div>
+
+                <div className="detail-actions mt-4">
+                  <Link
+                    to={`/booking/${movie.id}`}
+                    className="btn btn-cinema btn-lg"
+                    style={{ padding: '15px 40px', fontSize: '1.2rem', textTransform: 'uppercase', width: '100%' }}
+                  >
+                    🎟️ {movie.status === "COMING_SOON" ? "SẮP CHIẾU" : "ĐẶT VÉ NGAY"}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

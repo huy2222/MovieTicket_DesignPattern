@@ -3,11 +3,9 @@ package org.example.backend.repository;
 import org.example.backend.entity.Booking;
 import org.example.backend.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-
+@Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("""
