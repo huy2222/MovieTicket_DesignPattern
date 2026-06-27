@@ -4,6 +4,7 @@ import {
   updateAdminMovieStatus,
   deleteAdminMovie,
 } from "../../../services/movieAdminService";
+import { getGenres } from "../../../services/genreService";
 import MovieFormModal from "../../../components/movie/MovieFormModal";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import {
@@ -27,13 +28,20 @@ const STATUS_OPTIONS = [
 
 const PAGE_SIZE = 10;
 
+const ADMIN_SORT_OPTIONS = [
+  { value: "releaseDate_desc", label: "Ngày KC: Mới nhất" },
+  { value: "releaseDate_asc", label: "Ngày KC: Cũ nhất" },
+  { value: "title_asc", label: "Tên phim: A - Z" },
+  { value: "title_desc", label: "Tên phim: Z - A" },
+];
+
 export default function MovieManagementPage() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [sortDirection, setSortDirection] = useState("desc");
+  const [sortBy, setSortBy] = useState("releaseDate_desc");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
@@ -41,6 +49,38 @@ export default function MovieManagementPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState(null);
   const [statusUpdatingId, setStatusUpdatingId] = useState(null);
+
+  // Advanced Search States
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [allGenres, setAllGenres] = useState([]);
+  const [filterId, setFilterId] = useState("");
+  const [filterDirector, setFilterDirector] = useState("");
+  const [filterActor, setFilterActor] = useState("");
+  const [filterGenreIds, setFilterGenreIds] = useState([]);
+  const [filterCreatedBy, setFilterCreatedBy] = useState("");
+  const [filterCreatedFrom, setFilterCreatedFrom] = useState("");
+  const [filterCreatedTo, setFilterCreatedTo] = useState("");
+  const [filterReleaseFrom, setFilterReleaseFrom] = useState("");
+  const [filterReleaseTo, setFilterReleaseTo] = useState("");
+
+  useEffect(() => {
+    getGenres()
+      .then((res) => setAllGenres(res.data || []))
+      .catch((err) => console.error("Lỗi tải thể loại:", err));
+  }, []);
+
+  const handleResetAdvanced = () => {
+    setFilterId("");
+    setFilterDirector("");
+    setFilterActor("");
+    setFilterGenreIds([]);
+    setFilterCreatedBy("");
+    setFilterCreatedFrom("");
+    setFilterCreatedTo("");
+    setFilterReleaseFrom("");
+    setFilterReleaseTo("");
+    setPage(0);
+  };
 
   const showToast = useCallback((message, type = "success") => {
     setToast({ message, type });
@@ -50,13 +90,27 @@ export default function MovieManagementPage() {
   const fetchMovies = useCallback(async () => {
     try {
       setLoading(true);
+      const [sortField, sortDir] = sortBy.split("_");
       const params = {
         page,
         size: PAGE_SIZE,
-        sortDirection,
+        sortBy: sortField,
+        sortDirection: sortDir,
       };
-      if (search.trim()) params.search = search.trim();
+      if (search.trim()) params.keyword = search.trim();
       if (statusFilter !== "ALL") params.status = statusFilter;
+
+      if (showAdvanced) {
+        if (filterId.trim()) params.id = filterId.trim();
+        if (filterDirector.trim()) params.director = filterDirector.trim();
+        if (filterActor.trim()) params.actor = filterActor.trim();
+        if (filterGenreIds.length > 0) params.genreIds = filterGenreIds;
+        if (filterCreatedBy.trim()) params.createdBy = filterCreatedBy.trim();
+        if (filterCreatedFrom) params.createdFrom = filterCreatedFrom + "T00:00:00";
+        if (filterCreatedTo) params.createdTo = filterCreatedTo + "T23:59:59";
+        if (filterReleaseFrom) params.releaseFrom = filterReleaseFrom;
+        if (filterReleaseTo) params.releaseTo = filterReleaseTo;
+      }
 
       const res = await getAdminMovies(params);
       setMovies(res.data.content || []);
@@ -68,7 +122,23 @@ export default function MovieManagementPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter, sortDirection, showToast]);
+  }, [
+    page,
+    search,
+    statusFilter,
+    sortBy,
+    showAdvanced,
+    filterId,
+    filterDirector,
+    filterActor,
+    filterGenreIds,
+    filterCreatedBy,
+    filterCreatedFrom,
+    filterCreatedTo,
+    filterReleaseFrom,
+    filterReleaseTo,
+    showToast
+  ]);
 
   useEffect(() => {
     fetchMovies();
@@ -86,7 +156,7 @@ export default function MovieManagementPage() {
   };
 
   const handleSortChange = (e) => {
-    setSortDirection(e.target.value);
+    setSortBy(e.target.value);
     setPage(0);
   };
 
@@ -188,12 +258,129 @@ export default function MovieManagementPage() {
 
         <select
           className="movie-filter-select"
-          value={sortDirection}
+          value={sortBy}
           onChange={handleSortChange}
         >
-          <option value="desc">Ngày KC: Mới nhất</option>
-          <option value="asc">Ngày KC: Cũ nhất</option>
+          {ADMIN_SORT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
+      </div>
+
+      {/* Advanced Search Accordion */}
+      <div className="advanced-search-container">
+        <button
+          type="button"
+          className={`btn-toggle-advanced ${showAdvanced ? "active" : ""}`}
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          {showAdvanced ? "⚙️ Ẩn bộ lọc nâng cao" : "⚙️ Tìm kiếm nâng cao"}
+        </button>
+
+        {showAdvanced && (
+          <div className="advanced-search-grid">
+            <div className="adv-filter-group">
+              <label>ID Phim</label>
+              <input
+                type="number"
+                placeholder="ID..."
+                value={filterId}
+                onChange={(e) => setFilterId(e.target.value)}
+              />
+            </div>
+            <div className="adv-filter-group">
+              <label>Đạo diễn</label>
+              <input
+                type="text"
+                placeholder="Tên đạo diễn..."
+                value={filterDirector}
+                onChange={(e) => setFilterDirector(e.target.value)}
+              />
+            </div>
+            <div className="adv-filter-group">
+              <label>Diễn viên</label>
+              <input
+                type="text"
+                placeholder="Tên diễn viên..."
+                value={filterActor}
+                onChange={(e) => setFilterActor(e.target.value)}
+              />
+            </div>
+            <div className="adv-filter-group">
+              <label>Người tạo</label>
+              <input
+                type="text"
+                placeholder="Email..."
+                value={filterCreatedBy}
+                onChange={(e) => setFilterCreatedBy(e.target.value)}
+              />
+            </div>
+
+            <div className="adv-filter-group double-width">
+              <label>Ngày khởi chiếu</label>
+              <div className="adv-range-inputs">
+                <input
+                  type="date"
+                  value={filterReleaseFrom}
+                  onChange={(e) => setFilterReleaseFrom(e.target.value)}
+                />
+                <span>đến</span>
+                <input
+                  type="date"
+                  value={filterReleaseTo}
+                  onChange={(e) => setFilterReleaseTo(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="adv-filter-group double-width">
+              <label>Ngày tạo phim</label>
+              <div className="adv-range-inputs">
+                <input
+                  type="date"
+                  value={filterCreatedFrom}
+                  onChange={(e) => setFilterCreatedFrom(e.target.value)}
+                />
+                <span>đến</span>
+                <input
+                  type="date"
+                  value={filterCreatedTo}
+                  onChange={(e) => setFilterCreatedTo(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="adv-filter-group full-width">
+              <label>Thể loại</label>
+              <div className="adv-genres-list">
+                {allGenres.map((g) => (
+                  <label key={g.id} className="adv-genre-item">
+                    <input
+                      type="checkbox"
+                      checked={filterGenreIds.includes(g.id)}
+                      onChange={() => {
+                        setFilterGenreIds((prev) =>
+                          prev.includes(g.id)
+                            ? prev.filter((id) => id !== g.id)
+                            : [...prev, g.id]
+                        );
+                      }}
+                    />
+                    <span>{g.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="adv-actions-row">
+              <button type="button" className="btn-adv-reset" onClick={handleResetAdvanced}>
+                Reset
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {loading ? (

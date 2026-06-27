@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.example.backend.enums.MovieStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -31,6 +32,9 @@ public class MovieResponse {
     private List<String> actorNames;
     private String ageRestriction;
     private MovieStatus status;
+    private String createdBy;
+    private LocalDateTime createdAt;
+    private Double averageRating;
     private boolean hasRelatedData;
     private boolean deletable;
 }

@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.MovieSearchRequest;
 import org.example.backend.dto.request.MovieRequest;
 import org.example.backend.dto.request.MovieStatusRequest;
 import org.example.backend.dto.response.MovieDeleteResponse;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.WebDataBinder;
+
+import java.beans.PropertyEditorSupport;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -29,6 +36,29 @@ public class MovieController {
 
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
+    }
+
+    @InitBinder
+    public void initMovieSearchBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(List.class, "genreIds", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.isBlank()) {
+                    setValue(null);
+                    return;
+                }
+                setValue(Arrays.stream(text.split(","))
+                        .map(String::trim)
+                        .filter(value -> !value.isEmpty())
+                        .map(Long::valueOf)
+                        .toList());
+            }
+        });
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchMovies(MovieSearchRequest request) {
+        return ResponseEntity.ok(movieService.searchMovies(request));
     }
 
     @GetMapping("/home")
