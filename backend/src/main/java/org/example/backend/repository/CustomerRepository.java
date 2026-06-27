@@ -16,6 +16,8 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByEmail(String email);
+
+    long count();
     List<Customer> findAll();
     @Query("""
         SELECT new org.example.backend.dto.response.CustomerResponseAdmin(

@@ -52,8 +52,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/movies/**").hasRole("ADMIN")
                         // phải đăng nhập
-                        .requestMatchers("/api/customer/**").authenticated()
-                        .requestMatchers("/api/customers/**", "/api/bookings/**", "/api/cinemeet/**", "/home").permitAll()
+                        .requestMatchers("/api/customers/**", "/home", "/api/cinemeet/group-bookings/vnpay-return", "/api/bookings/cities", "/api/bookings/cinemas", "/api/bookings/showtimes/**", "/api/bookings/vnpay-return", "/api/bookings/checkout").permitAll()
+                        .requestMatchers("/api/customer/**", "/api/cinemeet/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session ->

@@ -34,4 +34,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             @Param("statuses") Collection<MovieStatus> statuses,
             Pageable pageable
     );
+
+    long countByStatus(MovieStatus status);
 }

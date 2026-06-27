@@ -48,6 +48,7 @@ public class GroupBookingService {
     private final TicketRepository ticketRepository;
     private final BookingRepository bookingRepository;
     private final CineMeetRealtimePublisher realtimePublisher;
+    private final VNPayService vnPayService;
 
     public GroupBookingService(
             GroupBookingSessionRepository groupRepository,
@@ -57,7 +58,8 @@ public class GroupBookingService {
             SeatHoldRepository seatHoldRepository,
             TicketRepository ticketRepository,
             BookingRepository bookingRepository,
-            CineMeetRealtimePublisher realtimePublisher
+            CineMeetRealtimePublisher realtimePublisher,
+            VNPayService vnPayService
     ) {
         this.groupRepository = groupRepository;
         this.participantRepository = participantRepository;
@@ -67,6 +69,7 @@ public class GroupBookingService {
         this.ticketRepository = ticketRepository;
         this.bookingRepository = bookingRepository;
         this.realtimePublisher = realtimePublisher;
+        this.vnPayService = vnPayService;
     }
 
     @Transactional
@@ -221,6 +224,56 @@ public class GroupBookingService {
         GroupBookingResponse response = toResponse(group, members);
         realtimePublisher.publishGroup(group.getId(), "GROUP_UPDATED", response);
         return response;
+    }
+
+    @Transactional
+    public String createVNPayUrl(String email, Long groupId, jakarta.servlet.http.HttpServletRequest request) {
+        Customer customer = findCustomer(email);
+        GroupBookingSession group = requireActiveGroup(groupId, customer);
+        ParticipantPayment member = findMemberWithDetails(group, customer);
+
+        if (member.getStatus() == GroupMemberStatus.PAID) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Đã thanh toán rồi");
+        }
+        if (member.getSeat() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chưa chọn ghế");
+        }
+
+        String txnRef = "CM_" + groupId + "_" + customer.getId() + "_" + System.currentTimeMillis();
+        String orderInfo = "Thanh toan ve nhom CineMeet " + groupId;
+        
+        return vnPayService.createPaymentUrl(request, (long) member.getAmount(), orderInfo, txnRef);
+    }
+
+    @Transactional
+    public void handleVNPayReturn(java.util.Map<String, String> params) {
+        if (!vnPayService.verifyPayment(params)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chữ ký VNPay không hợp lệ");
+        }
+        String txnRef = params.get("vnp_TxnRef"); // CM_{groupId}_{customerId}_{timestamp}
+        String responseCode = params.get("vnp_ResponseCode");
+
+        if (txnRef != null && txnRef.startsWith("CM_")) {
+            String[] parts = txnRef.split("_");
+            if (parts.length >= 3) {
+                Long groupId = Long.parseLong(parts[1]);
+                Long customerId = Long.parseLong(parts[2]);
+
+                Customer customer = customerRepository.findById(customerId).orElse(null);
+                if (customer != null) {
+                    GroupMemberStatus status = "00".equals(responseCode) ? GroupMemberStatus.PAID : GroupMemberStatus.FAILED;
+                    // Lấy lại group để kiểm tra và cập nhật
+                    GroupBookingSession group = groupRepository.findById(groupId).orElse(null);
+                    if (group != null) {
+                        try {
+                            updatePaymentStatus(customer.getEmail(), groupId, status);
+                        } catch (Exception e) {
+                            // Bỏ qua lỗi nếu đã thanh toán rồi hoặc hết hạn
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Transactional
