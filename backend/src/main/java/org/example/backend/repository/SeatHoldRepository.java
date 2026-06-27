@@ -13,6 +13,8 @@ public interface SeatHoldRepository extends JpaRepository<SeatHold, Long> {
     Optional<SeatHold> findFirstBySeat_IdAndShowtime_IdAndExpiresAtAfter(
             Long seatId, Long showtimeId, LocalDateTime now);
 
+    @Query("SELECT sh FROM SeatHold sh WHERE sh.showtime.id = :showtimeId")
+    List<SeatHold> findByShowtimeId(@Param("showtimeId") Long showtimeId);
     @Query("""
             select sh from SeatHold sh
             join fetch sh.customer

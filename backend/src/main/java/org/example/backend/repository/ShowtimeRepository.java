@@ -40,11 +40,32 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
     @Query("""
             select distinct s from Showtime s
             left join fetch s.movie
-            left join fetch s.cinema
+            left join fetch s.cinema c
+            left join fetch c.location l
             left join fetch s.room
             where s.id = :id
             """)
     Optional<Showtime> findWithDetailsById(@Param("id") Long id);
+
+    @Query("""
+            select distinct s from Showtime s
+            left join fetch s.movie
+            left join fetch s.cinema c
+            left join fetch c.location l
+            left join fetch s.room
+            where s.movie.id = :movieId
+              and l.city = :city
+              and s.startTime >= :startOfDay
+              and s.startTime < :endOfDay
+              and s.status <> org.example.backend.enums.ShowtimeStatus.CANCELLED
+            order by c.id asc, s.startTime asc
+            """)
+    List<Showtime> findShowtimesByMovieAndCityAndDate(
+            @Param("movieId") Long movieId,
+            @Param("city") String city,
+            @Param("startOfDay") LocalDateTime startOfDay,
+            @Param("endOfDay") LocalDateTime endOfDay
+    );
 
     @Query("""
             select count(s) > 0 from Showtime s
@@ -78,4 +99,15 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
             where h.showtime.id = :showtimeId
             """)
     boolean existsSeatHoldByShowtimeId(@Param("showtimeId") Long showtimeId);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Showtime s
+            WHERE s.startTime >= :start
+              AND s.startTime < :end
+            """)
+    long countByStartTimeBetween(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }
