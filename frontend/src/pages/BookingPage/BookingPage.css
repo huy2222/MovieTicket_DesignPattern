@@ -481,6 +481,65 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+.voucher-suggestions {
+  margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 215, 0, 0.5);
+}
+
+.voucher-suggestions-title {
+  color: #ccc;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  font-weight: 500;
+}
+
+.voucher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.voucher-suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--accent-gold);
+}
+
+.voucher-info {
+  color: white;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.voucher-info strong {
+  color: var(--accent-gold);
+  font-size: 1.05rem;
+}
+
+.btn-apply-voucher {
+  background: var(--accent-gold);
+  color: #000;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.btn-apply-voucher:hover {
+  background: #ffecb3;
+  transform: scale(1.05);
+}
+
 .checkout-actions {
   margin-top: 3rem;
 }

@@ -11,7 +11,8 @@ import {
   rejectMovieInvitation,
   selectGroupSeat,
   sendMatchMessage,
-  updateGroupPayment,
+  getGroupVNPayUrl,
+  getGroupSeats,
 } from "../../../services/cinemeetService";
 import { cineMeetRealtime } from "../../../services/cineMeetRealtime";
 
@@ -93,6 +94,7 @@ export default function ChatPanel({ match, onClose }) {
   const [messages, setMessages] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [group, setGroup] = useState(null);
+  const [groupSeats, setGroupSeats] = useState([]);
   const [showtimes, setShowtimes] = useState([]);
   const [selectedShowtimeId, setSelectedShowtimeId] = useState("");
   const [showInvitationForm, setShowInvitationForm] = useState(false);
@@ -119,10 +121,23 @@ export default function ChatPanel({ match, onClose }) {
     setInvitations(data ?? []);
   }, [match.matchId]);
 
+  const loadGroupSeats = useCallback(async (groupId) => {
+    if (!groupId) return;
+    try {
+      const { data } = await getGroupSeats(groupId);
+      setGroupSeats(data?.availableSeats ?? []);
+    } catch (e) {
+      console.error("Failed to load group seats", e);
+    }
+  }, []);
+
   const loadGroup = useCallback(async () => {
     const { data } = await getCineMeetGroupForMatch(match.matchId);
     setGroup(data ?? null);
-  }, [match.matchId]);
+    if (data?.id) {
+      loadGroupSeats(data.id);
+    }
+  }, [match.matchId, loadGroupSeats]);
 
   const loadConversation = useCallback(async () => {
     await Promise.all([loadMessages(), loadInvitations(), loadGroup()]);
@@ -198,11 +213,12 @@ export default function ChatPanel({ match, onClose }) {
       (event) => {
         if (event?.type === "GROUP_UPDATED" && event.payload) {
           setGroup(event.payload);
+          loadGroupSeats(event.payload.id);
         }
       }
     );
     return () => unsubscribe();
-  }, [group?.id]);
+  }, [group?.id, loadGroupSeats]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -227,6 +243,9 @@ export default function ChatPanel({ match, onClose }) {
     try {
       const { data } = await action();
       setGroup(data ?? null);
+      if (data?.id) {
+        await loadGroupSeats(data.id);
+      }
     } catch (err) {
       setError(err?.response?.data?.message ?? "Không thể thực hiện thao tác.");
     } finally {
@@ -250,7 +269,8 @@ export default function ChatPanel({ match, onClose }) {
   const handleCreateInvitation = () =>
     runAction(async () => {
       if (!selectedShowtimeId) throw new Error("Vui lòng chọn suất chiếu");
-      await createMovieInvitation(match.matchId, Number(selectedShowtimeId));
+      const selectedShowtime = showtimes.find(st => st.id === Number(selectedShowtimeId));
+      await createMovieInvitation(match.matchId, Number(selectedShowtimeId), selectedShowtime?.movieId);
       setShowInvitationForm(false);
     });
 
@@ -276,15 +296,15 @@ export default function ChatPanel({ match, onClose }) {
   const pendingInvitation = invitations.find((item) => item.status === "PROPOSED");
   const currentMember = group?.members?.find((member) => Number(member.customerId) === Number(currentUser.id));
   const companionMember = group?.members?.find((member) => Number(member.customerId) !== Number(currentUser.id));
-  const seatRows = buildSeatRows(group?.availableSeats);
+  const seatRows = buildSeatRows(groupSeats);
   const seatOwners = new Map((group?.members ?? [])
     .filter((member) => member.seatId)
     .map((member) => [Number(member.seatId), member]));
-  const seatById = new Map((group?.availableSeats ?? []).map((seat) => [Number(seat.id), seat]));
+  const seatById = new Map(groupSeats.map((seat) => [Number(seat.id), seat]));
   const anchorSeat = currentMember?.seatId
     ? seatById.get(Number(currentMember.seatId))
     : seatById.get(Number(companionMember?.seatId));
-  const recommendedSeatIds = findAdjacentSeatIds(anchorSeat, group?.availableSeats, group?.members);
+  const recommendedSeatIds = findAdjacentSeatIds(anchorSeat, groupSeats, group?.members);
   const hasSeatRecommendation = recommendedSeatIds.size > 0 && !currentMember?.seatId;
   const displayedMembers = [...(group?.members ?? [])].sort((left, right) => {
     if (Number(left.customerId) === Number(currentUser.id)) return -1;
@@ -462,7 +482,8 @@ export default function ChatPanel({ match, onClose }) {
                   <div key={member.customerId} className="flex items-center justify-between rounded-lg bg-black/20 px-3 py-2 text-xs">
                     <span className="text-white">
                       {Number(member.customerId) === Number(currentUser.id) ? "Bạn" : member.displayName}
-                      {member.seatLabel ? ` · Ghế ${member.seatLabel}` : " · Chưa chọn ghế"}
+                      {member.seatLabel ? ` - Ghế ${member.seatLabel}` : " - Chưa chọn ghế"}
+                      {member.amount ? ` - ${member.amount.toLocaleString('vi-VN')} VNĐ` : ""}
                     </span>
                     <span className="text-[#8cf0ad]">{member.status}</span>
                   </div>
@@ -528,8 +549,14 @@ export default function ChatPanel({ match, onClose }) {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button disabled={busy} onClick={() => runGroupAction(() => updateGroupPayment(group.id, "PAID"))} className="rounded-lg bg-[#26834a] px-3 py-1.5 text-xs font-semibold text-white">
-                      Xác nhận thanh toán
+                    <button disabled={busy} onClick={() => runGroupAction(async () => {
+                      const { data } = await getGroupVNPayUrl(group.id);
+                      if (data?.url) {
+                        window.location.href = data.url;
+                      }
+                      return { data: group }; // Fake return to avoid errors in runGroupAction
+                    })} className="rounded-lg bg-[#26834a] px-3 py-1.5 text-xs font-semibold text-white">
+                      Thanh toán bằng VNPay
                     </button>
                     <button disabled={busy} onClick={() => runGroupAction(() => cancelCineMeetGroup(group.id))} className="rounded-lg border border-[#555] px-3 py-1.5 text-xs text-white">
                       Hủy nhóm

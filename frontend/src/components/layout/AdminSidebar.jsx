@@ -77,6 +77,14 @@ function SidebarIcon({ name }) {
         <path d="m19 4 2 2" />
       </svg>
     ),
+    ticket: (
+      <svg {...commonProps}>
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+        <path d="M13 5v2" />
+        <path d="M13 17v2" />
+        <path d="M13 11v2" />
+      </svg>
+    ),
     employee: (
       <svg {...commonProps}>
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -190,26 +198,17 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             <SidebarIcon name="showtime" />
             Lịch chiếu
           </NavLink>
-
-          <NavLink
-            to="/admin/employees"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? "active" : ""}`
-            }
-          >
-            <SidebarIcon name="employee" />
-            Nhân viên
-          </NavLink>
-
+          
           <NavLink
             to="/admin/users"
             className={({ isActive }) =>
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <SidebarIcon name="users" />
+            <SidebarIcon name="showtime" />
             Tài khoản khách hàng
           </NavLink>
+          
 
 
         </nav>

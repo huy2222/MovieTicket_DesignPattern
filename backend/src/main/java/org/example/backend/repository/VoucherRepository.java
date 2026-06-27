@@ -24,4 +24,10 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
 
     @Query("SELECT COUNT(v) > 0 FROM Voucher v JOIN v.applicableMovies m WHERE m.id = :movieId")
     boolean existsByApplicableMovieId(@Param("movieId") Long movieId);
+
+    @Query("SELECT v FROM Voucher v WHERE v.status = 'ACTIVE' " +
+           "AND (v.startTime IS NULL OR v.startTime <= :now) " +
+           "AND (v.endTime IS NULL OR v.endTime >= :now) " +
+           "AND v.minimumOrderAmount <= :originalPrice")
+    List<Voucher> findApplicableVouchers(@Param("now") java.time.LocalDateTime now, @Param("originalPrice") double originalPrice);
 }
