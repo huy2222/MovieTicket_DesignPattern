@@ -7,6 +7,9 @@ import ProtectedRoute from "./ProtectedRoute";
 const MovieDetailPage = lazy(
   () => import("../pages/MovieDetailPage/MovieDetailPage")
 );
+const MovieSearchPage = lazy(
+  () => import("../pages/MovieSearchPage/MovieSearchPage")
+);
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
@@ -53,6 +56,7 @@ export default function AppRoutes() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/movies" element={<MovieSearchPage />} />
         <Route path="/movies/:id" element={<MovieDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

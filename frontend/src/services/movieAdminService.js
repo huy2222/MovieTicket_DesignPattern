@@ -1,7 +1,11 @@
 import api from "../api/axiosConfig";
+import { serializeMovieSearchParams } from "../utils/movieSearchParams";
 
 export const getAdminMovies = (params = {}) =>
-  api.get("/movies", { params });
+  api.get("/movies/search", {
+    params: { ...params, adminContext: true },
+    paramsSerializer: serializeMovieSearchParams,
+  });
 
 export const getAdminMovieById = (movieId) =>
   api.get(`/movies/${movieId}`);

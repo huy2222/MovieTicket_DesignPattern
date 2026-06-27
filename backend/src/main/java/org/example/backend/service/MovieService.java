@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.dto.MovieSearchRequest;
 import org.example.backend.dto.request.MovieRequest;
 import org.example.backend.dto.request.MovieStatusRequest;
 import org.example.backend.dto.response.MovieDeleteResponse;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +52,7 @@ public class MovieService {
     private final ReviewRepository reviewRepository;
     private final MovieHistoryRepository movieHistoryRepository;
     private final VoucherRepository voucherRepository;
+    private final SearchStrategyContext searchStrategyContext;
 
     public MovieService(
             MovieRepository movieRepository,
@@ -59,7 +62,8 @@ public class MovieService {
             MessageRepository messageRepository,
             ReviewRepository reviewRepository,
             MovieHistoryRepository movieHistoryRepository,
-            VoucherRepository voucherRepository
+            VoucherRepository voucherRepository,
+            SearchStrategyContext searchStrategyContext
     ) {
         this.movieRepository = movieRepository;
         this.genreRepository = genreRepository;
@@ -69,6 +73,7 @@ public class MovieService {
         this.reviewRepository = reviewRepository;
         this.movieHistoryRepository = movieHistoryRepository;
         this.voucherRepository = voucherRepository;
+        this.searchStrategyContext = searchStrategyContext;
     }
 
     @Transactional(readOnly = true)
@@ -85,6 +90,40 @@ public class MovieService {
                 statuses,
                 pageable
         );
+
+        return MoviePageResponse.builder()
+                .content(moviePage.getContent().stream().map(this::toResponse).toList())
+                .page(moviePage.getNumber())
+                .size(moviePage.getSize())
+                .totalElements(moviePage.getTotalElements())
+                .totalPages(moviePage.getTotalPages())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MoviePageResponse searchMovies(MovieSearchRequest request) {
+        String sortByField = request.getSortBy();
+        if ("title".equalsIgnoreCase(sortByField) || "name".equalsIgnoreCase(sortByField)) {
+            sortByField = "title";
+        } else if ("releaseDate".equalsIgnoreCase(sortByField)) {
+            sortByField = "releaseDate";
+        } else if ("rating".equalsIgnoreCase(sortByField)) {
+            sortByField = "averageRating";
+        } else if ("duration".equalsIgnoreCase(sortByField)) {
+            sortByField = "duration";
+        } else {
+            sortByField = "releaseDate";
+        }
+
+        Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortDirection())
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(direction, sortByField));
+
+        Specification<Movie> spec = searchStrategyContext.buildSpecification(request);
+
+        Page<Movie> moviePage = movieRepository.findAll(spec, pageable);
 
         return MoviePageResponse.builder()
                 .content(moviePage.getContent().stream().map(this::toResponse).toList())
@@ -140,6 +179,14 @@ public class MovieService {
 
         Movie movie = new Movie();
         applyRequestToMovie(request, movie);
+
+        String currentEmail = "System";
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+            currentEmail = auth.getName();
+        }
+        movie.setCreatedBy(currentEmail);
+        movie.setCreatedAt(java.time.LocalDateTime.now());
 
         Movie saved = movieRepository.save(movie);
         return toResponse(findMovieWithGenres(saved.getId()));
@@ -349,6 +396,9 @@ public class MovieService {
                 .actorNames(splitNames(movie.getCast()))
                 .ageRestriction(movie.getAgeRating())
                 .status(movie.getStatus())
+                .createdBy(movie.getCreatedBy())
+                .createdAt(movie.getCreatedAt())
+                .averageRating(movie.getAverageRating())
                 .hasRelatedData(related)
                 .deletable(!related)
                 .build();

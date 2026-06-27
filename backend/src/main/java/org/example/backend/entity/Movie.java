@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.example.backend.enums.MovieStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -32,6 +33,12 @@ public class Movie {
     private String banner; // Banner URL
     private String trailers; // Trailer URL
     private LocalDate releaseDate;
+
+    private String createdBy;
+    private LocalDateTime createdAt;
+
+    @org.hibernate.annotations.Formula("(SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.movie_id = id)")
+    private Double averageRating;
 
     @Enumerated(EnumType.STRING)
     private MovieStatus status;
