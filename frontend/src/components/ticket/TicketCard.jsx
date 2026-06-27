@@ -60,7 +60,7 @@ export default function TicketCard({ booking }) {
             <span className="ticket-detail-icon">💺</span>
             <span>Ghế:</span>
             <div className="ticket-seats">
-              {seatLabels.map((seat) => (
+              {seatLabels?.map((seat) => (
                 <span key={seat} className="ticket-seat-tag">
                   {seat}
                 </span>
