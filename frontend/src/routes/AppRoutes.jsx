@@ -15,6 +15,12 @@ const BookingPage = lazy(() => import("../pages/BookingPage/BookingPage"));
 const PaymentResultPage = lazy(() => import("../pages/PaymentResultPage/PaymentResultPage"));
 const MyTicketsPage = lazy(() => import("../pages/MyTicketsPage/MyTicketsPage"));
 
+const DashboardPage = lazy(
+  () => import("../pages/Admin/Dashboard/DashboardPage")
+);
+const EmployeeManagementPage = lazy(
+  () => import("../pages/Admin/EmployeeManagement/EmployeeManagementPage")
+);
 const AdminCinemaPage = lazy(
   () => import("../pages/AdminCinemaPage/AdminCinemaPage")
 );
@@ -65,7 +71,9 @@ export default function AppRoutes() {
         />
 
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<VoucherManagementPage />} />
+          <Route index element={<DashboardPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="employees" element={<EmployeeManagementPage />} />
           <Route path="vouchers" element={<VoucherManagementPage />} />
           <Route path="movies" element={<MovieManagementPage />} />
           <Route path="cinemas" element={<AdminCinemaPage />} />
