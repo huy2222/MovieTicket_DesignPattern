@@ -46,21 +46,21 @@ export const sendMatchMessage = (matchId, content) =>
   api.post(`/cinemeet/matches/${matchId}/messages`, { content });
 export const getCineMeetShowtimes = () => api.get("/cinemeet/showtimes");
 export const getMatchInvitations = (matchId) =>
-  api.get(`/cinemeet/matches/${matchId}/invitations`);
-export const createMovieInvitation = (matchId, showtimeId) =>
-  api.post(`/cinemeet/matches/${matchId}/invitations`, { showtimeId });
+  api.get(`/cinemeet/matches/${matchId}/movie-dates`);
+export const createMovieInvitation = (matchId, showtimeId, movieId) =>
+  api.post(`/cinemeet/matches/${matchId}/movie-dates`, { showtimeId, movieId });
 export const acceptMovieInvitation = (matchId, invitationId) =>
-  api.post(`/cinemeet/matches/${matchId}/invitations/${invitationId}/accept`);
+  api.put(`/cinemeet/matches/${matchId}/movie-dates/${invitationId}/respond?accept=true`);
 export const rejectMovieInvitation = (matchId, invitationId) =>
-  api.post(`/cinemeet/matches/${matchId}/invitations/${invitationId}/reject`);
+  api.put(`/cinemeet/matches/${matchId}/movie-dates/${invitationId}/respond?accept=false`);
 export const cancelMovieInvitation = (matchId, invitationId) =>
-  api.post(`/cinemeet/matches/${matchId}/invitations/${invitationId}/cancel`);
-export const getMyCineMeetGroups = () => api.get("/cinemeet/groups");
+  api.put(`/cinemeet/matches/${matchId}/movie-dates/${invitationId}/respond?accept=false`); // Backend treats cancel as reject or can add new endpoint
+export const getMyCineMeetGroups = () => api.get("/cinemeet/group-bookings");
 export const getCineMeetGroupForMatch = (matchId) =>
-  api.get(`/cinemeet/matches/${matchId}/group`);
+  api.get(`/cinemeet/group-bookings/match/${matchId}`); // Assuming we need to add this to backend
 export const selectGroupSeat = (groupId, seatId) =>
-  api.post(`/cinemeet/groups/${groupId}/seat`, { seatId });
-export const updateGroupPayment = (groupId, status) =>
-  api.post(`/cinemeet/groups/${groupId}/payment`, { status });
+  api.post(`/cinemeet/group-bookings/${groupId}/seats/${seatId}`);
+export const getGroupVNPayUrl = (groupId) =>
+  api.post(`/cinemeet/group-bookings/${groupId}/payment/vnpay-url`);
 export const cancelCineMeetGroup = (groupId) =>
-  api.post(`/cinemeet/groups/${groupId}/cancel`);
+  api.delete(`/cinemeet/group-bookings/${groupId}`);

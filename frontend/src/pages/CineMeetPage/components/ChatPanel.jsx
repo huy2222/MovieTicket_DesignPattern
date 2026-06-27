@@ -11,7 +11,7 @@ import {
   rejectMovieInvitation,
   selectGroupSeat,
   sendMatchMessage,
-  updateGroupPayment,
+  getGroupVNPayUrl,
 } from "../../../services/cinemeetService";
 import { cineMeetRealtime } from "../../../services/cineMeetRealtime";
 
@@ -250,7 +250,8 @@ export default function ChatPanel({ match, onClose }) {
   const handleCreateInvitation = () =>
     runAction(async () => {
       if (!selectedShowtimeId) throw new Error("Vui lòng chọn suất chiếu");
-      await createMovieInvitation(match.matchId, Number(selectedShowtimeId));
+      const selectedShowtime = showtimes.find(st => st.id === Number(selectedShowtimeId));
+      await createMovieInvitation(match.matchId, Number(selectedShowtimeId), selectedShowtime?.movieId);
       setShowInvitationForm(false);
     });
 
@@ -499,8 +500,14 @@ export default function ChatPanel({ match, onClose }) {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button disabled={busy} onClick={() => runGroupAction(() => updateGroupPayment(group.id, "PAID"))} className="rounded-lg bg-[#26834a] px-3 py-1.5 text-xs font-semibold text-white">
-                      Xác nhận thanh toán
+                    <button disabled={busy} onClick={() => runGroupAction(async () => {
+                      const { data } = await getGroupVNPayUrl(group.id);
+                      if (data?.url) {
+                        window.location.href = data.url;
+                      }
+                      return { data: group }; // Fake return to avoid errors in runGroupAction
+                    })} className="rounded-lg bg-[#26834a] px-3 py-1.5 text-xs font-semibold text-white">
+                      Thanh toán bằng VNPay
                     </button>
                     <button disabled={busy} onClick={() => runGroupAction(() => cancelCineMeetGroup(group.id))} className="rounded-lg border border-[#555] px-3 py-1.5 text-xs text-white">
                       Hủy nhóm
