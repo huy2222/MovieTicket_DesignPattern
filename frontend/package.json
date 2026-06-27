@@ -11,11 +11,12 @@
   },
   "dependencies": {
     "@stomp/stompjs": "^7.3.0",
+    "@tanstack/react-query": "^5.90.2",
     "axios": "^1.18.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.18.0",
-    "recharts": "^3.9.0",
+    "recharts": "^3.2.1",
     "sub-vn": "^0.0.2"
   },
   "devDependencies": {

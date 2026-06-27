@@ -67,14 +67,20 @@ public class CustomerService {
                         }
                     }
                     if (updatedProfile.getCurrentLocation() != null) {
-                        if (customer.getCurrentLocation() == null) {
-                            customer.setCurrentLocation(new Location());
+
+                        Location location = customer.getCurrentLocation();
+
+                        if (location == null) {
+                            location = new Location();
                         }
-                        customer.getCurrentLocation().setAddress(updatedProfile.getCurrentLocation().getAddress());
-                        customer.getCurrentLocation().setWard(updatedProfile.getCurrentLocation().getWard());
-                        customer.getCurrentLocation().setDistrict(updatedProfile.getCurrentLocation().getDistrict());
-                        customer.getCurrentLocation().setCity(updatedProfile.getCurrentLocation().getCity());
-                        customer.getCurrentLocation().setCountry(updatedProfile.getCurrentLocation().getCountry());
+
+                        location.setAddress(updatedProfile.getCurrentLocation().getAddress());
+                        location.setWard(updatedProfile.getCurrentLocation().getWard());
+                        location.setDistrict(updatedProfile.getCurrentLocation().getDistrict());
+                        location.setCity(updatedProfile.getCurrentLocation().getCity());
+                        location.setCountry(updatedProfile.getCurrentLocation().getCountry());
+
+                        customer.setCurrentLocation(location);
                     }
                     customerRepository.save(customer);
                     return CustomerResponse.builder()
