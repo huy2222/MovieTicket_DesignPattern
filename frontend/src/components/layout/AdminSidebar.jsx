@@ -198,17 +198,26 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             <SidebarIcon name="showtime" />
             Lịch chiếu
           </NavLink>
-          
+
+          <NavLink
+            to="/admin/employees"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="employee" />
+            Quản lý nhân viên
+          </NavLink>
+
           <NavLink
             to="/admin/users"
             className={({ isActive }) =>
               `sidebar-link ${isActive ? "active" : ""}`
             }
           >
-            <SidebarIcon name="showtime" />
+            <SidebarIcon name="users" />
             Tài khoản khách hàng
           </NavLink>
-          
 
 
         </nav>

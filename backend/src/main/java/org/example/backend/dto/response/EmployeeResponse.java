@@ -9,6 +9,7 @@ public class EmployeeResponse {
     private Long id;
     private String email;
     private String fullName;
+    private String avatarUrl;
     private String phoneNumber;
     private String role;
     private String status;

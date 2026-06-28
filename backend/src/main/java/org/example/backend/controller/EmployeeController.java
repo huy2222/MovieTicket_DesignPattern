@@ -32,6 +32,9 @@ public class EmployeeController {
     @GetMapping
     public EmployeePageResponse getEmployees(
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) Role role,
             @RequestParam(required = false) AccountStatus status,
             @RequestParam(defaultValue = "0") int page,
@@ -39,7 +42,7 @@ public class EmployeeController {
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection
     ) {
-        return employeeService.getEmployees(search, role, status, page, size, sortBy, sortDirection);
+        return employeeService.getEmployees(search, fullName, email, phoneNumber, role, status, page, size, sortBy, sortDirection);
     }
 
     @GetMapping("/{id}")

@@ -48,6 +48,9 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public EmployeePageResponse getEmployees(
             String search,
+            String fullName,
+            String email,
+            String phoneNumber,
             Role role,
             AccountStatus status,
             int page,
@@ -63,6 +66,9 @@ public class EmployeeService {
         Page<EmployeeProjection> result = employeeRepository.searchEmployees(
                 EMPLOYEE_ROLES,
                 normalizeSearch(search),
+                normalizeSearch(fullName),
+                normalizeSearch(email),
+                normalizeSearch(phoneNumber),
                 role,
                 status,
                 pageable
@@ -235,6 +241,7 @@ public class EmployeeService {
                 .id(projection.getId())
                 .email(projection.getEmail())
                 .fullName(projection.getFullName())
+                .avatarUrl(projection.getAvatarUrl())
                 .phoneNumber(projection.getPhoneNumber())
                 .role(projection.getRole().name())
                 .status(projection.getStatus().name())
@@ -250,6 +257,7 @@ public class EmployeeService {
                 .id(user.getId())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
+                .avatarUrl(user.getAvatarUrl())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole().name())
                 .status(user.getStatus().name())
