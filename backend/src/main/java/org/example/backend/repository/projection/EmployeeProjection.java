@@ -12,6 +12,8 @@ public interface EmployeeProjection {
 
     String getFullName();
 
+    String getAvatarUrl();
+
     String getPhoneNumber();
 
     Role getRole();

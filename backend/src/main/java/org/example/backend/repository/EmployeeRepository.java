@@ -19,6 +19,7 @@ public interface EmployeeRepository extends JpaRepository<User, Long> {
             SELECT u.id AS id,
                    u.email AS email,
                    u.fullName AS fullName,
+                   u.avatarUrl AS avatarUrl,
                    u.phoneNumber AS phoneNumber,
                    u.role AS role,
                    u.status AS status,
@@ -34,12 +35,21 @@ public interface EmployeeRepository extends JpaRepository<User, Long> {
                    OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))
                    OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%'))
                    OR LOWER(u.phoneNumber) LIKE LOWER(CONCAT('%', :search, '%')))
+              AND (:fullName IS NULL OR :fullName = ''
+                   OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :fullName, '%')))
+              AND (:email IS NULL OR :email = ''
+                   OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')))
+              AND (:phoneNumber IS NULL OR :phoneNumber = ''
+                   OR LOWER(u.phoneNumber) LIKE LOWER(CONCAT('%', :phoneNumber, '%')))
               AND (:role IS NULL OR u.role = :role)
               AND (:status IS NULL OR u.status = :status)
             """)
     Page<EmployeeProjection> searchEmployees(
             @Param("roles") Collection<Role> roles,
             @Param("search") String search,
+            @Param("fullName") String fullName,
+            @Param("email") String email,
+            @Param("phoneNumber") String phoneNumber,
             @Param("role") Role role,
             @Param("status") AccountStatus status,
             Pageable pageable

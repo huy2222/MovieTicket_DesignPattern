@@ -1,3 +1,7 @@
+.employee-page {
+  padding: 0 0.5rem;
+}
+
 .employee-page-header {
   display: flex;
   align-items: center;
@@ -37,18 +41,60 @@
   cursor: pointer;
 }
 
+/* ======= Toolbar search/filter fix (Flexbox + flex-wrap + gap) ======= */
 .employee-toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* tự xuống dòng khi không đủ không gian */
+  align-items: flex-start;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
+/* Form search: keyword giãn bằng flex:1, dropdown/input không làm tràn */
 .employee-search {
   display: flex;
+  flex-wrap: wrap; /* tránh chồng lấn khi màn hình hẹp */
+  align-items: center;
   flex: 1;
-  min-width: 240px;
+  min-width: 320px;
   gap: 0.5rem;
+}
+
+.employee-search-input {
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 520px;
+}
+
+/* Dropdown/filter: chỉ rộng vừa đủ ~160–220px */
+.employee-filter-select,
+.employee-search-type {
+  flex: 0 0 auto;
+  width: clamp(160px, 16vw, 220px);
+}
+
+/* Nút không bị che khuất khi wrap */
+.employee-search-btn {
+  padding: 0.55rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  color: #fff;
+  cursor: pointer;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.employee-reset-btn {
+  padding: 0.55rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.875rem;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .employee-search-input,
@@ -61,17 +107,99 @@
   font-size: 0.875rem;
 }
 
-.employee-search-input {
-  flex: 1;
+/* giữ nguyên class đang tồn tại */
+.employee-search-type {
+  min-width: 140px;
+  flex: 0 0 auto;
 }
 
-.employee-search-btn {
-  padding: 0.55rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 0.5rem;
+/* Hover/đổi màu reset */
+.employee-reset-btn:hover {
   color: #fff;
-  cursor: pointer;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ======= Dark dropdown (native <select><option>) ======= */
+.employee-filter-select,
+.employee-search-type,
+.employee-modal select {
+  background-color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e5e7eb;
+  color-scheme: dark;
+}
+
+.employee-filter-select option,
+.employee-search-type option,
+.employee-modal select option {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
+/* Focus nổi bật */
+.employee-filter-select:focus,
+.employee-search-type:focus,
+.employee-modal select:focus {
+  outline: none;
+  border-color: rgba(229, 9, 20, 0.55);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.18);
+}
+
+/* Responsive: ưu tiên tránh vỡ ở các độ phân giải mục tiêu */
+@media (max-width: 1536px) {
+  .employee-search {
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .employee-page {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-search {
+    min-width: 100%;
+  }
+  .employee-filter-select,
+  .employee-search-type {
+    width: 100%;
+  }
+  .employee-search-btn,
+  .employee-reset-btn {
+    width: 100%;
+  }
+}
+
+/* ======= phần còn lại giữ nguyên từ file gốc ======= */
+.employee-avatar-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.employee-avatar-img,
+.employee-avatar-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employee-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e50914, #9b0209);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.employee-name-cell {
+  font-weight: 600;
+  color: #fff;
 }
 
 .employee-table-wrapper {
@@ -109,11 +237,26 @@
   font-weight: 600;
 }
 
-.role-admin { background: rgba(229, 9, 20, 0.2); color: #fca5a5; }
-.role-staff { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
-.status-active { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
-.status-locked { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-.status-inactive { background: rgba(107, 114, 128, 0.2); color: #d1d5db; }
+.role-admin {
+  background: rgba(229, 9, 20, 0.2);
+  color: #fca5a5;
+}
+.role-staff {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+.status-active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+.status-locked {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+.status-inactive {
+  background: rgba(107, 114, 128, 0.2);
+  color: #d1d5db;
+}
 
 .employee-actions {
   display: flex;
@@ -135,6 +278,16 @@
   background: rgba(229, 9, 20, 0.2);
   border-color: rgba(229, 9, 20, 0.3);
   color: #fca5a5;
+}
+
+.employee-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.employee-table tr.row-loading {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .employee-pagination {
@@ -205,6 +358,17 @@
   color: #fff;
 }
 
+.employee-modal input.input-error,
+.employee-modal select.input-error {
+  border-color: #ef4444;
+}
+
+.field-error {
+  color: #fca5a5;
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+
 .employee-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -244,7 +408,28 @@
   color: #fff;
 }
 
-.employee-loading,
+.employee-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.employee-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-red, #e50914);
+  border-radius: 50%;
+  animation: employee-spin 0.8s linear infinite;
+}
+
+@keyframes employee-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .employee-error,
 .employee-empty {
   text-align: center;
