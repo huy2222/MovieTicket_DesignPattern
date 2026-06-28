@@ -355,7 +355,7 @@ export default function ChatPanel({ match, onClose }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {!pendingInvitation && !group ? (
+            {!pendingInvitation && (!group || ["CANCELLED", "EXPIRED", "COMPLETED"].includes(group.status)) ? (
               <button
                 type="button"
                 onClick={openInvitationForm}
