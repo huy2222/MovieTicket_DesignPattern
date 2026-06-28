@@ -130,9 +130,12 @@ export default function BookingPage() {
     
     setIsProcessing(true);
     try {
-      // Dùng customerId 1 làm mặc định nếu chưa auth
+      // Lấy ID user từ localStorage
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const customerId = currentUser.id || 1;
+
       const requestPayload = {
-        customerId: 1, 
+        customerId: customerId, 
         showtimeId: selectedShowtime.id,
         seatIds: selectedSeats.map(s => s.id),
         voucherCode: voucherCode.trim() !== '' ? voucherCode : null
