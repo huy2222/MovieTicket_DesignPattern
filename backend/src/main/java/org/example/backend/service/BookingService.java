@@ -40,7 +40,7 @@ public class BookingService {
     private final VNPayService vnPayService;
     private final org.example.backend.repository.CustomerRepository customerRepository;
 
-    @org.springframework.beans.factory.annotation.Value("${vnpay.returnUrl}")
+    @org.springframework.beans.factory.annotation.Value("${vnpay.returnUrl:http://localhost:8081/api/bookings/vnpay-return}")
     private String bookingReturnUrl;
 
     public BookingService(LocationRepository locationRepository, ShowtimeRepository showtimeRepository, SeatHoldRepository seatHoldRepository, TicketRepository ticketRepository, SeatRepository seatRepository, org.example.backend.repository.BookingRepository bookingRepository, org.example.backend.repository.PaymentRepository paymentRepository, VoucherService voucherService, org.example.backend.repository.VoucherRepository voucherRepository, VNPayService vnPayService, org.example.backend.repository.CustomerRepository customerRepository) {

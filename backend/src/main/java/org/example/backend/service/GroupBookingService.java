@@ -50,7 +50,7 @@ public class GroupBookingService {
     private final CineMeetRealtimePublisher realtimePublisher;
     private final VNPayService vnPayService;
 
-    @org.springframework.beans.factory.annotation.Value("${vnpay.cinemeetReturnUrl}")
+    @org.springframework.beans.factory.annotation.Value("${vnpay.cinemeetReturnUrl:http://localhost:8081/api/cinemeet/group-bookings/vnpay-return}")
     private String cinemeetReturnUrl;
 
     public GroupBookingService(
