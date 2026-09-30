@@ -236,6 +236,16 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             Báo cáo CineMeet
           </NavLink>
 
+          <NavLink
+            to="/admin/combos"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="voucher" />
+            Combo Bắp Nước
+          </NavLink>
+
 
         </nav>
 
