@@ -17,6 +17,8 @@ const CineMeetPage = lazy(() => import("../pages/CineMeetPage/CineMeetPage"));
 const BookingPage = lazy(() => import("../pages/BookingPage/BookingPage"));
 const PaymentResultPage = lazy(() => import("../pages/PaymentResultPage/PaymentResultPage"));
 const MyTicketsPage = lazy(() => import("../pages/MyTicketsPage/MyTicketsPage"));
+const StaffComboPage = lazy(() => import("../pages/Staff/StaffComboPage"));
+
 
 const DashboardPage = lazy(
   () => import("../pages/Admin/Dashboard/DashboardPage")
@@ -66,6 +68,8 @@ export default function AppRoutes() {
         <Route path="/payment/result" element={<PaymentResultPage />} />
         <Route path="/cinemeet/payment/result" element={<PaymentResultPage />} />
         <Route path="/my-tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
+        <Route path="/staff/combos" element={<ProtectedRoute><StaffComboPage /></ProtectedRoute>} />
+
         <Route
           path="/cinemeet"
           element={

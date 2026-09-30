@@ -10,4 +10,6 @@ public class BookingRequest {
     private Long showtimeId;
     private List<Long> seatIds;
     private String voucherCode;
+    private List<ComboItemRequest> combos;
 }
+
