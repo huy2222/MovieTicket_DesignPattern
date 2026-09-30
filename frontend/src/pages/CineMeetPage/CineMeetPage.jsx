@@ -7,6 +7,7 @@ import {
   closeMatch,
   discoverProfiles,
   getLikedProfiles,
+  getMyCineMeetReports,
   getMatches,
   swipeLeft,
   swipeRight,
@@ -16,6 +17,8 @@ import DiscoverSection from "./components/DiscoverSection";
 import HistorySection from "./components/HistorySection";
 import MatchSection from "./components/MatchSection";
 import ChatPanel from "./components/ChatPanel";
+import ReportModal from "./components/ReportModal";
+import MyReportsModal from "./components/MyReportsModal";
 import "./CineMeetPage.css";
 
 const DISCOVER_REFILL_THRESHOLD = 2;
@@ -44,6 +47,12 @@ export default function CineMeetPage() {
   const [popup, setPopup] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
   const [discoverExhausted, setDiscoverExhausted] = useState(false);
+  const [reportTarget, setReportTarget] = useState(null);
+  const [notice, setNotice] = useState("");
+  const [myReports, setMyReports] = useState([]);
+  const [reportsOpen, setReportsOpen] = useState(false);
+  const [reportsLoading, setReportsLoading] = useState(false);
+  const [reportsError, setReportsError] = useState("");
   const discoverFetchInFlightRef = useRef(false);
 
   const buildProfilePayload = (data, enabled) => ({
@@ -129,6 +138,19 @@ export default function CineMeetPage() {
     }
   }, []);
 
+  const fetchMyReports = useCallback(async () => {
+    setReportsLoading(true);
+    setReportsError("");
+    try {
+      const { data } = await getMyCineMeetReports();
+      setMyReports(data ?? []);
+    } catch (err) {
+      setReportsError(err?.response?.data?.message ?? "Không tải được trạng thái báo cáo.");
+    } finally {
+      setReportsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const bootstrap = async () => {
       let enabled = true;
@@ -169,8 +191,10 @@ export default function CineMeetPage() {
     }
 
     if (discoverList.length <= DISCOVER_REFILL_THRESHOLD) {
-      fetchDiscover({ append: true, silent: true });
+      const timer = window.setTimeout(() => fetchDiscover({ append: true, silent: true }), 0);
+      return () => window.clearTimeout(timer);
     }
+    return undefined;
   }, [cineMeetEnabled, discoverList.length, discoverExhausted, fetchDiscover, loadingDiscover]);
 
   const refreshCineMeetData = async () => {
@@ -303,6 +327,40 @@ export default function CineMeetPage() {
     }
   };
 
+  const reportProfile = (profile) => setReportTarget({
+    type: "USER",
+    userId: profile.customerId,
+    userName: profile.name,
+  });
+
+  const reportMatch = (match) => setReportTarget({
+    type: "USER",
+    userId: match.peer?.customerId,
+    userName: match.peer?.name,
+  });
+
+  const showNotice = (message) => {
+    setNotice(message);
+    window.setTimeout(() => setNotice(""), 3500);
+  };
+
+  const handleReportSuccess = (message, report) => {
+    const hiddenUserId = Number(report?.reportedUserId);
+    if (hiddenUserId) {
+      setDiscoverList((current) => current.filter((item) => Number(item.customerId) !== hiddenUserId));
+      setMatches((current) => current.filter((item) => Number(item.peer?.customerId) !== hiddenUserId));
+      setActivities((current) => current.filter((item) => Number(item.customerId) !== hiddenUserId));
+      setActiveChat((current) => Number(current?.peer?.customerId) === hiddenUserId ? null : current);
+    }
+    showNotice(message);
+    fetchMyReports();
+  };
+
+  const openMyReports = () => {
+    setReportsOpen(true);
+    fetchMyReports();
+  };
+
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <Header />
@@ -312,6 +370,7 @@ export default function CineMeetPage() {
             {error}
           </div>
         ) : null}
+        {notice ? <div className="cinemeet-report-toast" role="status">{notice}</div> : null}
 
         <section className={`cinemeet-toggle-card ${cineMeetEnabled ? "is-enabled" : "is-disabled"}`}>
           <div className="flex min-w-0 items-center gap-4">
@@ -325,15 +384,21 @@ export default function CineMeetPage() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleToggleCineMeet}
-            disabled={savingCineMeet || !profileData}
-            aria-pressed={cineMeetEnabled}
-            className={`cinemeet-switch ${cineMeetEnabled ? "is-on" : "is-off"}`}
-          >
-            <span />
-          </button>
+          <div className="cinemeet-toggle-actions">
+            <button type="button" className="cinemeet-my-reports-button" onClick={openMyReports}>
+              Báo cáo của tôi
+              {myReports.some((report) => report.status === "REVIEWING") ? <i /> : null}
+            </button>
+            <button
+              type="button"
+              onClick={handleToggleCineMeet}
+              disabled={savingCineMeet || !profileData}
+              aria-pressed={cineMeetEnabled}
+              className={`cinemeet-switch ${cineMeetEnabled ? "is-on" : "is-off"}`}
+            >
+              <span />
+            </button>
+          </div>
         </section>
 
         <div className={`cinemeet-stage ${cineMeetEnabled ? "curtain-open" : "curtain-closed"}`}>
@@ -353,6 +418,7 @@ export default function CineMeetPage() {
               onUseCurrentLocation={handleUseCurrentLocation}
               onSkip={handleSwipeLeft}
               onLike={handleSwipeRight}
+              onReport={reportProfile}
             />
 
             <HistorySection
@@ -366,6 +432,7 @@ export default function CineMeetPage() {
               onCloseMatch={handleCloseMatch}
               onBlockMatch={handleBlockMatch}
               onOpenChat={setActiveChat}
+              onReport={reportMatch}
             />
           </section>
         </div>
@@ -419,7 +486,31 @@ export default function CineMeetPage() {
         </div>
       ) : null}
 
-      {activeChat && cineMeetEnabled ? <ChatPanel match={activeChat} onClose={() => setActiveChat(null)} /> : null}
+      {activeChat && cineMeetEnabled ? (
+        <ChatPanel
+          match={activeChat}
+          onClose={() => setActiveChat(null)}
+          onReport={setReportTarget}
+        />
+      ) : null}
+
+      {reportTarget ? (
+        <ReportModal
+          target={reportTarget}
+          onClose={() => setReportTarget(null)}
+          onSuccess={handleReportSuccess}
+        />
+      ) : null}
+
+      {reportsOpen ? (
+        <MyReportsModal
+          reports={myReports}
+          loading={reportsLoading}
+          error={reportsError}
+          onClose={() => setReportsOpen(false)}
+          onRefresh={fetchMyReports}
+        />
+      ) : null}
 
       <Footer />
     </div>

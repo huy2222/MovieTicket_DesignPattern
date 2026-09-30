@@ -99,6 +99,13 @@ function SidebarIcon({ name }) {
         <circle cx="9" cy="7" r="4" />
       </svg>
     ),
+    reports: (
+      <svg {...commonProps}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+        <path d="M12 8v4" />
+        <path d="M12 16h.01" />
+      </svg>
+    ),
     logout: (
       <svg {...commonProps}>
         <path d="M10 17 15 12 10 7" />
@@ -217,6 +224,16 @@ export default function AdminSidebar({ isOpen, onToggle }) {
           >
             <SidebarIcon name="users" />
             Tài khoản khách hàng
+          </NavLink>
+
+          <NavLink
+            to="/admin/cinemeet-reports"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="reports" />
+            Báo cáo CineMeet
           </NavLink>
 
 

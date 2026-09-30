@@ -58,6 +58,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
               WHERE m.customerA.id = :myId
                 AND m.status IN :blockingStatuses
           )
+          AND c.id NOT IN (
+              SELECT r.reportedUser.id FROM CineMeetReport r
+              WHERE r.reporter.id = :myId
+          )
         ORDER BY ((loc.latitude - :centerLatitude) * (loc.latitude - :centerLatitude))
                + ((loc.longitude - :centerLongitude) * (loc.longitude - :centerLongitude)) ASC
     """)

@@ -1,4 +1,4 @@
-export default function ProfileCard({ profile, onSkip, onLike }) {
+export default function ProfileCard({ profile, onSkip, onLike, onReport }) {
   const genres = (profile.favoriteGenres ?? []).slice(0, 3).join(" • ") || "Chưa có dữ liệu";
   const cinema = (profile.frequentCinemas ?? [])[0] || "Chưa có dữ liệu";
 
@@ -45,6 +45,13 @@ export default function ProfileCard({ profile, onSkip, onLike }) {
             Quan tâm
           </button>
         </div>
+        <button
+          type="button"
+          onClick={onReport}
+          className="w-full rounded-lg px-3 py-1.5 text-xs text-[#8f8f8f] transition hover:bg-red-500/10 hover:text-red-300"
+        >
+          Báo cáo hồ sơ này
+        </button>
       </div>
     </article>
   );

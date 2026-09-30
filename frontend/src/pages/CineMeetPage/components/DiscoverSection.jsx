@@ -1,6 +1,6 @@
 import ProfileCard from "./ProfileCard";
 
-export default function DiscoverSection({ profiles, loading, locationStatus, onUseCurrentLocation, onSkip, onLike }) {
+export default function DiscoverSection({ profiles, loading, locationStatus, onUseCurrentLocation, onSkip, onLike, onReport }) {
   const activeProfile = profiles[0];
 
   return (
@@ -37,6 +37,7 @@ export default function DiscoverSection({ profiles, loading, locationStatus, onU
             profile={activeProfile}
             onSkip={() => onSkip(activeProfile)}
             onLike={() => onLike(activeProfile)}
+            onReport={() => onReport(activeProfile)}
           />
         </div>
       )}

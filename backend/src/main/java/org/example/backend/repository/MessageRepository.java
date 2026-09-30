@@ -23,4 +23,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT m FROM Message m WHERE m.match.id = :matchId AND m.id < :beforeId ORDER BY m.sentAt DESC")
     List<Message> findOlderByMatchId(@Param("matchId") Long matchId, @Param("beforeId") Long beforeId, Pageable pageable);
+
+    @Query("SELECT m FROM Message m WHERE m.match.id = :matchId AND m.id <= :messageId ORDER BY m.id DESC")
+    List<Message> findEvidenceBefore(@Param("matchId") Long matchId, @Param("messageId") Long messageId, Pageable pageable);
+
+    @Query("SELECT m FROM Message m WHERE m.match.id = :matchId AND m.id > :messageId ORDER BY m.id ASC")
+    List<Message> findEvidenceAfter(@Param("matchId") Long matchId, @Param("messageId") Long messageId, Pageable pageable);
 }

@@ -18,6 +18,7 @@ import org.example.backend.enums.MatchStatus;
 import org.example.backend.enums.NotificationType;
 import org.example.backend.enums.SwipeDirection;
 import org.example.backend.repository.CustomerRepository;
+import org.example.backend.repository.CineMeetReportRepository;
 import org.example.backend.repository.LocationRepository;
 import org.example.backend.repository.MatchRepository;
 import org.example.backend.repository.NotificationRepository;
@@ -59,6 +60,7 @@ public class CineMeetService {
     private final MatchRepository matchRepository;
     private final NotificationRepository notificationRepository;
     private final CompatibilityService compatibilityService;
+    private final CineMeetReportRepository reportRepository;
 
     public CineMeetService(
             CustomerRepository customerRepository,
@@ -66,7 +68,8 @@ public class CineMeetService {
             SwipeRepository swipeRepository,
             MatchRepository matchRepository,
             NotificationRepository notificationRepository,
-            CompatibilityService compatibilityService
+            CompatibilityService compatibilityService,
+            CineMeetReportRepository reportRepository
     ) {
         this.customerRepository = customerRepository;
         this.locationRepository = locationRepository;
@@ -74,6 +77,7 @@ public class CineMeetService {
         this.matchRepository = matchRepository;
         this.notificationRepository = notificationRepository;
         this.compatibilityService = compatibilityService;
+        this.reportRepository = reportRepository;
     }
 
     @Transactional(readOnly = true)
@@ -86,6 +90,7 @@ public class CineMeetService {
         BoundingBox box = createBoundingBox(centerLatitude, centerLongitude, DISCOVER_RADIUS_KM);
 
         List<CineMeetDiscoverItemResponse> items = new ArrayList<>();
+        Set<Long> reportedUserIds = Set.copyOf(reportRepository.findReportedUserIdsByReporterId(me.getId()));
         List<Customer> candidates = customerRepository.findNearbyDiscoverCandidates(
                 me.getId(),
                 leftCooldownThreshold,
@@ -99,6 +104,9 @@ public class CineMeetService {
                 PageRequest.of(0, DISCOVER_CANDIDATE_LIMIT)
         );
         for (Customer candidate : candidates) {
+            if (reportedUserIds.contains(candidate.getId())) {
+                continue;
+            }
             double score = compatibilityService.calculateScore(me, candidate);
             if (score < MIN_COMPATIBILITY_SCORE) {
                 continue;
@@ -265,7 +273,9 @@ public class CineMeetService {
     @Transactional(readOnly = true)
     public List<CineMeetMatchResponse> getMatches(String email) {
         Customer me = findCustomerByEmail(email);
+        Set<Long> reportedUserIds = Set.copyOf(reportRepository.findReportedUserIdsByReporterId(me.getId()));
         return matchRepository.findOwnedByStatus(me.getId(), MatchStatus.ACTIVE).stream()
+                .filter(match -> !reportedUserIds.contains(resolvePeer(match, me).getId()))
                 .map(match -> toMatchResponse(match, me))
                 .toList();
     }
@@ -273,11 +283,13 @@ public class CineMeetService {
     @Transactional(readOnly = true)
     public List<CineMeetLikedProfileResponse> getLikedProfiles(String email) {
         Customer me = findCustomerByEmail(email);
+        Set<Long> reportedUserIds = Set.copyOf(reportRepository.findReportedUserIdsByReporterId(me.getId()));
         Map<Long, Swipe> latestLikes = new LinkedHashMap<>();
         swipeRepository.findBySwiper_IdAndDirectionOrderBySwipedAtDesc(me.getId(), SwipeDirection.RIGHT)
                 .forEach(swipe -> latestLikes.putIfAbsent(swipe.getTarget().getId(), swipe));
 
         return latestLikes.values().stream()
+                .filter(swipe -> !reportedUserIds.contains(swipe.getTarget().getId()))
                 .map(swipe -> {
                     Customer target = swipe.getTarget();
                     return CineMeetLikedProfileResponse.builder()
@@ -298,6 +310,9 @@ public class CineMeetService {
         Match match = matchRepository.findById(matchId)
                 .filter(it -> it.getCustomerA().getId().equals(me.getId()) || it.getCustomerB().getId().equals(me.getId()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy match."));
+        if (reportRepository.existsByReporter_IdAndReportedUser_Id(me.getId(), resolvePeer(match, me).getId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy match.");
+        }
         return toMatchResponse(match, me);
     }
 
@@ -330,6 +345,9 @@ public class CineMeetService {
         if (target.getStatus() != AccountStatus.ACTIVE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tài khoản mục tiêu hiện không hoạt động.");
         }
+        if (reportRepository.existsByReporter_IdAndReportedUser_Id(me.getId(), target.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Người dùng này đã được bạn báo cáo và đã bị ẩn khỏi CineMeet.");
+        }
     }
 
     private Match findOwnedActiveMatch(Long matchId, Long meId) {
@@ -338,7 +356,7 @@ public class CineMeetService {
     }
 
     private CineMeetMatchResponse toMatchResponse(Match match, Customer me) {
-        Customer peer = match.getCustomerA().getId().equals(me.getId()) ? match.getCustomerB() : match.getCustomerA();
+        Customer peer = resolvePeer(match, me);
 
         return CineMeetMatchResponse.builder()
                 .matchId(match.getId())
@@ -354,6 +372,10 @@ public class CineMeetService {
                 .favoriteGenres(resolveGenres(peer))
                 .frequentCinemas(resolveFrequentCinemas(peer))
                 .build();
+    }
+
+    private Customer resolvePeer(Match match, Customer me) {
+        return match.getCustomerA().getId().equals(me.getId()) ? match.getCustomerB() : match.getCustomerA();
     }
 
     private void createMatchNotifications(Customer me, Customer target) {
