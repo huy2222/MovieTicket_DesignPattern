@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getCitiesWithShowtimes, getCinemasAndShowtimes, getShowtimeSeats, checkout } from '../../services/bookingService';
 import { getMovieById } from '../../services/movieService';
 import { getApplicableVouchers } from '../../services/voucherService';
+import { getActiveCombos } from '../../services/comboService';
 import './BookingPage.css';
 
 export default function BookingPage() {
@@ -29,7 +30,11 @@ export default function BookingPage() {
   const [bookedSeatIds, setBookedSeatIds] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
 
-  // --- Step 3 States ---
+  // --- Step 3 States (Combos) ---
+  const [combos, setCombos] = useState([]);
+  const [selectedCombos, setSelectedCombos] = useState({}); // { comboId: quantity }
+
+  // --- Step 4 States ---
   const [voucherCode, setVoucherCode] = useState('');
   const [applicableVouchers, setApplicableVouchers] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -49,16 +54,23 @@ export default function BookingPage() {
     getMovieById(movieId).then(res => setMovie(res.data)).catch(console.error);
   }, [movieId]);
 
-  // Fetch applicable vouchers when entering step 3
+  // Fetch applicable vouchers when entering step 4
   useEffect(() => {
-    if (step === 3) {
+    if (step === 4) {
       const originalPrice = calculateTotal();
       const ticketCount = selectedSeats.length;
       getApplicableVouchers(originalPrice, ticketCount)
         .then(res => setApplicableVouchers(res.data))
         .catch(console.error);
     }
-  }, [step, selectedSeats]);
+  }, [step, selectedSeats, selectedCombos]);
+
+  // Fetch combos when entering step 3
+  useEffect(() => {
+    if (step === 3 && combos.length === 0) {
+      getActiveCombos().then(setCombos).catch(console.error);
+    }
+  }, [step]);
 
   // 2. Fetch Cities when Date changes
   useEffect(() => {
@@ -95,6 +107,7 @@ export default function BookingPage() {
       setSeats(res.allSeats);
       setBookedSeatIds(res.bookedSeatIds || []);
       setSelectedSeats([]); // reset selection
+      setSelectedCombos({}); // reset combos
       setStep(2);
     } catch (err) {
       console.error(err);
@@ -118,7 +131,25 @@ export default function BookingPage() {
 
   const calculateTotal = () => {
     if (!selectedShowtime) return 0;
-    return selectedSeats.length * selectedShowtime.basePrice;
+    let total = selectedSeats.length * selectedShowtime.basePrice;
+    
+    // Add combo prices
+    combos.forEach(c => {
+      if (selectedCombos[c.id]) {
+        total += c.price * selectedCombos[c.id];
+      }
+    });
+
+    return total;
+  };
+
+  const handleComboChange = (comboId, delta) => {
+    setSelectedCombos(prev => {
+      const current = prev[comboId] || 0;
+      const next = current + delta;
+      if (next < 0 || next > 10) return prev; // Limit max 10
+      return { ...prev, [comboId]: next };
+    });
   };
 
   // 6. Handle Checkout
@@ -132,13 +163,23 @@ export default function BookingPage() {
     try {
       // Lấy ID user từ localStorage
       const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const customerId = currentUser.id || 1;
+      if (!currentUser.id) {
+        alert("Vui lòng đăng nhập để tiếp tục thanh toán.");
+        navigate("/login");
+        return;
+      }
+      const customerId = currentUser.id;
+
+      const comboList = Object.entries(selectedCombos)
+        .filter(([_, qty]) => qty > 0)
+        .map(([id, qty]) => ({ comboId: parseInt(id), quantity: qty }));
 
       const requestPayload = {
         customerId: customerId, 
         showtimeId: selectedShowtime.id,
         seatIds: selectedSeats.map(s => s.id),
-        voucherCode: voucherCode.trim() !== '' ? voucherCode : null
+        voucherCode: voucherCode.trim() !== '' ? voucherCode : null,
+        combos: comboList
       };
 
       const res = await checkout(requestPayload);
@@ -322,6 +363,47 @@ export default function BookingPage() {
         <div className="booking-step step-3">
           <div className="step-header">
             <button className="back-btn" onClick={() => setStep(2)}>← Chọn lại ghế</button>
+            <h3>Bắp Nước (Combos)</h3>
+          </div>
+
+          <div className="combo-list">
+            {combos.map(combo => (
+              <div key={combo.id} className="combo-item">
+                {combo.imageUrl && (
+                  <img src={combo.imageUrl} alt={combo.name} className="combo-image" />
+                )}
+                <div className="combo-info">
+                  <h4>{combo.name}</h4>
+                  <p>{combo.description}</p>
+                  <p className="combo-price">{combo.price.toLocaleString('vi-VN')} VNĐ</p>
+                </div>
+                <div className="combo-quantity-controls">
+                  <button onClick={() => handleComboChange(combo.id, -1)}>-</button>
+                  <span>{selectedCombos[combo.id] || 0}</span>
+                  <button onClick={() => handleComboChange(combo.id, 1)}>+</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="booking-summary-bar">
+            <div className="summary-info">
+              <h3 className="total-price">Tổng tiền: {calculateTotal().toLocaleString('vi-VN')} VNĐ</h3>
+            </div>
+            <button 
+              className="btn btn-primary next-btn" 
+              onClick={() => setStep(4)}
+            >
+              Thanh Toán →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="booking-step step-4">
+          <div className="step-header">
+            <button className="back-btn" onClick={() => setStep(3)}>← Trở lại</button>
             <h3>Thanh Toán</h3>
           </div>
 
@@ -332,6 +414,13 @@ export default function BookingPage() {
               <p><strong>Rạp:</strong> {selectedShowtime?.cinemaName} - {selectedShowtime?.roomName}</p>
               <p><strong>Suất chiếu:</strong> {new Date(selectedShowtime?.startTime).toLocaleString('vi-VN')}</p>
               <p><strong>Ghế:</strong> {selectedSeats.map(s => `${s.rowLabel}${s.columnNumber}`).join(', ')}</p>
+              {Object.keys(selectedCombos).length > 0 && (
+                  <p><strong>Bắp Nước:</strong> {
+                    combos.filter(c => selectedCombos[c.id] > 0)
+                          .map(c => `${c.name} x${selectedCombos[c.id]}`)
+                          .join(', ')
+                  }</p>
+              )}
               <p><strong>Tạm tính:</strong> {calculateTotal().toLocaleString('vi-VN')} VNĐ</p>
             </div>
 

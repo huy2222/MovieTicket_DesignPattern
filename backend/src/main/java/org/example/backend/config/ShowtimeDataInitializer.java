@@ -25,8 +25,8 @@ import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
-//@Component
-//@Order(4)
+@Component
+@Order(4)
 public class ShowtimeDataInitializer implements CommandLineRunner {
     private static final int SAMPLE_DAY_OFFSET = 1;
 
