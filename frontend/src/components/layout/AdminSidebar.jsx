@@ -219,6 +219,16 @@ export default function AdminSidebar({ isOpen, onToggle }) {
             Tài khoản khách hàng
           </NavLink>
 
+          <NavLink
+            to="/admin/combos"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="voucher" />
+            Combo Bắp Nước
+          </NavLink>
+
 
         </nav>
 

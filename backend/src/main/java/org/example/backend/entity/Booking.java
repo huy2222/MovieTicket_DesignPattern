@@ -54,4 +54,8 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "group_booking_session_id")
     private GroupBookingSession groupBookingSession;
+
+    // Thêm liên kết với BookingCombo
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<BookingCombo> bookingCombos;
 }
