@@ -239,6 +239,11 @@
   transform: translateX(30px);
 }
 
+.cinemeet-toggle-actions { display: flex; align-items: center; gap: 12px; }
+.cinemeet-my-reports-button { position: relative; padding: 9px 13px; color: #d4d4d4; font-size: 13px; font-weight: 650; background: #242424; border: 1px solid #393939; border-radius: 10px; cursor: pointer; }
+.cinemeet-my-reports-button:hover { color: #fff; border-color: #5a5a5a; }
+.cinemeet-my-reports-button i { position: absolute; top: -4px; right: -4px; width: 9px; height: 9px; background: #ffb020; border: 2px solid #171717; border-radius: 50%; }
+
 .cinemeet-stage {
   position: relative;
   overflow: hidden;
@@ -382,4 +387,104 @@
   .cinemeet-panel {
     padding: 16px;
   }
+}
+/* CineMeet report flow */
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.report-modal {
+  width: min(100%, 520px);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  color: #f5f5f5;
+  background: linear-gradient(160deg, #211719 0%, #151515 45%);
+  border: 1px solid rgba(255, 91, 101, 0.26);
+  border-radius: 20px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.65);
+}
+
+.report-modal-heading {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.85rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.report-modal-heading h2 { margin: 0.15rem 0 0; font-size: 1.35rem; }
+.report-modal-eyebrow { margin: 0; color: #ff7d85; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+.report-modal-icon { display: grid; place-items: center; width: 42px; height: 42px; color: #fff; font-size: 1.4rem; font-weight: 900; background: linear-gradient(145deg, #e50914, #8f0710); border-radius: 13px; }
+.report-modal-close { width: 36px; height: 36px; color: #aaa; font-size: 1.5rem; background: transparent; border: 0; border-radius: 50%; cursor: pointer; }
+.report-modal-close:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+.report-target-preview { margin-bottom: 1rem; padding: 0.95rem 1rem; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; }
+.report-target-preview strong { display: block; margin-top: 0.3rem; }
+.report-target-preview p, .report-target-preview blockquote { margin: 0.3rem 0 0; color: #a9a9a9; font-size: 0.82rem; }
+.report-target-preview blockquote { overflow: hidden; padding-left: 0.65rem; border-left: 2px solid #e50914; text-overflow: ellipsis; white-space: nowrap; }
+.report-target-label { color: #777; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.report-field { display: grid; gap: 0.45rem; margin-top: 1rem; color: #ddd; font-size: 0.85rem; font-weight: 650; }
+.report-field em { color: #ff606a; font-style: normal; }
+.report-field small { float: right; color: #777; font-weight: 400; }
+.report-field select, .report-field textarea { width: 100%; padding: 0.75rem 0.85rem; color: #f1f1f1; font: inherit; font-weight: 400; background: #111; border: 1px solid #393939; border-radius: 10px; outline: none; resize: vertical; }
+.report-field select:focus, .report-field textarea:focus { border-color: #e50914; box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.12); }
+.report-field select option { background: #151515; }
+.report-privacy-note { margin: 1rem 0 0; color: #858585; font-size: 0.75rem; line-height: 1.5; }
+.report-modal-error { margin-top: 0.85rem; padding: 0.7rem 0.8rem; color: #ffadb2; font-size: 0.8rem; background: rgba(229, 9, 20, 0.11); border: 1px solid rgba(229, 9, 20, 0.24); border-radius: 9px; }
+.report-modal-actions { display: flex; justify-content: flex-end; gap: 0.7rem; margin-top: 1.25rem; }
+.report-button-secondary, .report-button-danger { padding: 0.7rem 1rem; color: #fff; font-weight: 700; border-radius: 10px; cursor: pointer; }
+.report-button-secondary { background: #262626; border: 1px solid #3c3c3c; }
+.report-button-danger { background: linear-gradient(135deg, #e50914, #b20710); border: 1px solid #f02a34; box-shadow: 0 8px 24px rgba(229, 9, 20, 0.2); }
+.report-button-secondary:disabled, .report-button-danger:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.cinemeet-report-toast { position: fixed; top: 5.5rem; right: 1.25rem; z-index: 2900; padding: 0.8rem 1rem; color: #d4ffe2; font-size: 0.86rem; font-weight: 700; background: #153b25; border: 1px solid #2b7a4a; border-radius: 11px; box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38); animation: report-toast-in 0.25s ease-out; }
+
+.my-reports-modal { display: flex; flex-direction: column; width: min(100%, 650px); max-height: 88vh; color: #f3f3f3; background: #161616; border: 1px solid #333; border-radius: 20px; box-shadow: 0 28px 90px rgba(0, 0, 0, 0.65); overflow: hidden; }
+.my-reports-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.4rem; background: linear-gradient(135deg, rgba(229,9,20,.12), transparent); border-bottom: 1px solid #2c2c2c; }
+.my-reports-header h2 { margin: .15rem 0 .25rem; font-size: 1.35rem; }
+.my-reports-header > div > p:last-child { margin: 0; color: #8d8d8d; font-size: .8rem; }
+.my-reports-header-actions { display: flex; gap: .35rem; }
+.my-reports-header-actions button { width: 34px; height: 34px; color: #aaa; font-size: 1.2rem; background: #242424; border: 1px solid #383838; border-radius: 9px; cursor: pointer; }
+.my-reports-list { display: grid; gap: .8rem; padding: 1rem; overflow-y: auto; }
+.my-reports-empty { display: grid; gap: .35rem; place-items: center; padding: 4rem 1rem; color: #777; text-align: center; }
+.my-reports-empty strong { color: #bbb; }
+.my-reports-empty span { font-size: .8rem; }
+.my-report-card { padding: 1rem; background: #1d1d1d; border: 1px solid #303030; border-radius: 13px; }
+.my-report-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.my-report-user { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+.my-report-user > span { display: grid; flex: 0 0 auto; place-items: center; width: 38px; height: 38px; color: #ff9ea5; font-weight: 800; background: #391b1f; border-radius: 11px; }
+.my-report-user strong, .my-report-user small { display: block; }
+.my-report-user strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.my-report-user small { margin-top: .2rem; color: #777; font-size: .68rem; }
+.my-report-status { flex: 0 0 auto; padding: .3rem .55rem; font-size: .67rem; font-weight: 750; border-radius: 99px; }
+.my-report-status.is-pending { color: #ffc95c; background: rgba(246,183,60,.12); }
+.my-report-status.is-reviewing { color: #83baff; background: rgba(73,144,232,.13); }
+.my-report-status.is-resolved { color: #58dc91; background: rgba(53,201,121,.12); }
+.my-report-status.is-rejected { color: #a9acb4; background: rgba(126,130,140,.14); }
+.my-report-reason { display: flex; justify-content: space-between; gap: .75rem; margin-top: .85rem; padding-top: .75rem; color: #777; font-size: .75rem; border-top: 1px solid #2e2e2e; }
+.my-report-reason strong { color: #d2d2d2; text-align: right; }
+.my-report-card blockquote { margin: .75rem 0 0; padding: .65rem .75rem; overflow: hidden; color: #b9b9b9; font-size: .78rem; background: #141414; border-left: 2px solid #e50914; border-radius: 0 8px 8px 0; text-overflow: ellipsis; white-space: nowrap; }
+.my-report-progress { margin: .75rem 0 0; color: #8d8d8d; font-size: .75rem; line-height: 1.5; }
+.my-report-result { margin-top: .75rem; padding: .7rem; color: #b7d9c4; background: rgba(53,201,121,.08); border: 1px solid rgba(53,201,121,.18); border-radius: 8px; }
+.my-report-result span { color: #68b583; font-size: .65rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.my-report-result p { margin: .35rem 0 0; font-size: .78rem; line-height: 1.5; }
+
+@keyframes report-toast-in { from { opacity: 0; transform: translateY(-8px); } }
+
+@media (max-width: 540px) {
+  .report-modal { padding: 1.1rem; border-radius: 16px; }
+  .report-modal-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .cinemeet-report-toast { right: 0.75rem; left: 0.75rem; text-align: center; }
+  .cinemeet-toggle-actions { align-items: flex-end; flex-direction: column-reverse; }
+  .cinemeet-my-reports-button { padding: 7px 9px; font-size: 11px; }
+  .my-reports-modal { max-height: 94vh; border-radius: 15px; }
 }

@@ -1,4 +1,4 @@
-export default function MatchSection({ matches, loading, disabled, onCloseMatch, onBlockMatch, onOpenChat }) {
+export default function MatchSection({ matches, loading, disabled, onCloseMatch, onBlockMatch, onOpenChat, onReport }) {
   return (
     <section className="cinemeet-panel cinemeet-match-card">
       <h2 className="text-xl font-semibold text-white">Match của bạn</h2>
@@ -77,6 +77,13 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                   className="rounded-lg border border-[#e50914]/60 bg-[#321417] px-3 py-1.5 text-xs text-[#ff7d85] hover:bg-[#3e1a1f]"
                 >
                   Chặn
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onReport(match)}
+                  className="ml-auto rounded-lg px-3 py-1.5 text-xs text-[#888] hover:bg-red-500/10 hover:text-red-300"
+                >
+                  Báo cáo
                 </button>
               </div>
             </div>
