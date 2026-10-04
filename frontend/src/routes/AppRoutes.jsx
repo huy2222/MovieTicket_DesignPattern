@@ -45,6 +45,12 @@ const ShowtimeManagementPage = lazy(
 const UserManagementPage = lazy(
   () => import("../pages/Admin/CustomerManagement/CustomerManagementPage")
 );
+const CineMeetReportManagementPage = lazy(
+  () => import("../pages/Admin/CineMeetReportManagement/CineMeetReportManagementPage")
+);
+const ComboManagementPage = lazy(
+  () => import("../pages/Admin/ComboManagement/ComboManagementPage")
+);
 
 function PageLoader() {
   return (
@@ -89,6 +95,8 @@ export default function AppRoutes() {
           <Route path="rooms" element={<RoomManagementPage />} />
           <Route path="showtimes" element={<ShowtimeManagementPage />} />
           <Route path="users" element={<UserManagementPage />} />
+          <Route path="cinemeet-reports" element={<CineMeetReportManagementPage />} />
+          <Route path="combos" element={<ComboManagementPage />} />
         </Route>
       </Routes>
     </Suspense>

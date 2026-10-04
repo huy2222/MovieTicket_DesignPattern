@@ -175,6 +175,7 @@ public class VoucherService {
                 .buyQuantity(voucher.getBuyQuantity())
                 .freeQuantity(voucher.getFreeQuantity())
                 .minTickets(voucher.getMinTickets())
+                .maxDiscountAmount(voucher.getMaxDiscountAmount())
                 .minimumOrderAmount(voucher.getMinimumOrderAmount())
                 .usageLimit(voucher.getUsageLimit())
                 .usedCount(voucher.getUsedCount())
@@ -194,6 +195,7 @@ public class VoucherService {
         voucher.setBuyQuantity(request.getBuyQuantity());
         voucher.setFreeQuantity(request.getFreeQuantity());
         voucher.setMinTickets(request.getMinTickets());
+        voucher.setMaxDiscountAmount(request.getMaxDiscountAmount());
         voucher.setMinimumOrderAmount(request.getMinimumOrderAmount() != null ? request.getMinimumOrderAmount() : 0.0);
         voucher.setUsageLimit(request.getUsageLimit() != null ? request.getUsageLimit() : 0);
         voucher.setStartTime(parseDateTime(request.getStartTime()));

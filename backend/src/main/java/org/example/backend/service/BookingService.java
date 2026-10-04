@@ -7,6 +7,7 @@ import org.example.backend.dto.response.ShowtimeResponse;
 import org.example.backend.dto.response.ShowtimeSeatsResponse;
 import org.example.backend.entity.Cinema;
 import org.example.backend.entity.Movie;
+import org.example.backend.enums.ComboFulfillmentStatus;
 import org.example.backend.entity.Room;
 import org.example.backend.entity.Seat;
 import org.example.backend.entity.Showtime;
@@ -208,9 +209,18 @@ public class BookingService {
 
         if (request.getCombos() != null && !request.getCombos().isEmpty()) {
             for (org.example.backend.dto.request.ComboItemRequest item : request.getCombos()) {
-                if (item.getQuantity() > 0 && item.getComboId() != null) {
+                if (item.getQuantity() != null && item.getQuantity() > 0 && item.getComboId() != null) {
                     org.example.backend.entity.Combo combo = comboRepository.findById(item.getComboId())
                             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy combo ID: " + item.getComboId()));
+
+                    if (combo.getIsActive() == null || !combo.getIsActive()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Combo " + combo.getName() + " hiện đang ngừng bán");
+                    }
+
+                    if (item.getQuantity() > 10) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số lượng combo " + combo.getName() + " không hợp lệ (1-10)");
+                    }
+
                     double itemTotal = combo.getPrice() * item.getQuantity();
                     comboTotal += itemTotal;
 
@@ -224,13 +234,15 @@ public class BookingService {
             }
         }
 
-        double basePrice = ticketBasePrice + comboTotal;
-        double discountedPrice = basePrice;
+        double totalBeforeDiscount = ticketBasePrice + comboTotal;
+        double discountedPrice = totalBeforeDiscount;
         org.example.backend.entity.Voucher voucher = null;
 
         if (request.getVoucherCode() != null && !request.getVoucherCode().trim().isEmpty()) {
             try {
-                discountedPrice = voucherService.applyVoucher(request.getVoucherCode(), basePrice, seats.size());
+                // Voucher chỉ áp dụng cho giá vé (theo yêu cầu)
+                double discountedTickets = voucherService.applyVoucher(request.getVoucherCode(), ticketBasePrice, seats.size());
+                discountedPrice = discountedTickets + comboTotal;
                 voucher = voucherRepository.findByCode(request.getVoucherCode()).orElse(null);
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -243,9 +255,9 @@ public class BookingService {
         booking.setShowtime(showtime);
         booking.setBookingDate(LocalDateTime.now());
         booking.setPaymentDeadline(LocalDateTime.now().plusMinutes(15));
-        booking.setBasePrice(basePrice);
-        booking.setDiscountAmount(basePrice - discountedPrice);
-        booking.setSubtotal(basePrice);
+        booking.setBasePrice(totalBeforeDiscount);
+        booking.setDiscountAmount(totalBeforeDiscount - discountedPrice);
+        booking.setSubtotal(totalBeforeDiscount);
         booking.setTotalAmount(discountedPrice);
         booking.setStatus(org.example.backend.enums.BookingStatus.PENDING);
         booking.setVoucher(voucher);
@@ -336,6 +348,11 @@ public class BookingService {
             List<org.example.backend.entity.Ticket> tickets = ticketRepository.findByBookingId(booking.getId());
             tickets.forEach(t -> t.setStatus(org.example.backend.enums.TicketStatus.CONFIRMED));
             ticketRepository.saveAll(tickets);
+
+            // Cập nhật trạng thái combo
+            List<org.example.backend.entity.BookingCombo> combos = bookingComboRepository.findByBookingId(booking.getId());
+            combos.forEach(c -> c.setFulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.PAID_NOT_RECEIVED));
+            bookingComboRepository.saveAll(combos);
         } else {
             payment.setStatus(org.example.backend.enums.PaymentStatus.FAILED);
             paymentRepository.save(payment);
@@ -355,6 +372,11 @@ public class BookingService {
             List<org.example.backend.entity.Ticket> tickets = ticketRepository.findByBookingId(booking.getId());
             tickets.forEach(t -> t.setStatus(org.example.backend.enums.TicketStatus.CANCELLED));
             ticketRepository.saveAll(tickets);
+
+            // Hủy trạng thái combo
+            List<org.example.backend.entity.BookingCombo> combos = bookingComboRepository.findByBookingId(booking.getId());
+            combos.forEach(c -> c.setFulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.CANCELLED));
+            bookingComboRepository.saveAll(combos);
         }
     }
 

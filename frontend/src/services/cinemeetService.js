@@ -67,3 +67,5 @@ export const cancelCineMeetGroup = (groupId) =>
   api.delete(`/cinemeet/group-bookings/${groupId}`);
 export const getGroupSeats = (groupId) =>
   api.get(`/cinemeet/group-bookings/${groupId}/seats`);
+export const createCineMeetReport = (payload) => api.post("/cinemeet/reports", payload);
+export const getMyCineMeetReports = () => api.get("/cinemeet/reports");

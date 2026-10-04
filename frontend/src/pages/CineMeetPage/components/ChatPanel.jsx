@@ -90,7 +90,7 @@ const findAdjacentSeatIds = (anchorSeat, seats = [], members = []) => {
   );
 };
 
-export default function ChatPanel({ match, onClose }) {
+export default function ChatPanel({ match, onClose, onReport }) {
   const [messages, setMessages] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [group, setGroup] = useState(null);
@@ -355,6 +355,17 @@ export default function ChatPanel({ match, onClose }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => onReport?.({
+                type: "USER",
+                userId: match.peer?.customerId,
+                userName: match.peer?.name,
+              })}
+              className="rounded-lg px-3 py-2 text-xs text-[#999] hover:bg-red-500/10 hover:text-red-300"
+            >
+              Báo cáo
+            </button>
             {!pendingInvitation && (!group || ["CANCELLED", "EXPIRED", "COMPLETED"].includes(group.status)) ? (
               <button
                 type="button"
@@ -413,7 +424,7 @@ export default function ChatPanel({ match, onClose }) {
               const message = item.data;
               const mine = Number(message.senderId) === Number(currentUser.id);
               return (
-              <div key={`message-${message.id}`} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <div key={`message-${message.id}`} className={`group flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[78%] rounded-2xl px-3 py-2 ${mine ? "bg-[#e50914] text-white" : "bg-[#292929] text-white"}`}>
                   {!mine ? <p className="mb-1 text-[11px] font-semibold text-[#ff8a91]">{message.senderName}</p> : null}
                   <p className="whitespace-pre-wrap break-words text-sm">{message.content}</p>
@@ -421,6 +432,21 @@ export default function ChatPanel({ match, onClose }) {
                     {formatDateTime(message.sentAt)}
                   </p>
                 </div>
+                {!mine ? (
+                  <button
+                    type="button"
+                    onClick={() => onReport?.({
+                      type: "MESSAGE",
+                      messageId: message.id,
+                      messageContent: message.content,
+                      userId: message.senderId,
+                      userName: message.senderName,
+                    })}
+                    className="mb-1 rounded px-2 py-1 text-[10px] text-[#777] opacity-0 transition hover:bg-red-500/10 hover:text-red-300 group-hover:opacity-100 focus:opacity-100"
+                  >
+                    Báo cáo
+                  </button>
+                ) : null}
               </div>
               );
             }

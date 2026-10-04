@@ -46,6 +46,15 @@ public class VoucherFactory {
                         voucher.getDiscountPercent() != null ? voucher.getDiscountPercent() : 0
                 );
                 break;
+
+            case MAX_CAP_PERCENT_DISCOUNT:
+                component = new MaxCapPercentDiscountDecorator(
+                        component,
+                        voucher.getDiscountPercent() != null ? voucher.getDiscountPercent() : 0,
+                        voucher.getMaxDiscountAmount() != null ? voucher.getMaxDiscountAmount() : Double.MAX_VALUE,
+                        voucher.getMinimumOrderAmount()
+                );
+                break;
         }
 
         return component;

@@ -34,14 +34,15 @@ public class ComboDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Initialize sample combos if empty
         if (comboRepository.count() == 0) {
+            System.out.println("Seeding initial Combos...");
+
             Combo combo1 = Combo.builder()
                     .name("Combo Solo")
                     .description("1 Bắp Rang Bơ Phô Mai/Ngọt + 1 Nước Ngọt 500ml")
                     .price(79000.0)
                     .imageUrl("https://images.unsplash.com/photo-1585647347384-2593bc35786b?w=400")
-                    .active(true)
+                    .isActive(true)
                     .build();
 
             Combo combo2 = Combo.builder()
@@ -49,7 +50,7 @@ public class ComboDataInitializer implements CommandLineRunner {
                     .description("1 Bắp Rang Bơ Lớn + 2 Nước Ngọt 500ml")
                     .price(119000.0)
                     .imageUrl("https://images.unsplash.com/photo-1578849278619-e73505e9610f?w=400")
-                    .active(true)
+                    .isActive(true)
                     .build();
 
             Combo combo3 = Combo.builder()
@@ -57,11 +58,11 @@ public class ComboDataInitializer implements CommandLineRunner {
                     .description("2 Bắp Rang Bơ Lớn + 4 Nước Ngọt 500ml + 1 Snack")
                     .price(199000.0)
                     .imageUrl("https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400")
-                    .active(true)
+                    .isActive(true)
                     .build();
 
             comboRepository.saveAll(List.of(combo1, combo2, combo3));
-            System.out.println("Default Combos created successfully!");
+            System.out.println("Seeded 3 Combos successfully.");
         }
 
         // Initialize sample staff account if not exists

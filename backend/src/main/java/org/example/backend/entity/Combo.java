@@ -1,27 +1,33 @@
 package org.example.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "combos")
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Combo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
-    private double price;
+
+    @Column(nullable = false)
+    private Double price;
+
     private String imageUrl;
 
     @Builder.Default
-    private boolean active = true;
+    @Column(nullable = false)
+    private Boolean isActive = true;
 }
+
