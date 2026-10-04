@@ -54,6 +54,24 @@ public class BookingUserService {
                 .sorted()
                 .toList();
 
+        List<org.example.backend.dto.response.BookingComboResponse> comboResponses = booking.getBookingCombos() != null
+                ? booking.getBookingCombos().stream()
+                .map(bc -> org.example.backend.dto.response.BookingComboResponse.builder()
+                        .id(bc.getId())
+                        .comboId(bc.getCombo() != null ? bc.getCombo().getId() : null)
+                        .comboName(bc.getCombo() != null ? bc.getCombo().getName() : "Combo")
+                        .description(bc.getCombo() != null ? bc.getCombo().getDescription() : "")
+                        .imageUrl(bc.getCombo() != null ? bc.getCombo().getImageUrl() : "")
+                        .quantity(bc.getQuantity())
+                        .price(bc.getPrice())
+                        .fulfillmentStatus(bc.getFulfillmentStatus())
+                        .receivedAt(bc.getReceivedAt())
+                        .confirmedByStaffId(bc.getReceivedByStaff() != null ? bc.getReceivedByStaff().getId() : null)
+                        .confirmedByStaffName(bc.getReceivedByStaff() != null ? bc.getReceivedByStaff().getFullName() : null)
+                        .build())
+                .toList()
+                : List.of();
+
         return MyBookingResponse.builder()
                 .bookingId(booking.getId())
                 .movieTitle(movie.getTitle())
@@ -67,6 +85,8 @@ public class BookingUserService {
                 .totalAmount(booking.getTotalAmount())
                 .bookingDate(booking.getBookingDate().format(DATETIME_FORMATTER))
                 .ticketCount(booking.getTickets().size())
+                .combos(comboResponses)
                 .build();
     }
 }
+

@@ -46,7 +46,19 @@ public class BookingService {
     @org.springframework.beans.factory.annotation.Value("${vnpay.returnUrl:http://localhost:8081/api/bookings/vnpay-return}")
     private String bookingReturnUrl;
 
-    public BookingService(LocationRepository locationRepository, ShowtimeRepository showtimeRepository, SeatHoldRepository seatHoldRepository, TicketRepository ticketRepository, SeatRepository seatRepository, org.example.backend.repository.BookingRepository bookingRepository, org.example.backend.repository.PaymentRepository paymentRepository, VoucherService voucherService, org.example.backend.repository.VoucherRepository voucherRepository, VNPayService vnPayService, org.example.backend.repository.CustomerRepository customerRepository, org.example.backend.repository.ComboRepository comboRepository, org.example.backend.repository.BookingComboRepository bookingComboRepository) {
+    public BookingService(LocationRepository locationRepository,
+                          ShowtimeRepository showtimeRepository,
+                          SeatHoldRepository seatHoldRepository,
+                          TicketRepository ticketRepository,
+                          SeatRepository seatRepository,
+                          org.example.backend.repository.BookingRepository bookingRepository,
+                          org.example.backend.repository.PaymentRepository paymentRepository,
+                          VoucherService voucherService,
+                          org.example.backend.repository.VoucherRepository voucherRepository,
+                          VNPayService vnPayService,
+                          org.example.backend.repository.CustomerRepository customerRepository,
+                          org.example.backend.repository.ComboRepository comboRepository,
+                          org.example.backend.repository.BookingComboRepository bookingComboRepository) {
         this.locationRepository = locationRepository;
         this.showtimeRepository = showtimeRepository;
         this.seatHoldRepository = seatHoldRepository;
@@ -61,6 +73,8 @@ public class BookingService {
         this.comboRepository = comboRepository;
         this.bookingComboRepository = bookingComboRepository;
     }
+
+
 
     public ShowtimeSeatsResponse getShowtimeSeats(Long showtimeId) {
         Showtime showtime = showtimeRepository.findById(showtimeId)
@@ -189,46 +203,45 @@ public class BookingService {
         }
 
         // 2. Calculate initial price
-        double basePrice = showtime.getBasePrice() * seats.size();
-        
-        // Calculate combo price
-        double comboTotal = 0;
-        List<org.example.backend.entity.BookingCombo> pendingBookingCombos = new java.util.ArrayList<>();
+        double ticketBasePrice = showtime.getBasePrice() * seats.size();
+        double comboTotal = 0.0;
+        List<org.example.backend.entity.BookingCombo> pendingCombos = new java.util.ArrayList<>();
+
         if (request.getCombos() != null && !request.getCombos().isEmpty()) {
             for (org.example.backend.dto.request.ComboItemRequest item : request.getCombos()) {
-                org.example.backend.entity.Combo combo = comboRepository.findById(item.getComboId())
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy combo ID: " + item.getComboId()));
-                
-                if (combo.getIsActive() == null || !combo.getIsActive()) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Combo " + combo.getName() + " hiện đang ngừng bán");
+                if (item.getQuantity() != null && item.getQuantity() > 0 && item.getComboId() != null) {
+                    org.example.backend.entity.Combo combo = comboRepository.findById(item.getComboId())
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy combo ID: " + item.getComboId()));
+
+                    if (combo.getIsActive() == null || !combo.getIsActive()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Combo " + combo.getName() + " hiện đang ngừng bán");
+                    }
+
+                    if (item.getQuantity() > 10) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số lượng combo " + combo.getName() + " không hợp lệ (1-10)");
+                    }
+
+                    double itemTotal = combo.getPrice() * item.getQuantity();
+                    comboTotal += itemTotal;
+
+                    org.example.backend.entity.BookingCombo bc = new org.example.backend.entity.BookingCombo();
+                    bc.setCombo(combo);
+                    bc.setQuantity(item.getQuantity());
+                    bc.setPrice(combo.getPrice());
+                    bc.setFulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.UNPAID);
+                    pendingCombos.add(bc);
                 }
-                
-                if (item.getQuantity() < 1 || item.getQuantity() > 10) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số lượng combo " + combo.getName() + " không hợp lệ (1-10)");
-                }
-                
-                double subtotal = combo.getPrice() * item.getQuantity();
-                comboTotal += subtotal;
-                
-                org.example.backend.entity.BookingCombo bookingCombo = org.example.backend.entity.BookingCombo.builder()
-                        .combo(combo)
-                        .quantity(item.getQuantity())
-                        .unitPrice(combo.getPrice())
-                        .subtotal(subtotal)
-                        .fulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.PENDING_PAYMENT)
-                        .build();
-                pendingBookingCombos.add(bookingCombo);
             }
         }
 
-        double totalBeforeDiscount = basePrice + comboTotal;
+        double totalBeforeDiscount = ticketBasePrice + comboTotal;
         double discountedPrice = totalBeforeDiscount;
         org.example.backend.entity.Voucher voucher = null;
 
         if (request.getVoucherCode() != null && !request.getVoucherCode().trim().isEmpty()) {
             try {
                 // Voucher chỉ áp dụng cho giá vé (theo yêu cầu)
-                double discountedTickets = voucherService.applyVoucher(request.getVoucherCode(), basePrice, seats.size());
+                double discountedTickets = voucherService.applyVoucher(request.getVoucherCode(), ticketBasePrice, seats.size());
                 discountedPrice = discountedTickets + comboTotal;
                 voucher = voucherRepository.findByCode(request.getVoucherCode()).orElse(null);
             } catch (Exception e) {
@@ -251,12 +264,13 @@ public class BookingService {
 
         booking = bookingRepository.save(booking);
 
-        // Save BookingCombos
-        if (!pendingBookingCombos.isEmpty()) {
-            for (org.example.backend.entity.BookingCombo bc : pendingBookingCombos) {
+        // Save BookingCombos if any
+        if (!pendingCombos.isEmpty()) {
+            for (org.example.backend.entity.BookingCombo bc : pendingCombos) {
                 bc.setBooking(booking);
             }
-            bookingComboRepository.saveAll(pendingBookingCombos);
+            bookingComboRepository.saveAll(pendingCombos);
+            booking.setBookingCombos(pendingCombos);
         }
 
         // 4. Create Tickets (PENDING)
@@ -312,8 +326,19 @@ public class BookingService {
             paymentRepository.save(payment);
 
             booking.setStatus(org.example.backend.enums.BookingStatus.CONFIRMED);
-            bookingRepository.save(booking);
             
+            // Transition combos to PAID_NOT_RECEIVED
+            if (booking.getBookingCombos() != null && !booking.getBookingCombos().isEmpty()) {
+                for (org.example.backend.entity.BookingCombo bc : booking.getBookingCombos()) {
+                    if (bc.getFulfillmentStatus() == org.example.backend.enums.ComboFulfillmentStatus.UNPAID) {
+                        bc.setFulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.PAID_NOT_RECEIVED);
+                    }
+                }
+                bookingComboRepository.saveAll(booking.getBookingCombos());
+            }
+
+            bookingRepository.save(booking);
+
             if (booking.getVoucher() != null) {
                 org.example.backend.entity.Voucher appliedVoucher = booking.getVoucher();
                 appliedVoucher.setUsedCount(appliedVoucher.getUsedCount() + 1);
@@ -333,8 +358,17 @@ public class BookingService {
             paymentRepository.save(payment);
 
             booking.setStatus(org.example.backend.enums.BookingStatus.CANCELLED);
+
+            // Transition combos to CANCELLED
+            if (booking.getBookingCombos() != null && !booking.getBookingCombos().isEmpty()) {
+                for (org.example.backend.entity.BookingCombo bc : booking.getBookingCombos()) {
+                    bc.setFulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.CANCELLED);
+                }
+                bookingComboRepository.saveAll(booking.getBookingCombos());
+            }
+
             bookingRepository.save(booking);
-            
+
             List<org.example.backend.entity.Ticket> tickets = ticketRepository.findByBookingId(booking.getId());
             tickets.forEach(t -> t.setStatus(org.example.backend.enums.TicketStatus.CANCELLED));
             ticketRepository.saveAll(tickets);
@@ -345,6 +379,7 @@ public class BookingService {
             bookingComboRepository.saveAll(combos);
         }
     }
+
 
     public Map<String, Object> debugSeatCounts() {
         List<Seat> allSeats = seatRepository.findAll();

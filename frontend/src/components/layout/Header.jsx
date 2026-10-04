@@ -47,6 +47,11 @@ export default function Header() {
                   <Link to="/my-tickets" className="nav-link">
                     🎫 Vé của tôi
                   </Link>
+                  {(user?.role === "STAFF" || user?.role === "ADMIN") && (
+                    <Link to="/staff/combos" className="nav-link text-[#ef4444] font-bold">
+                      🍿 Giao Combo
+                    </Link>
+                  )}
                   <NavLink
                     to="/cinemeet"
                     className={({ isActive }) => `nav-link ${isActive ? "text-[#e50914]" : ""}`}
@@ -56,6 +61,7 @@ export default function Header() {
                   <Link to="/account" className="nav-link">
                     {user.fullName || "Tài khoản"}
                   </Link>
+
                 </>
               )}
               <span className="role-badge">

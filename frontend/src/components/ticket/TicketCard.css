@@ -197,6 +197,56 @@
   color: var(--text-light);
 }
 
+/* Combos Section */
+.ticket-combos-row {
+  align-items: flex-start;
+  margin-top: 4px;
+}
+
+.ticket-combos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.ticket-combo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.combo-name-qty {
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.combo-status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.combo-status-badge.received {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+}
+
+.combo-status-badge.paid_not_received {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+}
+
+.combo-status-badge.cancelled {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.15);
+}
+
 /* ============================================
    Responsive
    ============================================ */
@@ -216,3 +266,4 @@
     gap: 0.5rem;
   }
 }
+
