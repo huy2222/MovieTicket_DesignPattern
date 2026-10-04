@@ -16,12 +16,14 @@ const VOUCHER_TYPE_LABELS = {
   PERCENT_DISCOUNT: "Giảm %",
   BUY_N_GET_FREE: "Mua N tặng M",
   MIN_TICKET_DISCOUNT: "Mua N giảm %",
+  MAX_CAP_PERCENT_DISCOUNT: "Giảm % (Có trần)",
 };
 
 const VOUCHER_TYPE_CLASS = {
   PERCENT_DISCOUNT: "percent",
   BUY_N_GET_FREE: "buyfree",
   MIN_TICKET_DISCOUNT: "minticket",
+  MAX_CAP_PERCENT_DISCOUNT: "maxcap",
 };
 
 const STATUS_LABELS = {

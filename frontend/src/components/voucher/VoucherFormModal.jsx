@@ -24,6 +24,11 @@ const VOUCHER_TYPES = [
     label: "Giảm % khi mua tối thiểu N vé",
     desc: "Chỉ giảm giá khi khách mua đủ số lượng vé tối thiểu",
   },
+  {
+    value: "MAX_CAP_PERCENT_DISCOUNT",
+    label: "Giảm % có mức trần tối đa",
+    desc: "Giảm một phần trăm nhưng giới hạn số tiền giảm tối đa",
+  },
 ];
 
 // ============================================
@@ -38,6 +43,7 @@ const INITIAL_FORM = {
   buyQuantity: "",
   freeQuantity: "",
   minTickets: "",
+  maxDiscountAmount: "",
   minimumOrderAmount: "",
   usageLimit: "",
   startTime: "",
@@ -65,6 +71,7 @@ export default function VoucherFormModal({ voucher, onClose, onSuccess }) {
         buyQuantity: voucher.buyQuantity ?? "",
         freeQuantity: voucher.freeQuantity ?? "",
         minTickets: voucher.minTickets ?? "",
+        maxDiscountAmount: voucher.maxDiscountAmount ?? "",
         minimumOrderAmount: voucher.minimumOrderAmount ?? "",
         usageLimit: voucher.usageLimit ?? "",
         startTime: voucher.startTime
@@ -94,6 +101,7 @@ export default function VoucherFormModal({ voucher, onClose, onSuccess }) {
       buyQuantity: "",
       freeQuantity: "",
       minTickets: "",
+      maxDiscountAmount: "",
     }));
     setErrors({});
   };
@@ -138,6 +146,16 @@ export default function VoucherFormModal({ voucher, onClose, onSuccess }) {
       }
     }
 
+    if (form.voucherType === "MAX_CAP_PERCENT_DISCOUNT") {
+      const pct = Number(form.discountPercent);
+      if (!form.discountPercent || pct <= 0 || pct > 100) {
+        errs.discountPercent = "Phần trăm giảm phải từ 1 đến 100";
+      }
+      if (!form.maxDiscountAmount || Number(form.maxDiscountAmount) <= 0) {
+        errs.maxDiscountAmount = "Số tiền giảm tối đa phải > 0";
+      }
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -154,7 +172,8 @@ export default function VoucherFormModal({ voucher, onClose, onSuccess }) {
       voucherType: form.voucherType,
       discountPercent:
         form.voucherType === "PERCENT_DISCOUNT" ||
-        form.voucherType === "MIN_TICKET_DISCOUNT"
+        form.voucherType === "MIN_TICKET_DISCOUNT" ||
+        form.voucherType === "MAX_CAP_PERCENT_DISCOUNT"
           ? Number(form.discountPercent)
           : null,
       buyQuantity:
@@ -168,6 +187,10 @@ export default function VoucherFormModal({ voucher, onClose, onSuccess }) {
       minTickets:
         form.voucherType === "MIN_TICKET_DISCOUNT"
           ? Number(form.minTickets)
+          : null,
+      maxDiscountAmount:
+        form.voucherType === "MAX_CAP_PERCENT_DISCOUNT"
+          ? Number(form.maxDiscountAmount)
           : null,
       minimumOrderAmount: form.minimumOrderAmount
         ? Number(form.minimumOrderAmount)
@@ -391,6 +414,50 @@ export default function VoucherFormModal({ voucher, onClose, onSuccess }) {
                     {errors.discountPercent && (
                       <span className="form-error">
                         {errors.discountPercent}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* MAX_CAP_PERCENT_DISCOUNT */}
+              {form.voucherType === "MAX_CAP_PERCENT_DISCOUNT" && (
+                <>
+                  <div className="form-group">
+                    <label className="form-label">Phần trăm giảm giá</label>
+                    <div className="form-input-wrapper">
+                      <input
+                        className="form-input"
+                        type="number"
+                        name="discountPercent"
+                        value={form.discountPercent}
+                        onChange={handleChange}
+                        placeholder="20"
+                        min="1"
+                        max="100"
+                      />
+                      <span className="form-input-suffix">%</span>
+                    </div>
+                    {errors.discountPercent && (
+                      <span className="form-error">
+                        {errors.discountPercent}
+                      </span>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Giảm tối đa (VNĐ)</label>
+                    <input
+                      className="form-input"
+                      type="number"
+                      name="maxDiscountAmount"
+                      value={form.maxDiscountAmount}
+                      onChange={handleChange}
+                      placeholder="50000"
+                      min="1"
+                    />
+                    {errors.maxDiscountAmount && (
+                      <span className="form-error">
+                        {errors.maxDiscountAmount}
                       </span>
                     )}
                   </div>

@@ -7,6 +7,7 @@ import org.example.backend.dto.response.ShowtimeResponse;
 import org.example.backend.dto.response.ShowtimeSeatsResponse;
 import org.example.backend.entity.Cinema;
 import org.example.backend.entity.Movie;
+import org.example.backend.enums.ComboFulfillmentStatus;
 import org.example.backend.entity.Room;
 import org.example.backend.entity.Seat;
 import org.example.backend.entity.Showtime;

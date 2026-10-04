@@ -36,6 +36,7 @@ class CineMeetServiceTest {
     @Mock MatchRepository matchRepository;
     @Mock NotificationRepository notificationRepository;
     @Mock CompatibilityService compatibilityService;
+    @Mock org.example.backend.repository.CineMeetReportRepository reportRepository;
 
     private CineMeetService service;
 
@@ -47,7 +48,8 @@ class CineMeetServiceTest {
                 swipeRepository,
                 matchRepository,
                 notificationRepository,
-                compatibilityService
+                compatibilityService,
+                reportRepository
         );
     }
 

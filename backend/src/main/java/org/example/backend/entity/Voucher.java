@@ -51,6 +51,9 @@ public class Voucher {
     // Số vé tối thiểu cần mua (dùng cho MIN_TICKET_DISCOUNT)
     private Integer minTickets;
 
+    // Số tiền giảm tối đa (dùng cho MAX_CAP_PERCENT_DISCOUNT)
+    private Double maxDiscountAmount;
+
     @ManyToMany
     @JoinTable(
             name = "voucher_cinemas",
