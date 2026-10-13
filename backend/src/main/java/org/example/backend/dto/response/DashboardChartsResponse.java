@@ -12,6 +12,7 @@ public class DashboardChartsResponse {
     private String fromDate;
     private String toDate;
     private List<MonthlyRevenueItem> monthlyRevenue;
+    private List<DailyRevenueItem> revenueByDay;
     private List<MovieRevenueItem> topMoviesByRevenue;
     private List<MovieTicketItem> topMoviesByTickets;
     private List<CinemaRevenueItem> revenueByCinema;
@@ -24,6 +25,13 @@ public class DashboardChartsResponse {
         private int year;
         private int month;
         private String label;
+        private double revenue;
+    }
+
+    @Data
+    @Builder
+    public static class DailyRevenueItem {
+        private String date;
         private double revenue;
     }
 

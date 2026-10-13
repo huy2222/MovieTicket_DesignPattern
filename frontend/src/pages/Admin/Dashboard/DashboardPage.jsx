@@ -58,6 +58,12 @@ function formatMoneyAxis(value) {
   return value.toString();
 }
 
+function formatDateAxis(value) {
+  if (!value) return "";
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 export default function DashboardPage() {
   const [period, setPeriod] = useState("LAST_30_DAYS");
   const [fromDate, setFromDate] = useState("");
@@ -108,6 +114,38 @@ export default function DashboardPage() {
 
   const overview = overviewQuery.data;
   const charts = chartsQuery.data;
+
+  const revenueTimeline = (() => {
+    if (!charts) return { title: "Doanh thu theo thời gian", data: [] };
+
+    if (appliedFilter.period === "TODAY") {
+      return {
+        title: "Doanh thu theo giờ",
+        data: (charts.revenueByHour || []).map((item) => ({
+          ...item,
+          timeLabel: item.label,
+        })),
+      };
+    }
+
+    if (appliedFilter.period === "YEAR") {
+      return {
+        title: "Doanh thu theo tháng",
+        data: (charts.monthlyRevenue || []).map((item) => ({
+          ...item,
+          timeLabel: item.label,
+        })),
+      };
+    }
+
+    return {
+      title: "Doanh thu theo ngày",
+      data: (charts.revenueByDay || []).map((item) => ({
+        ...item,
+        timeLabel: formatDateAxis(item.date),
+      })),
+    };
+  })();
 
   const getRevenueCard = () => {
     if (!overview) return null;
@@ -218,13 +256,13 @@ export default function DashboardPage() {
         charts && (
           <div className="dashboard-charts-grid">
             <div className="dashboard-chart-card full-width">
-              <h3>Doanh thu 12 tháng</h3>
+              <h3>{revenueTimeline.title}</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={charts.monthlyRevenue}>
+                <LineChart data={revenueTimeline.data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis dataKey="label" stroke="#aaa" fontSize={12} />
+                  <XAxis dataKey="timeLabel" stroke="#aaa" fontSize={12} />
                   <YAxis stroke="#aaa" fontSize={12} tickFormatter={formatMoneyAxis} />
-                  <Tooltip formatter={(v) => formatCurrency(v)} />
+                  <Tooltip formatter={(v) => [formatCurrency(v), "Doanh thu"]} />
                   <Legend />
                   <Line type="monotone" dataKey="revenue" name="Doanh thu" stroke="#ffd700" strokeWidth={2} dot={false} />
                 </LineChart>

@@ -4,9 +4,9 @@ import "./VoucherCard.css";
 // Helpers
 // ============================================
 const STATUS_LABELS = {
-  DRAFT: "Khóa",
+  DRAFT: "Đã khóa",
   ACTIVE: "Đang hoạt động",
-  SUSPENDED: "Khóa",
+  SUSPENDED: "Đã khóa",
   EXPIRED: "Hết hạn",
 };
 

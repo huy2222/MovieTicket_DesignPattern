@@ -76,6 +76,11 @@
   font-size: 0.875rem;
 }
 
+.dashboard-filter-select option {
+  background: #1f1f1f;
+  color: #fff;
+}
+
 .dashboard-filter-btn {
   padding: 0.55rem 1.25rem;
   background: linear-gradient(135deg, var(--accent-red, #e50914), #c20710);

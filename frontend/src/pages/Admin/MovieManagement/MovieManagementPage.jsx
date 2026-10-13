@@ -21,9 +21,9 @@ import "./MovieManagementPage.css";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "Tất cả trạng thái" },
-  { value: "NOW_SHOWING", label: "Now Showing" },
-  { value: "COMING_SOON", label: "Coming Soon" },
-  { value: "ENDED", label: "Ended" },
+  { value: "NOW_SHOWING", label: MOVIE_STATUS_LABELS.NOW_SHOWING },
+  { value: "COMING_SOON", label: MOVIE_STATUS_LABELS.COMING_SOON },
+  { value: "ENDED", label: MOVIE_STATUS_LABELS.ENDED },
 ];
 
 const PAGE_SIZE = 10;
@@ -452,9 +452,15 @@ export default function MovieManagementPage() {
                           handleStatusChange(movie, e.target.value)
                         }
                       >
-                        <option value="NOW_SHOWING">Now Showing</option>
-                        <option value="COMING_SOON">Coming Soon</option>
-                        <option value="ENDED">Ended</option>
+                        <option value="NOW_SHOWING">
+                          {MOVIE_STATUS_LABELS.NOW_SHOWING}
+                        </option>
+                        <option value="COMING_SOON">
+                          {MOVIE_STATUS_LABELS.COMING_SOON}
+                        </option>
+                        <option value="ENDED">
+                          {MOVIE_STATUS_LABELS.ENDED}
+                        </option>
                       </select>
                     </td>
                     <td>
