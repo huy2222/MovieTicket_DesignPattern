@@ -35,8 +35,8 @@ const AGE_RATING_OPTIONS = [
 
 const STATUS_OPTIONS = [
   { value: "", label: "Tất cả trạng thái" },
-  { value: "NOW_SHOWING", label: "Đang chiếu (Now Showing)" },
-  { value: "COMING_SOON", label: "Sắp chiếu (Coming Soon)" },
+  { value: "NOW_SHOWING", label: "Đang chiếu" },
+  { value: "COMING_SOON", label: "Sắp chiếu" },
 ];
 
 export default function MovieSearchPage() {

@@ -3,6 +3,7 @@ package org.example.backend.repository;
 import org.example.backend.entity.Payment;
 import org.example.backend.enums.PaymentStatus;
 import org.example.backend.repository.projection.CinemaRevenueProjection;
+import org.example.backend.repository.projection.DailyRevenueProjection;
 import org.example.backend.repository.projection.HourlyRevenueProjection;
 import org.example.backend.repository.projection.MonthlyRevenueProjection;
 import org.example.backend.repository.projection.MovieRevenueProjection;
@@ -44,6 +45,22 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             ORDER BY YEAR(p.paidAt), MONTH(p.paidAt)
             """)
     List<MonthlyRevenueProjection> sumRevenueGroupByMonth(
+            @Param("status") PaymentStatus status,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+            SELECT FUNCTION('DATE', p.paidAt) AS revenueDate,
+                   COALESCE(SUM(p.amount), 0) AS revenue
+            FROM Payment p
+            WHERE p.status = :status
+              AND p.paidAt >= :start
+              AND p.paidAt < :end
+            GROUP BY FUNCTION('DATE', p.paidAt)
+            ORDER BY FUNCTION('DATE', p.paidAt)
+            """)
+    List<DailyRevenueProjection> sumRevenueGroupByDay(
             @Param("status") PaymentStatus status,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end

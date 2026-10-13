@@ -32,7 +32,7 @@ export const AGE_RATING_OPTIONS = [
 ];
 
 export const STATUS_OPTIONS = [
-  { value: "COMING_SOON", label: "Coming Soon" },
-  { value: "NOW_SHOWING", label: "Now Showing" },
-  { value: "ENDED", label: "Ended" },
+  { value: "COMING_SOON", label: "Sắp chiếu" },
+  { value: "NOW_SHOWING", label: "Đang chiếu" },
+  { value: "ENDED", label: "Đã kết thúc" },
 ];

@@ -27,9 +27,9 @@ const VOUCHER_TYPE_CLASS = {
 };
 
 const STATUS_LABELS = {
-  DRAFT: "Khóa",
+  DRAFT: "Đã khóa",
   ACTIVE: "Đang hoạt động",
-  SUSPENDED: "Khóa",
+  SUSPENDED: "Đã khóa",
   EXPIRED: "Hết hạn",
 };
 
@@ -93,9 +93,15 @@ export default function VoucherManagementPage() {
 
   const handleSuspend = async (id) => {
     try {
-      await suspendVoucher(id);
+      const res = await suspendVoucher(id);
+      setVouchers((current) =>
+        current.map((voucher) =>
+          voucher.id === id
+            ? { ...voucher, ...res.data, status: "SUSPENDED" }
+            : voucher
+        )
+      );
       showToast("Tạm ngưng voucher thành công!");
-      fetchVouchers();
     } catch (err) {
       showToast("Lỗi khi tạm ngưng voucher", "error");
     }
@@ -186,7 +192,7 @@ export default function VoucherManagementPage() {
         >
           <option value="ALL">Tất cả trạng thái</option>
           <option value="ACTIVE">🟢 Đang hoạt động</option>
-          <option value="SUSPENDED">🔴 Khóa</option>
+          <option value="SUSPENDED">🔴 Đã khóa</option>
           <option value="EXPIRED">⚫ Hết hạn</option>
         </select>
       </div>

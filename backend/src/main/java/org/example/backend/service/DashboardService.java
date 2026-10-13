@@ -18,6 +18,7 @@ import org.example.backend.repository.ShowtimeRepository;
 import org.example.backend.repository.StaffRepository;
 import org.example.backend.repository.TicketRepository;
 import org.example.backend.repository.projection.CinemaRevenueProjection;
+import org.example.backend.repository.projection.DailyRevenueProjection;
 import org.example.backend.repository.projection.DailyTicketProjection;
 import org.example.backend.repository.projection.HourlyRevenueProjection;
 import org.example.backend.repository.projection.MonthlyRevenueProjection;
@@ -124,6 +125,7 @@ public class DashboardService {
                 .fromDate(range.from().format(DATE_FORMAT))
                 .toDate(range.to().format(DATE_FORMAT))
                 .monthlyRevenue(buildMonthlyRevenue(monthlyStart, monthlyEnd))
+                .revenueByDay(buildRevenueByDay(chartStart, chartEnd))
                 .topMoviesByRevenue(buildTopMoviesByRevenue(chartStart, chartEnd))
                 .topMoviesByTickets(buildTopMoviesByTickets(chartStart, chartEnd))
                 .revenueByCinema(buildRevenueByCinema(chartStart, chartEnd))
@@ -163,6 +165,37 @@ public class DashboardService {
                     .revenue(revenueMap.getOrDefault(key, 0.0))
                     .build());
             cursor = cursor.plusMonths(1);
+        }
+
+        return items;
+    }
+
+    private List<DashboardChartsResponse.DailyRevenueItem> buildRevenueByDay(
+            LocalDateTime start,
+            LocalDateTime end
+    ) {
+        Map<LocalDate, Double> revenueMap = new HashMap<>();
+        for (DailyRevenueProjection row : paymentRepository.sumRevenueGroupByDay(
+                PaymentStatus.PAID, start, end
+        )) {
+            if (row.getRevenueDate() != null) {
+                revenueMap.put(
+                        row.getRevenueDate().toLocalDate(),
+                        row.getRevenue() != null ? row.getRevenue() : 0.0
+                );
+            }
+        }
+
+        List<DashboardChartsResponse.DailyRevenueItem> items = new ArrayList<>();
+        LocalDate cursor = start.toLocalDate();
+        LocalDate endDate = end.toLocalDate().minusDays(1);
+
+        while (!cursor.isAfter(endDate)) {
+            items.add(DashboardChartsResponse.DailyRevenueItem.builder()
+                    .date(cursor.format(DATE_FORMAT))
+                    .revenue(revenueMap.getOrDefault(cursor, 0.0))
+                    .build());
+            cursor = cursor.plusDays(1);
         }
 
         return items;
