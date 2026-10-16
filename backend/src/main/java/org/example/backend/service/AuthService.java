@@ -33,30 +33,39 @@ public class AuthService {
 
     // REGISTER
     public UserResponse register(RegisterRequest req) {
-
-        if (userRepository.findByEmail(req.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        String email = req.getEmail() != null ? req.getEmail().trim().toLowerCase() : "";
+        if (email.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email không được để trống");
         }
 
-        // Chuẩn hóa và kiểm tra định dạng số điện thoại
-        String phone = req.getPhoneNumber();
-        if (phone != null) {
-            phone = phone.trim();
-            if (phone.startsWith("+84")) {
-                phone = "0" + phone.substring(3);
-            } else if (phone.startsWith("84") && phone.length() > 9) {
-                phone = "0" + phone.substring(2);
-            }
-            phone = phone.replaceAll("\\D", "");
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã được sử dụng");
         }
 
-        if (phone == null || !phone.matches("^0[0-9]{9}$")) {
+        // Kiểm tra và chuẩn hóa định dạng số điện thoại
+        String rawPhone = req.getPhoneNumber();
+        if (rawPhone == null || rawPhone.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số điện thoại không được để trống");
+        }
+
+        String phone = rawPhone.trim();
+        if (phone.startsWith("+84")) {
+            phone = "0" + phone.substring(3);
+        } else if (phone.startsWith("84") && phone.length() == 11) {
+            phone = "0" + phone.substring(2);
+        }
+
+        if (!phone.matches("^0[0-9]{9}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số điện thoại không đúng định dạng (phải gồm 10 chữ số bắt đầu bằng số 0)");
         }
 
+        if (userRepository.existsByPhoneNumber(phone)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số điện thoại đã được sử dụng");
+        }
+
         Customer user = new Customer(); // vì User là abstract
-        user.setEmail(req.getEmail());
-        user.setFullName(req.getFullName());
+        user.setEmail(email);
+        user.setFullName(req.getFullName() != null ? req.getFullName().trim() : "");
         user.setPhoneNumber(phone);
 
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
@@ -66,7 +75,7 @@ public class AuthService {
         user.setCreatedAt(LocalDateTime.now());
 
         ProfileCard profile = new ProfileCard();
-        profile.setDisplayName(req.getFullName());
+        profile.setDisplayName(user.getFullName());
         profile.setAge(0);
         profile.setCineMeetEnabled(false);
         profile.setVisibleToCustomer(false);
@@ -85,8 +94,8 @@ public class AuthService {
 
     // LOGIN
     public AuthResponse login(LoginRequest req) {
-
-        User user = userRepository.findByEmail(req.getEmail())
+        String email = req.getEmail() != null ? req.getEmail().trim().toLowerCase() : "";
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
