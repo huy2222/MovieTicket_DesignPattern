@@ -53,6 +53,9 @@ const ComboManagementPage = lazy(
   () => import("../pages/Admin/ComboManagement/ComboManagementPage")
 );
 const SupportPage = lazy(() => import("../pages/SupportPage/SupportPage"));
+const FavoriteMoviesPage = lazy(
+  () => import("../pages/FavoriteMoviesPage/FavoriteMoviesPage")
+);
 
 function PageLoader() {
   return (
@@ -87,7 +90,22 @@ export default function AppRoutes() {
           }
         />
 
-        <Route path="/support" element={<SupportPage />} />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <FavoriteMoviesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <SupportPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />

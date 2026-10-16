@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getMovieById } from "../../services/movieService";
+import favoriteService from "../../services/favoriteService";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import {
@@ -110,6 +111,9 @@ export default function MovieDetailPage() {
   const [error, setError] = useState(null);
   const [trailerOpen, setTrailerOpen] = useState(false);
   const [thumbError, setThumbError] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+  const [favToast, setFavToast] = useState(null);
 
   const closeTrailer = useCallback(() => setTrailerOpen(false), []);
 
@@ -129,7 +133,60 @@ export default function MovieDetailPage() {
     };
 
     fetchMovie();
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      favoriteService
+        .checkFavorite(id)
+        .then((res) => setIsFavorite(Boolean(res?.isFavorite)))
+        .catch(() => {});
+    } else {
+      setIsFavorite(false);
+    }
   }, [id]);
+
+  const handleToggleFavorite = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setFavToast({
+        type: "error",
+        text: "Vui lòng đăng nhập để thêm phim vào danh sách yêu thích.",
+      });
+      setTimeout(() => setFavToast(null), 3500);
+      return;
+    }
+
+    if (favLoading) return;
+    setFavLoading(true);
+
+    try {
+      if (isFavorite) {
+        await favoriteService.removeFavorite(id);
+        setIsFavorite(false);
+        setFavToast({
+          type: "info",
+          text: "Đã xóa phim khỏi danh sách yêu thích.",
+        });
+      } else {
+        await favoriteService.addFavorite(id);
+        setIsFavorite(true);
+        setFavToast({
+          type: "success",
+          text: "Thêm phim vào danh sách yêu thích thành công.",
+        });
+      }
+    } catch (err) {
+      setFavToast({
+        type: "error",
+        text:
+          err.response?.data?.message ||
+          "Thao tác yêu thích thất bại. Vui lòng thử lại sau.",
+      });
+    } finally {
+      setFavLoading(false);
+      setTimeout(() => setFavToast(null), 3500);
+    }
+  };
 
   if (loading) {
     return (
@@ -307,12 +364,27 @@ export default function MovieDetailPage() {
                 <div className="detail-actions mt-4">
                   <Link
                     to={`/booking/${movie.id}`}
-                    className="btn btn-cinema btn-lg"
-                    style={{ padding: '15px 40px', fontSize: '1.2rem', textTransform: 'uppercase', width: '100%' }}
+                    className="btn btn-cinema btn-lg flex-grow-1"
+                    style={{ padding: '15px 40px', fontSize: '1.2rem', textTransform: 'uppercase', textAlign: 'center' }}
                   >
                     🎟️ {movie.status === "COMING_SOON" ? "SẮP CHIẾU" : "ĐẶT VÉ NGAY"}
                   </Link>
+                  <button
+                    type="button"
+                    className={`btn-favorite-toggle ${isFavorite ? "active" : ""}`}
+                    onClick={handleToggleFavorite}
+                    disabled={favLoading}
+                    title={isFavorite ? "Xóa khỏi danh sách yêu thích" : "Thêm vào danh sách yêu thích"}
+                  >
+                    <i className={`heart-icon bi ${isFavorite ? "bi-heart-fill text-danger" : "bi-heart"}`} />
+                    <span>{isFavorite ? "Đã yêu thích" : "Yêu thích"}</span>
+                  </button>
                 </div>
+                {favToast && (
+                  <div className={`detail-fav-toast ${favToast.type}`}>
+                    {favToast.text}
+                  </div>
+                )}
               </div>
             </div>
           </div>
