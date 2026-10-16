@@ -207,6 +207,16 @@ export default function AdminSidebar({ isOpen, onToggle }) {
           </NavLink>
 
           <NavLink
+            to="/admin/bookings"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <SidebarIcon name="ticket" />
+            Quản lý Đặt Vé
+          </NavLink>
+
+          <NavLink
             to="/admin/employees"
             className={({ isActive }) =>
               `sidebar-link ${isActive ? "active" : ""}`

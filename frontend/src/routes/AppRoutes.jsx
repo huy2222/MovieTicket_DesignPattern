@@ -18,11 +18,11 @@ const BookingPage = lazy(() => import("../pages/BookingPage/BookingPage"));
 const PaymentResultPage = lazy(() => import("../pages/PaymentResultPage/PaymentResultPage"));
 const MyTicketsPage = lazy(() => import("../pages/MyTicketsPage/MyTicketsPage"));
 const StaffComboPage = lazy(() => import("../pages/Staff/StaffComboPage"));
-
-
-
 const DashboardPage = lazy(
   () => import("../pages/Admin/Dashboard/DashboardPage")
+);
+const BookingManagementPage = lazy(
+  () => import("../pages/Admin/BookingManagementPage")
 );
 const EmployeeManagementPage = lazy(
   () => import("../pages/Admin/EmployeeManagement/EmployeeManagementPage")
@@ -68,7 +68,6 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/movies" element={<MovieSearchPage />} />
-        <Route path="/bookings" element={<MovieSearchPage />} />
         <Route path="/movies/:id" element={<MovieDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -88,9 +87,12 @@ export default function AppRoutes() {
           }
         />
 
+        <Route path="/support" element={<SupportPage />} />
+
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="bookings" element={<BookingManagementPage />} />
           <Route path="employees" element={<EmployeeManagementPage />} />
           <Route path="vouchers" element={<VoucherManagementPage />} />
           <Route path="movies" element={<MovieManagementPage />} />
@@ -100,7 +102,7 @@ export default function AppRoutes() {
           <Route path="users" element={<UserManagementPage />} />
           <Route path="cinemeet-reports" element={<CineMeetReportManagementPage />} />
           <Route path="combos" element={<ComboManagementPage />} />
-          <Route path="/support" element={<SupportPage />} />
+          <Route path="support" element={<SupportPage />} />
         </Route>
       </Routes>
     </Suspense>

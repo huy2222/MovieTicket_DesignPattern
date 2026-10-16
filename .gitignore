@@ -24,6 +24,7 @@ backend/uploads/
 # ========================
 .DS_Store
 Thumbs.db
+~$*
 
 # ========================
 # Environment variables

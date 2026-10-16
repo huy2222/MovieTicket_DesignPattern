@@ -4,6 +4,29 @@ import "./RegisterPage.css";
 import { register } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 
+// Chuyển và chuẩn hóa số điện thoại theo định dạng chuẩn Việt Nam (10 chữ số bắt đầu bằng 0)
+const formatPhoneNumber = (value) => {
+  if (!value) return "";
+  let cleaned = value.trim();
+  // Chuyển +84 hoặc 84 ở đầu thành 0
+  if (cleaned.startsWith("+84")) {
+    cleaned = "0" + cleaned.slice(3);
+  } else if (cleaned.startsWith("84") && cleaned.length > 9) {
+    cleaned = "0" + cleaned.slice(2);
+  }
+  // Chỉ giữ lại ký tự số và giới hạn tối đa 10 chữ số
+  return cleaned.replace(/\D/g, "").slice(0, 10);
+};
+
+// Kiểm tra định dạng số điện thoại hợp lệ
+const validatePhoneNumber = (phone) => {
+  if (!phone) return "Số điện thoại không được để trống.";
+  if (!/^0[0-9]{9}$/.test(phone)) {
+    return "Số điện thoại không đúng định dạng. Vui lòng nhập đúng 10 chữ số bắt đầu bằng số 0 (Ví dụ: 0912345678).";
+  }
+  return "";
+};
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -14,15 +37,48 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
+  const [phoneError, setPhoneError] = useState("");
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "phone") {
+      const formattedPhone = formatPhoneNumber(value);
+      setFormData((prev) => ({
+        ...prev,
+        phone: formattedPhone,
+      }));
+
+      if (formattedPhone.length > 0) {
+        if (!formattedPhone.startsWith("0")) {
+          setPhoneError("Số điện thoại không đúng định dạng (phải bắt đầu bằng chữ số 0).");
+        } else if (formattedPhone.length < 10) {
+          setPhoneError("Số điện thoại không đúng định dạng (phải có đủ 10 chữ số).");
+        } else {
+          setPhoneError("");
+        }
+      } else {
+        setPhoneError("");
+      }
+      setError("");
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     setError("");
+  };
+
+  const handlePhoneBlur = () => {
+    if (!formData.phone) {
+      setPhoneError("Vui lòng nhập số điện thoại.");
+    } else {
+      setPhoneError(validatePhoneNumber(formData.phone));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -39,6 +95,13 @@ export default function RegisterPage() {
       return;
     }
 
+    const phoneValidationMsg = validatePhoneNumber(formData.phone);
+    if (phoneValidationMsg) {
+      setPhoneError(phoneValidationMsg);
+      setError(phoneValidationMsg);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("Mật khẩu xác nhận không khớp.");
       return;
@@ -46,9 +109,9 @@ export default function RegisterPage() {
 
     try {
       const payload = {
-        fullName: formData.fullName,
-        phoneNumber: formData.phone,
-        email: formData.email,
+        fullName: formData.fullName.trim(),
+        phoneNumber: formData.phone.trim(),
+        email: formData.email.trim(),
         password: formData.password,
       };
 
@@ -56,8 +119,12 @@ export default function RegisterPage() {
       console.log(response.data);
 
       navigate("/login");
-    } catch {
-      setError("Đăng ký thất bại. Vui lòng thử lại.");
+    } catch (err) {
+      const serverMsg =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        "Đăng ký thất bại. Vui lòng thử lại.";
+      setError(typeof serverMsg === "string" ? serverMsg : "Đăng ký thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -88,12 +155,16 @@ export default function RegisterPage() {
             <label>Số điện thoại</label>
 
             <input
-              type="text"
+              type="tel"
               name="phone"
-              placeholder="Nhập số điện thoại"
+              maxLength={10}
+              placeholder="Nhập số điện thoại (10 số, bắt đầu bằng 0)"
               value={formData.phone}
               onChange={handleChange}
+              onBlur={handlePhoneBlur}
+              className={phoneError ? "input-invalid" : ""}
             />
+            {phoneError && <span className="field-error-text">{phoneError}</span>}
           </div>
 
           <div className="input-group">

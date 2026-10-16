@@ -35,13 +35,29 @@ public class AuthService {
     public UserResponse register(RegisterRequest req) {
 
         if (userRepository.findByEmail(req.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
+
+        // Chuẩn hóa và kiểm tra định dạng số điện thoại
+        String phone = req.getPhoneNumber();
+        if (phone != null) {
+            phone = phone.trim();
+            if (phone.startsWith("+84")) {
+                phone = "0" + phone.substring(3);
+            } else if (phone.startsWith("84") && phone.length() > 9) {
+                phone = "0" + phone.substring(2);
+            }
+            phone = phone.replaceAll("\\D", "");
+        }
+
+        if (phone == null || !phone.matches("^0[0-9]{9}$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số điện thoại không đúng định dạng (phải gồm 10 chữ số bắt đầu bằng số 0)");
         }
 
         Customer user = new Customer(); // vì User là abstract
         user.setEmail(req.getEmail());
         user.setFullName(req.getFullName());
-        user.setPhoneNumber(req.getPhoneNumber());
+        user.setPhoneNumber(phone);
 
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
 
