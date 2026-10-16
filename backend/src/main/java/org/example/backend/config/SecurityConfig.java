@@ -45,9 +45,12 @@ public class SecurityConfig {
                         // public
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/genres").permitAll()
+                        .requestMatchers("/api/combos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies", "/api/movies/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/avatars/**").permitAll()
                         .requestMatchers("/ws-cinemeet/**").permitAll()
+                        // staff
+                        .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")
                         // admin
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/movies/**").hasRole("ADMIN")
@@ -56,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/customer/**", "/api/cinemeet/**").authenticated()
                         .anyRequest().permitAll()
                 )
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))

@@ -16,6 +16,7 @@ public class VoucherRequest {
     private Integer buyQuantity;      // Dùng cho BUY_N_GET_FREE
     private Integer freeQuantity;     // Dùng cho BUY_N_GET_FREE
     private Integer minTickets;       // Dùng cho MIN_TICKET_DISCOUNT
+    private Double maxDiscountAmount; // Dùng cho MAX_CAP_PERCENT_DISCOUNT
     private Double minimumOrderAmount;
     private Integer usageLimit;
     private String startTime;         // ISO format: "2026-07-01T00:00:00"

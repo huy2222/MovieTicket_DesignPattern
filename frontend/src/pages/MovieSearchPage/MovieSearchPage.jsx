@@ -11,6 +11,10 @@ import {
   getPosterUrl,
   getAgeRatingLabel,
 } from "../../utils/movieUtils";
+import {
+  COUNTRY_OPTIONS,
+  LANGUAGE_OPTIONS,
+} from "../../constants/movieFormConstants";
 import "./MovieSearchPage.css";
 
 const SORT_OPTIONS = [
@@ -35,8 +39,18 @@ const AGE_RATING_OPTIONS = [
 
 const STATUS_OPTIONS = [
   { value: "", label: "Tất cả trạng thái" },
-  { value: "NOW_SHOWING", label: "Đang chiếu (Now Showing)" },
-  { value: "COMING_SOON", label: "Sắp chiếu (Coming Soon)" },
+  { value: "NOW_SHOWING", label: "Đang chiếu" },
+  { value: "COMING_SOON", label: "Sắp chiếu" },
+];
+
+const LANGUAGE_FILTER_OPTIONS = [
+  { value: "", label: "Tất cả ngôn ngữ" },
+  ...LANGUAGE_OPTIONS,
+];
+
+const COUNTRY_FILTER_OPTIONS = [
+  { value: "", label: "Tất cả quốc gia" },
+  ...COUNTRY_OPTIONS,
 ];
 
 export default function MovieSearchPage() {
@@ -279,25 +293,33 @@ export default function MovieSearchPage() {
               <div className="filter-row">
                 <div className="filter-group half-width">
                   <label htmlFor="filter-lang">Ngôn ngữ</label>
-                  <input
-                    type="text"
+                  <select
                     id="filter-lang"
-                    className="filter-input-text"
-                    placeholder="Ví dụ: Tiếng Anh"
+                    className="filter-select-input"
                     value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                  />
+                    onChange={handleFilterChange(setLanguage)}
+                  >
+                    {LANGUAGE_FILTER_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="filter-group half-width">
                   <label htmlFor="filter-country">Quốc gia</label>
-                  <input
-                    type="text"
+                  <select
                     id="filter-country"
-                    className="filter-input-text"
-                    placeholder="Ví dụ: Mỹ"
+                    className="filter-select-input"
                     value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                  />
+                    onChange={handleFilterChange(setCountry)}
+                  >
+                    {COUNTRY_FILTER_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

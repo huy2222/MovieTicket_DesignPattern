@@ -1,8 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import { register } from "../../services/authService";
-import { useNavigate } from "react-router-dom";
+
+// Kiểm tra định dạng số điện thoại hợp lệ (phải gồm 10 chữ số bắt đầu bằng 0 hoặc định dạng +84)
+const validatePhoneNumber = (phone) => {
+  if (!phone || !phone.trim()) return "Số điện thoại không được để trống.";
+  const trimmed = phone.trim();
+  let normalized = trimmed;
+  if (normalized.startsWith("+84")) {
+    normalized = "0" + normalized.slice(3);
+  } else if (normalized.startsWith("84") && normalized.length === 11) {
+    normalized = "0" + normalized.slice(2);
+  }
+  if (!/^0[0-9]{9}$/.test(normalized)) {
+    return "Số điện thoại không đúng định dạng (phải gồm 10 chữ số bắt đầu bằng số 0).";
+  }
+  return "";
+};
+
+// Kiểm tra định dạng email hợp lệ
+const validateEmail = (email) => {
+  if (!email || !email.trim()) return "Email không được để trống.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return "Email không đúng định dạng.";
+  }
+  return "";
+};
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -14,28 +38,89 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
+  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "phone") {
+      setFormData((prev) => ({
+        ...prev,
+        phone: value,
+      }));
+
+      if (value.trim().length > 0) {
+        setPhoneError(validatePhoneNumber(value));
+      } else {
+        setPhoneError("");
+      }
+      setError("");
+      return;
+    }
+
+    if (name === "email") {
+      setFormData((prev) => ({
+        ...prev,
+        email: value,
+      }));
+      if (emailError) {
+        setEmailError("");
+      }
+      setError("");
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     setError("");
+  };
+
+  const handlePhoneBlur = () => {
+    if (!formData.phone.trim()) {
+      setPhoneError("Vui lòng nhập số điện thoại.");
+    } else {
+      setPhoneError(validatePhoneNumber(formData.phone));
+    }
+  };
+
+  const handleEmailBlur = () => {
+    if (!formData.email.trim()) {
+      setEmailError("Vui lòng nhập email.");
+    } else {
+      setEmailError(validateEmail(formData.email));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
-      !formData.fullName ||
-      !formData.phone ||
-      !formData.email ||
+      !formData.fullName.trim() ||
+      !formData.phone.trim() ||
+      !formData.email.trim() ||
       !formData.password ||
       !formData.confirmPassword
     ) {
       setError("Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+
+    const phoneValidationMsg = validatePhoneNumber(formData.phone);
+    if (phoneValidationMsg) {
+      setPhoneError(phoneValidationMsg);
+      setError(phoneValidationMsg);
+      return;
+    }
+
+    const emailValidationMsg = validateEmail(formData.email);
+    if (emailValidationMsg) {
+      setEmailError(emailValidationMsg);
+      setError(emailValidationMsg);
       return;
     }
 
@@ -45,19 +130,38 @@ export default function RegisterPage() {
     }
 
     try {
+      let phone = formData.phone.trim();
+      if (phone.startsWith("+84")) {
+        phone = "0" + phone.slice(3);
+      } else if (phone.startsWith("84") && phone.length === 11) {
+        phone = "0" + phone.slice(2);
+      }
+
       const payload = {
-        fullName: formData.fullName,
-        phoneNumber: formData.phone,
-        email: formData.email,
+        fullName: formData.fullName.trim(),
+        phoneNumber: phone,
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
       };
 
-      const response = await register(payload);
-      console.log(response.data);
-
+      await register(payload);
       navigate("/login");
-    } catch {
-      setError("Đăng ký thất bại. Vui lòng thử lại.");
+    } catch (err) {
+      const serverMsg =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        "Đăng ký thất bại. Vui lòng thử lại.";
+      const msgStr = typeof serverMsg === "string" ? serverMsg : "Đăng ký thất bại. Vui lòng thử lại.";
+      setError(msgStr);
+
+      if (msgStr.toLowerCase().includes("email")) {
+        setEmailError(msgStr);
+      } else if (
+        msgStr.toLowerCase().includes("số điện thoại") ||
+        msgStr.toLowerCase().includes("phone")
+      ) {
+        setPhoneError(msgStr);
+      }
     }
   };
 
@@ -88,12 +192,16 @@ export default function RegisterPage() {
             <label>Số điện thoại</label>
 
             <input
-              type="text"
+              type="tel"
               name="phone"
-              placeholder="Nhập số điện thoại"
+              maxLength={15}
+              placeholder="Nhập số điện thoại (10 số, bắt đầu bằng 0)"
               value={formData.phone}
               onChange={handleChange}
+              onBlur={handlePhoneBlur}
+              className={phoneError ? "input-invalid" : ""}
             />
+            {phoneError && <span className="field-error-text">{phoneError}</span>}
           </div>
 
           <div className="input-group">
@@ -105,7 +213,10 @@ export default function RegisterPage() {
               placeholder="Nhập email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleEmailBlur}
+              className={emailError ? "input-invalid" : ""}
             />
+            {emailError && <span className="field-error-text">{emailError}</span>}
           </div>
 
           <div className="input-group">

@@ -4,9 +4,11 @@ export const COUNTRY_OPTIONS = [
   { value: "Hàn Quốc", label: "Hàn Quốc" },
   { value: "Nhật Bản", label: "Nhật Bản" },
   { value: "Trung Quốc", label: "Trung Quốc" },
+  { value: "Hồng Kông", label: "Hồng Kông" },
   { value: "Thái Lan", label: "Thái Lan" },
   { value: "Anh", label: "Anh" },
   { value: "Pháp", label: "Pháp" },
+  { value: "Indonesia", label: "Indonesia" },
   { value: "Ấn Độ", label: "Ấn Độ" },
   { value: "Khác", label: "Khác" },
 ];
@@ -19,6 +21,7 @@ export const LANGUAGE_OPTIONS = [
   { value: "Tiếng Trung", label: "Tiếng Trung" },
   { value: "Tiếng Thái", label: "Tiếng Thái" },
   { value: "Tiếng Pháp", label: "Tiếng Pháp" },
+  { value: "Tiếng Indonesia", label: "Tiếng Indonesia" },
   { value: "Khác", label: "Khác" },
 ];
 
@@ -32,7 +35,7 @@ export const AGE_RATING_OPTIONS = [
 ];
 
 export const STATUS_OPTIONS = [
-  { value: "COMING_SOON", label: "Coming Soon" },
-  { value: "NOW_SHOWING", label: "Now Showing" },
-  { value: "ENDED", label: "Ended" },
+  { value: "COMING_SOON", label: "Sắp chiếu" },
+  { value: "NOW_SHOWING", label: "Đang chiếu" },
+  { value: "ENDED", label: "Đã kết thúc" },
 ];

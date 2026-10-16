@@ -24,4 +24,6 @@ public class MyBookingResponse {
     private double totalAmount;          // Tổng tiền
     private String bookingDate;          // Ngày đặt: "24/06/2026 08:30"
     private int ticketCount;             // Số lượng vé
+    private List<BookingComboResponse> combos;
 }
+

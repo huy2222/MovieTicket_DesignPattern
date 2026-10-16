@@ -19,6 +19,7 @@ public class VoucherResponse {
     private Integer buyQuantity;
     private Integer freeQuantity;
     private Integer minTickets;
+    private Double maxDiscountAmount;
     private Double minimumOrderAmount;
     private Integer usageLimit;
     private Integer usedCount;

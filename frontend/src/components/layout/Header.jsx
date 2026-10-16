@@ -47,6 +47,17 @@ export default function Header() {
                   <Link to="/my-tickets" className="nav-link">
                     🎫 Vé của tôi
                   </Link>
+                  <Link to="/favorites" className="nav-link">
+                    ❤️ Phim yêu thích
+                  </Link>
+                  <Link to="/support" className="nav-link">
+                    🎧 Hỗ trợ
+                  </Link>
+                  {(user?.role === "STAFF" || user?.role === "ADMIN") && (
+                    <Link to="/staff/combos" className="nav-link text-[#ef4444] font-bold">
+                      🍿 Giao Combo
+                    </Link>
+                  )}
                   <NavLink
                     to="/cinemeet"
                     className={({ isActive }) => `nav-link ${isActive ? "text-[#e50914]" : ""}`}
@@ -56,6 +67,7 @@ export default function Header() {
                   <Link to="/account" className="nav-link">
                     {user.fullName || "Tài khoản"}
                   </Link>
+
                 </>
               )}
               <span className="role-badge">
@@ -66,9 +78,17 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <Link to="/login" className="nav-link">
-              Đăng nhập
-            </Link>
+            <>
+              <Link to="/movies" className="nav-link">
+                Phim
+              </Link>
+              <Link to="/support" className="nav-link">
+                🎧 Hỗ trợ
+              </Link>
+              <Link to="/login" className="nav-link">
+                Đăng nhập
+              </Link>
+            </>
           )}
         </nav>
       </div>

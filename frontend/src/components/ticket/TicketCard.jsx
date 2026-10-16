@@ -72,7 +72,30 @@ export default function TicketCard({ booking }) {
             <span className="ticket-detail-icon">🎫</span>
             <span>{ticketCount} vé</span>
           </div>
+
+          {booking.combos && booking.combos.length > 0 && (
+            <div className="ticket-detail-row ticket-combos-row">
+              <span className="ticket-detail-icon">🍿</span>
+              <div className="ticket-combos-list">
+                {booking.combos.map((c) => (
+                  <div key={c.id} className="ticket-combo-item">
+                    <span className="combo-name-qty">{c.comboName} (x{c.quantity})</span>
+                    <span className={`combo-status-badge ${c.fulfillmentStatus?.toLowerCase()}`}>
+                      {c.fulfillmentStatus === "RECEIVED"
+                        ? "✅ Đã nhận"
+                        : c.fulfillmentStatus === "PAID_NOT_RECEIVED"
+                        ? "🟡 Chờ nhận tại rạp"
+                        : c.fulfillmentStatus === "CANCELLED"
+                        ? "🔴 Đã hủy"
+                        : "⚪ Chưa thanh toán"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
 
         <div className="ticket-footer">
           <span className={`ticket-status ${status.toLowerCase()}`}>

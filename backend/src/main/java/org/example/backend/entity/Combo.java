@@ -26,6 +26,8 @@ public class Combo {
 
     private String imageUrl;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isActive = true;
 }
+

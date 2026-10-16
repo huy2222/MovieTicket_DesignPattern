@@ -17,9 +17,12 @@ const CineMeetPage = lazy(() => import("../pages/CineMeetPage/CineMeetPage"));
 const BookingPage = lazy(() => import("../pages/BookingPage/BookingPage"));
 const PaymentResultPage = lazy(() => import("../pages/PaymentResultPage/PaymentResultPage"));
 const MyTicketsPage = lazy(() => import("../pages/MyTicketsPage/MyTicketsPage"));
-
+const StaffComboPage = lazy(() => import("../pages/Staff/StaffComboPage"));
 const DashboardPage = lazy(
   () => import("../pages/Admin/Dashboard/DashboardPage")
+);
+const BookingManagementPage = lazy(
+  () => import("../pages/Admin/BookingManagementPage")
 );
 const EmployeeManagementPage = lazy(
   () => import("../pages/Admin/EmployeeManagement/EmployeeManagementPage")
@@ -49,6 +52,10 @@ const CineMeetReportManagementPage = lazy(
 const ComboManagementPage = lazy(
   () => import("../pages/Admin/ComboManagement/ComboManagementPage")
 );
+const SupportPage = lazy(() => import("../pages/SupportPage/SupportPage"));
+const FavoriteMoviesPage = lazy(
+  () => import("../pages/FavoriteMoviesPage/FavoriteMoviesPage")
+);
 
 function PageLoader() {
   return (
@@ -72,6 +79,8 @@ export default function AppRoutes() {
         <Route path="/payment/result" element={<PaymentResultPage />} />
         <Route path="/cinemeet/payment/result" element={<PaymentResultPage />} />
         <Route path="/my-tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
+        <Route path="/staff/combos" element={<ProtectedRoute><StaffComboPage /></ProtectedRoute>} />
+
         <Route
           path="/cinemeet"
           element={
@@ -81,9 +90,27 @@ export default function AppRoutes() {
           }
         />
 
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <FavoriteMoviesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <SupportPage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="bookings" element={<BookingManagementPage />} />
           <Route path="employees" element={<EmployeeManagementPage />} />
           <Route path="vouchers" element={<VoucherManagementPage />} />
           <Route path="movies" element={<MovieManagementPage />} />
@@ -93,6 +120,7 @@ export default function AppRoutes() {
           <Route path="users" element={<UserManagementPage />} />
           <Route path="cinemeet-reports" element={<CineMeetReportManagementPage />} />
           <Route path="combos" element={<ComboManagementPage />} />
+          <Route path="support" element={<SupportPage />} />
         </Route>
       </Routes>
     </Suspense>

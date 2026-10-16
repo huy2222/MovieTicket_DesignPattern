@@ -1,19 +1,35 @@
 package org.example.backend.config;
 
 import org.example.backend.entity.Combo;
+import org.example.backend.entity.Staff;
+import org.example.backend.enums.AccountStatus;
+import org.example.backend.enums.Role;
 import org.example.backend.repository.ComboRepository;
+import org.example.backend.repository.StaffRepository;
+import org.example.backend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class ComboDataInitializer implements CommandLineRunner {
 
     private final ComboRepository comboRepository;
+    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ComboDataInitializer(ComboRepository comboRepository) {
+    public ComboDataInitializer(ComboRepository comboRepository,
+                                UserRepository userRepository,
+                                StaffRepository staffRepository,
+                                PasswordEncoder passwordEncoder) {
         this.comboRepository = comboRepository;
+        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -22,33 +38,48 @@ public class ComboDataInitializer implements CommandLineRunner {
             System.out.println("Seeding initial Combos...");
 
             Combo combo1 = Combo.builder()
-                    .name("Combo 1 Bắp 1 Nước")
-                    .description("1 Bắp lớn + 1 Nước ngọt lớn")
-                    .price(85000.0)
-                    .imageUrl("https://s3img.vcdn.vn/123phim/2021/02/bap-nuoc-1-16135544716186.png")
+                    .name("Combo Solo")
+                    .description("1 Bắp Rang Bơ Phô Mai/Ngọt + 1 Nước Ngọt 500ml")
+                    .price(79000.0)
+                    .imageUrl("https://images.unsplash.com/photo-1585647347384-2593bc35786b?w=400")
                     .isActive(true)
                     .build();
 
             Combo combo2 = Combo.builder()
-                    .name("Combo 1 Bắp 2 Nước")
-                    .description("1 Bắp lớn + 2 Nước ngọt lớn")
-                    .price(105000.0)
-                    .imageUrl("https://s3img.vcdn.vn/123phim/2021/02/bap-nuoc-2-16135544716762.png")
+                    .name("Combo Couple")
+                    .description("1 Bắp Rang Bơ Lớn + 2 Nước Ngọt 500ml")
+                    .price(119000.0)
+                    .imageUrl("https://images.unsplash.com/photo-1578849278619-e73505e9610f?w=400")
                     .isActive(true)
                     .build();
 
             Combo combo3 = Combo.builder()
-                    .name("Combo Gia Đình")
-                    .description("2 Bắp lớn + 4 Nước ngọt lớn")
-                    .price(180000.0)
-                    .imageUrl("https://s3img.vcdn.vn/123phim/2021/02/bap-nuoc-3-16135544720199.png")
+                    .name("Combo Family")
+                    .description("2 Bắp Rang Bơ Lớn + 4 Nước Ngọt 500ml + 1 Snack")
+                    .price(199000.0)
+                    .imageUrl("https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400")
                     .isActive(true)
                     .build();
 
             comboRepository.saveAll(List.of(combo1, combo2, combo3));
             System.out.println("Seeded 3 Combos successfully.");
-        } else {
-            System.out.println("Combos already seeded.");
+        }
+
+        // Initialize sample staff account if not exists
+        String staffEmail = "staff@cinemax.com";
+        if (userRepository.findByEmail(staffEmail).isEmpty()) {
+            Staff staff = new Staff();
+            staff.setEmail(staffEmail);
+            staff.setFullName("Nhân Viên Rạp CINEMAX");
+            staff.setPasswordHash(passwordEncoder.encode("staff123"));
+            staff.setPhoneNumber("0987654321");
+            staff.setRole(Role.STAFF);
+            staff.setStatus(AccountStatus.ACTIVE);
+            staff.setCreatedAt(LocalDateTime.now());
+            staff.setPosition("Staff Phục Vụ Combo");
+
+            staffRepository.save(staff);
+            System.out.println("Sample Staff account created! Email: " + staffEmail + " / Password: staff123");
         }
     }
 }

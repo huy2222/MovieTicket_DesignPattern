@@ -21,9 +21,12 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // userId trong sơ đồ
 
+    @Column(nullable = false, unique = true)
     private String email;
     private String fullName;
     private String passwordHash;
+
+    @Column(unique = true)
     private String phoneNumber;
     private String avatarUrl;
     private LocalDateTime birthDate;

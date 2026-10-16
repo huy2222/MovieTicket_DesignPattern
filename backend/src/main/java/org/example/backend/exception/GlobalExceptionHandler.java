@@ -97,8 +97,18 @@ public class GlobalExceptionHandler {
         if (raw.contains("foreign key constraint fails") && raw.contains("movie_genres")) {
             return "Thể loại hoặc phim không tồn tại. Vui lòng chọn lại thể loại hợp lệ";
         }
-        if (raw.contains("Duplicate entry") && raw.contains("movie_genres")) {
-            return "Thể loại đã được gán cho phim này";
+        if (raw.contains("Duplicate entry")) {
+            String lower = raw.toLowerCase();
+            if (lower.contains("email") || lower.contains("@")) {
+                return "Email đã được sử dụng";
+            }
+            if (lower.contains("phone") || lower.contains("phone_number")) {
+                return "Số điện thoại đã được sử dụng";
+            }
+            if (raw.contains("movie_genres")) {
+                return "Thể loại đã được gán cho phim này";
+            }
+            return "Dữ liệu đã tồn tại trong hệ thống";
         }
 
         return raw;

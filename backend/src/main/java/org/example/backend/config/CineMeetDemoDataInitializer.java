@@ -65,6 +65,7 @@ public class CineMeetDemoDataInitializer implements CommandLineRunner {
         Customer first = ensureCustomer(
                 FIRST_EMAIL,
                 "Nguyễn An",
+                "0900000001",
                 "An mê phim",
                 24,
                 "Thích phim hành động, cuối tuần thường đi xem phim.",
@@ -75,6 +76,7 @@ public class CineMeetDemoDataInitializer implements CommandLineRunner {
         Customer second = ensureCustomer(
                 SECOND_EMAIL,
                 "Trần Bình",
+                "0900000002",
                 "Bình điện ảnh",
                 23,
                 "Fan khoa học viễn tưởng và những buổi chiếu tối.",
@@ -98,6 +100,7 @@ public class CineMeetDemoDataInitializer implements CommandLineRunner {
     private Customer ensureCustomer(
             String email,
             String fullName,
+            String phoneNumber,
             String displayName,
             int age,
             String bio,
@@ -109,7 +112,7 @@ public class CineMeetDemoDataInitializer implements CommandLineRunner {
         boolean isNew = customer.getId() == null;
         customer.setEmail(email);
         customer.setFullName(fullName);
-        customer.setPhoneNumber(isNew ? "0900000000" : customer.getPhoneNumber());
+        customer.setPhoneNumber(isNew ? phoneNumber : customer.getPhoneNumber());
         customer.setPasswordHash(isNew
                 ? passwordEncoder.encode(DEMO_PASSWORD)
                 : customer.getPasswordHash());
