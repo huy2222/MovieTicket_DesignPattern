@@ -68,8 +68,14 @@
   color: var(--accent-red);
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after,
+.nav-link.active::after {
   width: 100%;
+}
+
+.nav-link.active {
+  color: var(--accent-red);
+  text-shadow: 0 0 14px rgba(229, 9, 20, 0.35);
 }
 
 .admin-nav-link {

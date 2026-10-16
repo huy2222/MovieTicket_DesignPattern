@@ -1,8 +1,9 @@
 import './Header.css'
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = localStorage.getItem("token");
   const userStr = localStorage.getItem("user");
   let user = null;
@@ -16,6 +17,12 @@ export default function Header() {
   const isLoggedIn = Boolean(token && user);
   const isAdmin = user?.role === "ADMIN";
 
+  const navClassName = ({ isActive }) =>
+    `nav-link${isActive ? " active" : ""}`;
+
+  const bookingNavClassName = () =>
+    `nav-link${location.pathname.startsWith("/booking") ? " active" : ""}`;
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -27,40 +34,44 @@ export default function Header() {
       <div className="header-content">
         <Link to="/" className="logo">CINEMAX</Link>
         <nav className="nav">
-          <Link to="/" className="nav-link">
+          <NavLink to="/" end className={navClassName}>
             Trang chủ
-          </Link>
+          </NavLink>
           {isLoggedIn ? (
             <>
               {isAdmin ? (
-                <Link to="/admin" className="nav-link admin-nav-link">
+                <NavLink to="/admin" className={({ isActive }) =>
+                  `nav-link admin-nav-link${isActive ? " active" : ""}`
+                }>
                   Bảng quản trị
-                </Link>
+                </NavLink>
               ) : (
                 <>
-                  <Link to="/movies" className="nav-link">
+                  <NavLink to="/movies" className={navClassName}>
                     Phim
-                  </Link>
-                  <Link to="/bookings" className="nav-link">
+                  </NavLink>
+                  <NavLink to="/bookings" className={bookingNavClassName}>
                     Đặt vé
-                  </Link>
-                  <Link to="/my-tickets" className="nav-link">
+                  </NavLink>
+                  <NavLink to="/my-tickets" className={navClassName}>
                     🎫 Vé của tôi
-                  </Link>
+                  </NavLink>
                   {(user?.role === "STAFF" || user?.role === "ADMIN") && (
-                    <Link to="/staff/combos" className="nav-link text-[#ef4444] font-bold">
+                    <NavLink to="/staff/combos" className={({ isActive }) =>
+                      `nav-link text-[#ef4444] font-bold${isActive ? " active" : ""}`
+                    }>
                       🍿 Giao Combo
-                    </Link>
+                    </NavLink>
                   )}
                   <NavLink
                     to="/cinemeet"
-                    className={({ isActive }) => `nav-link ${isActive ? "text-[#e50914]" : ""}`}
+                    className={navClassName}
                   >
                     CineMeet
                   </NavLink>
-                  <Link to="/account" className="nav-link">
+                  <NavLink to="/account" className={navClassName}>
                     {user.fullName || "Tài khoản"}
-                  </Link>
+                  </NavLink>
 
                 </>
               )}
@@ -72,9 +83,9 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <Link to="/login" className="nav-link">
+            <NavLink to="/login" className={navClassName}>
               Đăng nhập
-            </Link>
+            </NavLink>
           )}
         </nav>
       </div>

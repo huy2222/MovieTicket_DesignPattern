@@ -68,6 +68,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/movies" element={<MovieSearchPage />} />
+        <Route path="/bookings" element={<MovieSearchPage />} />
         <Route path="/movies/:id" element={<MovieDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
