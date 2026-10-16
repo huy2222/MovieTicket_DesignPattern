@@ -98,8 +98,16 @@ public class EmployeeService {
         validateEmployeeRole(request.getRole());
         validateCreateRequest(request);
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã tồn tại");
+        String email = request.getEmail().trim().toLowerCase();
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã được sử dụng");
+        }
+
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
+            String phone = request.getPhoneNumber().trim();
+            if (userRepository.existsByPhoneNumber(phone)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số điện thoại đã được sử dụng");
+            }
         }
 
         User user = request.getRole() == Role.ADMIN ? new Admin() : new Staff();
@@ -126,8 +134,16 @@ public class EmployeeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không thể thay đổi vai trò sau khi tạo tài khoản");
         }
 
-        if (userRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã tồn tại");
+        String email = request.getEmail().trim().toLowerCase();
+        if (userRepository.existsByEmailAndIdNot(email, id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã được sử dụng");
+        }
+
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
+            String phone = request.getPhoneNumber().trim();
+            if (userRepository.existsByPhoneNumberAndIdNot(phone, id)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số điện thoại đã được sử dụng");
+            }
         }
 
         applyCommonFields(user, request, false);
