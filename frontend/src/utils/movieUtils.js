@@ -33,12 +33,24 @@ export function formatDuration(minutes) {
 
 export function formatDate(dateStr) {
   if (!dateStr) return "—";
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("vi-VN", {
+
+  // LocalDate từ backend có dạng YYYY-MM-DD. Không đưa chuỗi này qua
+  // new Date() vì trình duyệt sẽ hiểu là UTC và có thể làm lệch ngày.
+  const dateOnlyMatch = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateOnlyMatch) {
+    const [, year, month, day] = dateOnlyMatch;
+    return `${day}/${month}/${year}`;
+  }
+
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return new Intl.DateTimeFormat("vi-VN", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-  });
+    timeZone: "Asia/Ho_Chi_Minh",
+  }).format(date);
 }
 
 export function getYoutubeVideoId(url) {

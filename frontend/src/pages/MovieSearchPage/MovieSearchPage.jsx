@@ -39,6 +39,12 @@ const STATUS_OPTIONS = [
   { value: "COMING_SOON", label: "Sắp chiếu" },
 ];
 
+const openNativeDatePicker = (event) => {
+  if (typeof event.currentTarget.showPicker === "function") {
+    event.currentTarget.showPicker();
+  }
+};
+
 export default function MovieSearchPage() {
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -335,9 +341,13 @@ export default function MovieSearchPage() {
                     <span>Từ</span>
                     <input
                       type="date"
-                      className="filter-input-text"
+                      className="filter-input-text date-picker-input"
                       value={releaseFrom}
                       onChange={(e) => setReleaseFrom(e.target.value)}
+                      onClick={openNativeDatePicker}
+                      max={releaseTo || undefined}
+                      lang="vi"
+                      aria-label="Ngày chiếu từ"
                       id="filter-release-from"
                     />
                   </div>
@@ -345,9 +355,13 @@ export default function MovieSearchPage() {
                     <span>Đến</span>
                     <input
                       type="date"
-                      className="filter-input-text"
+                      className="filter-input-text date-picker-input"
                       value={releaseTo}
                       onChange={(e) => setReleaseTo(e.target.value)}
+                      onClick={openNativeDatePicker}
+                      min={releaseFrom || undefined}
+                      lang="vi"
+                      aria-label="Ngày chiếu đến"
                       id="filter-release-to"
                     />
                   </div>
