@@ -1,0 +1,96 @@
+/* Theme + layout fixes for EmployeeManagementPage (dark dropdown + responsive toolbar)
+   - Giữ nguyên logic nghiệp vụ (chỉ CSS)
+   - Tránh chồng lấn: flex-wrap + gap + không dùng width cố định
+   - Dropdown: đảm bảo native <select><option> đồng bộ nền tối chữ sáng
+*/
+
+.employee-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.employee-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  flex: 1;
+  min-width: 320px;
+  gap: 0.5rem;
+}
+
+/* Keyword tự giãn */
+.employee-search-input {
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 520px;
+}
+
+/* Dropdown/filter: width vừa đủ (160–220px) */
+.employee-filter-select,
+.employee-search-type {
+  flex: 0 0 auto;
+  width: clamp(160px, 16vw, 220px);
+}
+
+/* Nút Tìm/Đặt lại không bị che khi wrap */
+.employee-search-btn,
+.employee-reset-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* === Dark dropdown for native select/options === */
+.employee-filter-select,
+.employee-search-type,
+.employee-modal select {
+  background-color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e5e7eb;
+  color-scheme: dark;
+}
+
+.employee-filter-select option,
+.employee-search-type option,
+.employee-modal select option {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
+/* Focus nổi bật */
+.employee-filter-select:focus,
+.employee-search-type:focus,
+.employee-modal select:focus {
+  outline: none;
+  border-color: rgba(229, 9, 20, 0.55);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.18);
+}
+
+/* Responsive target resolutions */
+@media (max-width: 1536px) {
+  .employee-search {
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .employee-page {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-search {
+    min-width: 100%;
+  }
+  .employee-filter-select,
+  .employee-search-type {
+    width: 100%;
+  }
+  .employee-search-btn,
+  .employee-reset-btn {
+    width: 100%;
+  }
+}

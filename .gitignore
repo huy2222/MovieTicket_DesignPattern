@@ -10,6 +10,7 @@ frontend/dist/
 # ========================
 backend/target/
 backend/*.log
+backend/uploads/
 
 # ========================
 # IDE
@@ -23,12 +24,14 @@ backend/*.log
 # ========================
 .DS_Store
 Thumbs.db
+~$*
 
 # ========================
 # Environment variables
 # ========================
 .env
 .env.local
+/application.properties
 
 # ========================
 # Logs

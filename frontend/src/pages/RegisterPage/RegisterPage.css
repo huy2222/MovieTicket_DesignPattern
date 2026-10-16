@@ -54,6 +54,19 @@
     border-color: #ef4444;
 }
 
+.input-group input.input-invalid {
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.field-error-text {
+    display: block;
+    color: #ef4444;
+    font-size: 0.82rem;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
 .register-btn {
     width: 100%;
     border: none;

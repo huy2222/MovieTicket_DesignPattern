@@ -1,27 +1,95 @@
 import './Header.css'
-import { Link } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const userStr = localStorage.getItem("user");
+  let user = null;
+  if (token && userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch (e) {
+      // ignore
+    }
+  }
+  const isLoggedIn = Boolean(token && user);
+  const isAdmin = user?.role === "ADMIN";
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <header className="header">
       <div className="header-content">
-        <h1 className="logo">CINEMAX</h1>
+        <Link to="/" className="logo">CINEMAX</Link>
         <nav className="nav">
           <Link to="/" className="nav-link">
-            Home
+            Trang chủ
           </Link>
-          <Link to="/movies" className="nav-link">
-            Movies
-          </Link>
-          <Link to="/bookings" className="nav-link">
-            Bookings
-          </Link>
-          <Link to="/account" className="nav-link">
-            Account
-          </Link>
-          <Link to="/login" className="nav-link">
-            Login
-          </Link>
+          {isLoggedIn ? (
+            <>
+              {isAdmin ? (
+                <Link to="/admin" className="nav-link admin-nav-link">
+                  Bảng quản trị
+                </Link>
+              ) : (
+                <>
+                  <Link to="/movies" className="nav-link">
+                    Phim
+                  </Link>
+                  <Link to="/bookings" className="nav-link">
+                    Đặt vé
+                  </Link>
+                  <Link to="/my-tickets" className="nav-link">
+                    🎫 Vé của tôi
+                  </Link>
+                  <Link to="/favorites" className="nav-link">
+                    ❤️ Phim yêu thích
+                  </Link>
+                  <Link to="/support" className="nav-link">
+                    🎧 Hỗ trợ
+                  </Link>
+                  {(user?.role === "STAFF" || user?.role === "ADMIN") && (
+                    <Link to="/staff/combos" className="nav-link text-[#ef4444] font-bold">
+                      🍿 Giao Combo
+                    </Link>
+                  )}
+                  <NavLink
+                    to="/cinemeet"
+                    className={({ isActive }) => `nav-link ${isActive ? "text-[#e50914]" : ""}`}
+                  >
+                    CineMeet
+                  </NavLink>
+                  <Link to="/account" className="nav-link">
+                    {user.fullName || "Tài khoản"}
+                  </Link>
+
+                </>
+              )}
+              <span className="role-badge">
+                {isAdmin ? "Quản trị" : user.role}
+              </span>
+              <button type="button" className="logout-btn" onClick={handleLogout}>
+                Đăng xuất
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/movies" className="nav-link">
+                Phim
+              </Link>
+              <Link to="/support" className="nav-link">
+                🎧 Hỗ trợ
+              </Link>
+              <Link to="/login" className="nav-link">
+                Đăng nhập
+              </Link>
+            </>
+          )}
         </nav>
       </div>
     </header>

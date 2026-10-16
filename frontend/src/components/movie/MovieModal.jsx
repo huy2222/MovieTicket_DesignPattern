@@ -1,7 +1,15 @@
 import './MovieModal.css'
+import { useNavigate } from 'react-router-dom';
 
 export default function MovieModal({ movie, onClose }) {
+  const navigate = useNavigate();
+
   if (!movie) return null;
+
+  const handleBookTicket = () => {
+    onClose();
+    navigate(`/booking/${movie.id}`);
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -24,8 +32,8 @@ export default function MovieModal({ movie, onClose }) {
             <value>{movie.genre}</value>
           </div>
         </div>
-        <button className="btn btn-primary">
-          {movie.releaseDate ? "Notify Me" : "Book Now"}
+        <button className="btn-cinema" style={{padding: '12px 24px', width: '100%', marginTop: '20px'}} onClick={handleBookTicket}>
+          {movie.releaseDate ? "SẮP CHIẾU" : "🎟️ ĐẶT VÉ NGAY"}
         </button>
       </div>
     </div>

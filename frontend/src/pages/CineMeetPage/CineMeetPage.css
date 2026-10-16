@@ -1,0 +1,490 @@
+.cinemeet-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #383838 #1a1a1a;
+}
+
+.cinemeet-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cinemeet-scroll::-webkit-scrollbar-thumb {
+  background: #383838;
+  border-radius: 999px;
+}
+
+.cinemeet-seat-picker {
+  overflow-x: auto;
+  border: 1px solid rgba(98, 217, 139, 0.18);
+  border-radius: 12px;
+  background: rgba(4, 12, 8, 0.34);
+  padding: 12px;
+}
+
+.cinemeet-screen {
+  position: relative;
+  margin: 0 auto 14px;
+  width: min(360px, 82%);
+  height: 24px;
+  border-top: 3px solid #d8dde5;
+  border-radius: 50% 50% 0 0;
+  color: #b7c7bd;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.cinemeet-seat-map {
+  display: grid;
+  gap: 7px;
+  min-width: max-content;
+}
+
+.cinemeet-seat-row {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.cinemeet-seat-row-label {
+  color: #8cf0ad;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cinemeet-seat-row-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 34px;
+  gap: 6px;
+}
+
+.cinemeet-seat {
+  display: grid;
+  width: 34px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 7px 7px 11px 11px;
+  background: #25362b;
+  color: #ecfff2;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.cinemeet-seat:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: #8cf0ad;
+}
+
+.cinemeet-seat.vip {
+  background: #2d3144;
+  border-color: rgba(116, 167, 255, 0.42);
+}
+
+.cinemeet-seat.couple {
+  width: 46px;
+  background: #403025;
+  border-color: rgba(255, 194, 116, 0.48);
+}
+
+.cinemeet-seat.is-mine {
+  background: #e50914;
+  border-color: #ff9ba0;
+  box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.24);
+}
+
+.cinemeet-seat.is-companion {
+  background: #26834a;
+  border-color: #8cf0ad;
+}
+
+.cinemeet-seat.is-recommended {
+  border-color: #ffc83b;
+  box-shadow: 0 0 0 2px rgba(255, 200, 59, 0.26);
+}
+
+.cinemeet-seat.is-unavailable:not(.is-mine):not(.is-companion) {
+  cursor: not-allowed;
+  background: #303030;
+  color: #8f8f8f;
+  opacity: 0.72;
+}
+
+.cinemeet-seat-hint {
+  margin: 10px 0 0;
+  color: #ffd86b;
+  font-size: 11px;
+}
+
+.cinemeet-seat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 12px;
+  color: #b7c7bd;
+  font-size: 11px;
+}
+
+.cinemeet-seat-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cinemeet-seat-swatch {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  background: #25362b;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.cinemeet-seat-swatch.is-mine {
+  background: #e50914;
+}
+
+.cinemeet-seat-swatch.is-companion {
+  background: #26834a;
+}
+
+.cinemeet-seat-swatch.is-recommended {
+  background: #25362b;
+  border-color: #ffc83b;
+  box-shadow: 0 0 0 2px rgba(255, 200, 59, 0.22);
+}
+
+.cinemeet-seat-swatch.is-unavailable {
+  background: #303030;
+}
+
+.cinemeet-seat-empty {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.cinemeet-toggle-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 22px 26px;
+  background:
+    linear-gradient(120deg, rgba(229, 9, 20, 0.16), rgba(255, 200, 59, 0.08)),
+    #151515;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.cinemeet-toggle-card.is-disabled {
+  background:
+    linear-gradient(120deg, rgba(60, 24, 28, 0.55), rgba(20, 20, 20, 0.92)),
+    #121212;
+}
+
+.cinemeet-toggle-icon {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(229, 9, 20, 0.42);
+  border-radius: 14px;
+  background: rgba(229, 9, 20, 0.16);
+  color: #ffc83b;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.cinemeet-switch {
+  position: relative;
+  width: 64px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 220ms ease, opacity 220ms ease;
+}
+
+.cinemeet-switch:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.cinemeet-switch span {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 240ms ease;
+}
+
+.cinemeet-switch.is-on {
+  background: #e50914;
+}
+
+.cinemeet-switch.is-on span {
+  transform: translateX(30px);
+}
+
+.cinemeet-toggle-actions { display: flex; align-items: center; gap: 12px; }
+.cinemeet-my-reports-button { position: relative; padding: 9px 13px; color: #d4d4d4; font-size: 13px; font-weight: 650; background: #242424; border: 1px solid #393939; border-radius: 10px; cursor: pointer; }
+.cinemeet-my-reports-button:hover { color: #fff; border-color: #5a5a5a; }
+.cinemeet-my-reports-button i { position: absolute; top: -4px; right: -4px; width: 9px; height: 9px; background: #ffb020; border: 2px solid #171717; border-radius: 50%; }
+
+.cinemeet-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.cinemeet-layout {
+  display: grid;
+  grid-template-areas:
+    "discover matches"
+    "history matches";
+  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.85fr);
+  gap: 18px;
+  transition: filter 320ms ease, transform 320ms ease;
+}
+
+.cinemeet-panel {
+  border: 1px solid #2a2a2a;
+  border-radius: 18px;
+  background: #1a1a1a;
+  padding: 20px;
+}
+
+.cinemeet-discover-card {
+  grid-area: discover;
+  min-height: 360px;
+}
+
+.cinemeet-history-card {
+  grid-area: history;
+  min-height: 210px;
+  opacity: 0.9;
+}
+
+.cinemeet-match-card {
+  grid-area: matches;
+  min-height: 100%;
+}
+
+.cinemeet-curtain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.cinemeet-curtain::before,
+.cinemeet-curtain::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background:
+    linear-gradient(90deg, rgba(20, 3, 5, 0.98), rgba(88, 7, 13, 0.95)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 34px);
+  box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.5);
+  transition: transform 560ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.cinemeet-curtain::before {
+  left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cinemeet-curtain::after {
+  right: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.curtain-open .cinemeet-curtain::before {
+  transform: translateX(-102%);
+}
+
+.curtain-open .cinemeet-curtain::after {
+  transform: translateX(102%);
+}
+
+.curtain-closed .cinemeet-layout {
+  filter: blur(2px) brightness(0.42);
+  transform: scale(0.985);
+}
+
+.cinemeet-curtain-message {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 11;
+  width: min(420px, calc(100% - 32px));
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(18, 18, 18, 0.92);
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
+}
+
+.cinemeet-curtain-message h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.cinemeet-curtain-message p {
+  margin: 8px 0 0;
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.curtain-open .cinemeet-curtain-message {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .cinemeet-layout {
+    grid-template-areas:
+      "discover"
+      "matches"
+      "history";
+    grid-template-columns: 1fr;
+  }
+
+  .cinemeet-match-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .cinemeet-toggle-card {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .cinemeet-toggle-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .cinemeet-panel {
+    padding: 16px;
+  }
+}
+/* CineMeet report flow */
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.report-modal {
+  width: min(100%, 520px);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  color: #f5f5f5;
+  background: linear-gradient(160deg, #211719 0%, #151515 45%);
+  border: 1px solid rgba(255, 91, 101, 0.26);
+  border-radius: 20px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.65);
+}
+
+.report-modal-heading {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.85rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.report-modal-heading h2 { margin: 0.15rem 0 0; font-size: 1.35rem; }
+.report-modal-eyebrow { margin: 0; color: #ff7d85; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+.report-modal-icon { display: grid; place-items: center; width: 42px; height: 42px; color: #fff; font-size: 1.4rem; font-weight: 900; background: linear-gradient(145deg, #e50914, #8f0710); border-radius: 13px; }
+.report-modal-close { width: 36px; height: 36px; color: #aaa; font-size: 1.5rem; background: transparent; border: 0; border-radius: 50%; cursor: pointer; }
+.report-modal-close:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+.report-target-preview { margin-bottom: 1rem; padding: 0.95rem 1rem; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; }
+.report-target-preview strong { display: block; margin-top: 0.3rem; }
+.report-target-preview p, .report-target-preview blockquote { margin: 0.3rem 0 0; color: #a9a9a9; font-size: 0.82rem; }
+.report-target-preview blockquote { overflow: hidden; padding-left: 0.65rem; border-left: 2px solid #e50914; text-overflow: ellipsis; white-space: nowrap; }
+.report-target-label { color: #777; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.report-field { display: grid; gap: 0.45rem; margin-top: 1rem; color: #ddd; font-size: 0.85rem; font-weight: 650; }
+.report-field em { color: #ff606a; font-style: normal; }
+.report-field small { float: right; color: #777; font-weight: 400; }
+.report-field select, .report-field textarea { width: 100%; padding: 0.75rem 0.85rem; color: #f1f1f1; font: inherit; font-weight: 400; background: #111; border: 1px solid #393939; border-radius: 10px; outline: none; resize: vertical; }
+.report-field select:focus, .report-field textarea:focus { border-color: #e50914; box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.12); }
+.report-field select option { background: #151515; }
+.report-privacy-note { margin: 1rem 0 0; color: #858585; font-size: 0.75rem; line-height: 1.5; }
+.report-modal-error { margin-top: 0.85rem; padding: 0.7rem 0.8rem; color: #ffadb2; font-size: 0.8rem; background: rgba(229, 9, 20, 0.11); border: 1px solid rgba(229, 9, 20, 0.24); border-radius: 9px; }
+.report-modal-actions { display: flex; justify-content: flex-end; gap: 0.7rem; margin-top: 1.25rem; }
+.report-button-secondary, .report-button-danger { padding: 0.7rem 1rem; color: #fff; font-weight: 700; border-radius: 10px; cursor: pointer; }
+.report-button-secondary { background: #262626; border: 1px solid #3c3c3c; }
+.report-button-danger { background: linear-gradient(135deg, #e50914, #b20710); border: 1px solid #f02a34; box-shadow: 0 8px 24px rgba(229, 9, 20, 0.2); }
+.report-button-secondary:disabled, .report-button-danger:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.cinemeet-report-toast { position: fixed; top: 5.5rem; right: 1.25rem; z-index: 2900; padding: 0.8rem 1rem; color: #d4ffe2; font-size: 0.86rem; font-weight: 700; background: #153b25; border: 1px solid #2b7a4a; border-radius: 11px; box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38); animation: report-toast-in 0.25s ease-out; }
+
+.my-reports-modal { display: flex; flex-direction: column; width: min(100%, 650px); max-height: 88vh; color: #f3f3f3; background: #161616; border: 1px solid #333; border-radius: 20px; box-shadow: 0 28px 90px rgba(0, 0, 0, 0.65); overflow: hidden; }
+.my-reports-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.4rem; background: linear-gradient(135deg, rgba(229,9,20,.12), transparent); border-bottom: 1px solid #2c2c2c; }
+.my-reports-header h2 { margin: .15rem 0 .25rem; font-size: 1.35rem; }
+.my-reports-header > div > p:last-child { margin: 0; color: #8d8d8d; font-size: .8rem; }
+.my-reports-header-actions { display: flex; gap: .35rem; }
+.my-reports-header-actions button { width: 34px; height: 34px; color: #aaa; font-size: 1.2rem; background: #242424; border: 1px solid #383838; border-radius: 9px; cursor: pointer; }
+.my-reports-list { display: grid; gap: .8rem; padding: 1rem; overflow-y: auto; }
+.my-reports-empty { display: grid; gap: .35rem; place-items: center; padding: 4rem 1rem; color: #777; text-align: center; }
+.my-reports-empty strong { color: #bbb; }
+.my-reports-empty span { font-size: .8rem; }
+.my-report-card { padding: 1rem; background: #1d1d1d; border: 1px solid #303030; border-radius: 13px; }
+.my-report-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.my-report-user { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+.my-report-user > span { display: grid; flex: 0 0 auto; place-items: center; width: 38px; height: 38px; color: #ff9ea5; font-weight: 800; background: #391b1f; border-radius: 11px; }
+.my-report-user strong, .my-report-user small { display: block; }
+.my-report-user strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.my-report-user small { margin-top: .2rem; color: #777; font-size: .68rem; }
+.my-report-status { flex: 0 0 auto; padding: .3rem .55rem; font-size: .67rem; font-weight: 750; border-radius: 99px; }
+.my-report-status.is-pending { color: #ffc95c; background: rgba(246,183,60,.12); }
+.my-report-status.is-reviewing { color: #83baff; background: rgba(73,144,232,.13); }
+.my-report-status.is-resolved { color: #58dc91; background: rgba(53,201,121,.12); }
+.my-report-status.is-rejected { color: #a9acb4; background: rgba(126,130,140,.14); }
+.my-report-reason { display: flex; justify-content: space-between; gap: .75rem; margin-top: .85rem; padding-top: .75rem; color: #777; font-size: .75rem; border-top: 1px solid #2e2e2e; }
+.my-report-reason strong { color: #d2d2d2; text-align: right; }
+.my-report-card blockquote { margin: .75rem 0 0; padding: .65rem .75rem; overflow: hidden; color: #b9b9b9; font-size: .78rem; background: #141414; border-left: 2px solid #e50914; border-radius: 0 8px 8px 0; text-overflow: ellipsis; white-space: nowrap; }
+.my-report-progress { margin: .75rem 0 0; color: #8d8d8d; font-size: .75rem; line-height: 1.5; }
+.my-report-result { margin-top: .75rem; padding: .7rem; color: #b7d9c4; background: rgba(53,201,121,.08); border: 1px solid rgba(53,201,121,.18); border-radius: 8px; }
+.my-report-result span { color: #68b583; font-size: .65rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.my-report-result p { margin: .35rem 0 0; font-size: .78rem; line-height: 1.5; }
+
+@keyframes report-toast-in { from { opacity: 0; transform: translateY(-8px); } }
+
+@media (max-width: 540px) {
+  .report-modal { padding: 1.1rem; border-radius: 16px; }
+  .report-modal-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .cinemeet-report-toast { right: 0.75rem; left: 0.75rem; text-align: center; }
+  .cinemeet-toggle-actions { align-items: flex-end; flex-direction: column-reverse; }
+  .cinemeet-my-reports-button { padding: 7px 9px; font-size: 11px; }
+  .my-reports-modal { max-height: 94vh; border-radius: 15px; }
+}

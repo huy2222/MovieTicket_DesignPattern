@@ -1,21 +1,128 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage/HomePage";
-// import MoviePage from "../pages/MoviePage/MoviePage";
-// import BookingPage from "../pages/BookingPage/BookingPage";
-// import AccountPage from "../pages/AccountPage/AccountPage";
-import LoginPage from "../pages/LoginPage/LoginPage";
-import RegisterPage from "../pages/RegisterPage/RegisterPage";
+import ProtectedRoute from "./ProtectedRoute";
+
+const MovieDetailPage = lazy(
+  () => import("../pages/MovieDetailPage/MovieDetailPage")
+);
+const MovieSearchPage = lazy(
+  () => import("../pages/MovieSearchPage/MovieSearchPage")
+);
+const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
+const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
+const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
+const CineMeetPage = lazy(() => import("../pages/CineMeetPage/CineMeetPage"));
+const BookingPage = lazy(() => import("../pages/BookingPage/BookingPage"));
+const PaymentResultPage = lazy(() => import("../pages/PaymentResultPage/PaymentResultPage"));
+const MyTicketsPage = lazy(() => import("../pages/MyTicketsPage/MyTicketsPage"));
+const StaffComboPage = lazy(() => import("../pages/Staff/StaffComboPage"));
+const DashboardPage = lazy(
+  () => import("../pages/Admin/Dashboard/DashboardPage")
+);
+const BookingManagementPage = lazy(
+  () => import("../pages/Admin/BookingManagementPage")
+);
+const EmployeeManagementPage = lazy(
+  () => import("../pages/Admin/EmployeeManagement/EmployeeManagementPage")
+);
+const AdminCinemaPage = lazy(
+  () => import("../pages/AdminCinemaPage/AdminCinemaPage")
+);
+const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
+const VoucherManagementPage = lazy(
+  () => import("../pages/Admin/VoucherManagement/VoucherManagementPage")
+);
+const MovieManagementPage = lazy(
+  () => import("../pages/Admin/MovieManagement/MovieManagementPage")
+);
+const RoomManagementPage = lazy(
+  () => import("../pages/Admin/RoomManagement/RoomManagementPage")
+);
+const ShowtimeManagementPage = lazy(
+  () => import("../pages/Admin/ShowtimeManagement/ShowtimeManagementPage")
+);
+const UserManagementPage = lazy(
+  () => import("../pages/Admin/CustomerManagement/CustomerManagementPage")
+);
+const CineMeetReportManagementPage = lazy(
+  () => import("../pages/Admin/CineMeetReportManagement/CineMeetReportManagementPage")
+);
+const ComboManagementPage = lazy(
+  () => import("../pages/Admin/ComboManagement/ComboManagementPage")
+);
+const SupportPage = lazy(() => import("../pages/SupportPage/SupportPage"));
+const FavoriteMoviesPage = lazy(
+  () => import("../pages/FavoriteMoviesPage/FavoriteMoviesPage")
+);
+
+function PageLoader() {
+  return (
+    <div className="page-loader">
+      <div className="page-loader-spinner" />
+    </div>
+  );
+}
 
 export default function AppRoutes() {
-    return (
-        <Routes>
-            <Route path="/" element={<HomePage />} />
-            {/* <Route path="/movies" element={<MoviePage />} />
-            <Route path="/bookings" element={<BookingPage />} />
-            <Route path="/account" element={<AccountPage />} /> */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-    );
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/movies" element={<MovieSearchPage />} />
+        <Route path="/movies/:id" element={<MovieDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/account" element={<ProfilePage />} />
+        <Route path="/booking/:movieId" element={<BookingPage />} />
+        <Route path="/payment/result" element={<PaymentResultPage />} />
+        <Route path="/cinemeet/payment/result" element={<PaymentResultPage />} />
+        <Route path="/my-tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
+        <Route path="/staff/combos" element={<ProtectedRoute><StaffComboPage /></ProtectedRoute>} />
+
+        <Route
+          path="/cinemeet"
+          element={
+            <ProtectedRoute>
+              <CineMeetPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <FavoriteMoviesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <SupportPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="bookings" element={<BookingManagementPage />} />
+          <Route path="employees" element={<EmployeeManagementPage />} />
+          <Route path="vouchers" element={<VoucherManagementPage />} />
+          <Route path="movies" element={<MovieManagementPage />} />
+          <Route path="cinemas" element={<AdminCinemaPage />} />
+          <Route path="rooms" element={<RoomManagementPage />} />
+          <Route path="showtimes" element={<ShowtimeManagementPage />} />
+          <Route path="users" element={<UserManagementPage />} />
+          <Route path="cinemeet-reports" element={<CineMeetReportManagementPage />} />
+          <Route path="combos" element={<ComboManagementPage />} />
+          <Route path="support" element={<SupportPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
 }
