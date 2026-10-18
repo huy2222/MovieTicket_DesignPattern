@@ -28,6 +28,7 @@ public class DatabaseSchemaInitializer implements CommandLineRunner {
             ensureGroupBookingParticipantsTable();
             syncMovieStatusColumn();
             syncNotificationTypeColumn();
+            syncBookingCombosColumns();
         } catch (RuntimeException ex) {
             System.out.println("[Schema] Migration skipped because database is temporarily unavailable: "
                     + ex.getMessage());
@@ -190,6 +191,73 @@ public class DatabaseSchemaInitializer implements CommandLineRunner {
         return "varchar".equalsIgnoreCase(dataType);
     }
 
+    private void syncBookingCombosColumns() {
+        try {
+            if (!tableExists("booking_combos")) {
+                return;
+            }
+
+            if (!columnExists("booking_combos", "price")) {
+                jdbcTemplate.execute("ALTER TABLE booking_combos ADD COLUMN price DOUBLE NOT NULL DEFAULT 0");
+                System.out.println("[Schema] Added column 'price' to table booking_combos");
+            }
+
+            if (columnExists("booking_combos", "unit_price")) {
+                jdbcTemplate.execute("UPDATE booking_combos SET price = unit_price WHERE price = 0");
+                try {
+                    jdbcTemplate.execute("ALTER TABLE booking_combos DROP COLUMN unit_price");
+                    System.out.println("[Schema] Dropped obsolete column 'unit_price' from booking_combos");
+                } catch (Exception ex) {
+                    jdbcTemplate.execute("ALTER TABLE booking_combos MODIFY COLUMN unit_price DOUBLE NULL DEFAULT 0");
+                }
+            }
+
+            if (columnExists("booking_combos", "subtotal")) {
+                try {
+                    jdbcTemplate.execute("ALTER TABLE booking_combos DROP COLUMN subtotal");
+                    System.out.println("[Schema] Dropped obsolete column 'subtotal' from booking_combos");
+                } catch (Exception ex) {
+                    jdbcTemplate.execute("ALTER TABLE booking_combos MODIFY COLUMN subtotal DOUBLE NULL DEFAULT 0");
+                }
+            }
+
+            if (!columnExists("booking_combos", "fulfillment_status")) {
+                jdbcTemplate.execute("ALTER TABLE booking_combos ADD COLUMN fulfillment_status VARCHAR(50) NOT NULL DEFAULT 'UNPAID'");
+                System.out.println("[Schema] Added column 'fulfillment_status' to table booking_combos");
+            } else {
+                jdbcTemplate.execute("ALTER TABLE booking_combos MODIFY COLUMN fulfillment_status VARCHAR(50) NOT NULL DEFAULT 'UNPAID'");
+            }
+
+            if (!columnExists("booking_combos", "received_at")) {
+                jdbcTemplate.execute("ALTER TABLE booking_combos ADD COLUMN received_at DATETIME NULL");
+                System.out.println("[Schema] Added column 'received_at' to table booking_combos");
+            }
+
+            if (!columnExists("booking_combos", "received_by_staff_id")) {
+                jdbcTemplate.execute("ALTER TABLE booking_combos ADD COLUMN received_by_staff_id BIGINT NULL");
+                System.out.println("[Schema] Added column 'received_by_staff_id' to table booking_combos");
+            }
+        } catch (Exception ex) {
+            System.out.println("[Schema] booking_combos sync skipped: " + ex.getMessage());
+        }
+    }
+
+    private boolean columnExists(String tableName, String columnName) {
+        Integer count = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM information_schema.columns
+                WHERE table_schema = DATABASE()
+                  AND table_name = ?
+                  AND column_name = ?
+                """,
+                Integer.class,
+                tableName,
+                columnName
+        );
+        return count != null && count > 0;
+    }
+
     private boolean tableExists(String tableName) {
         Integer count = jdbcTemplate.queryForObject(
                 """
@@ -204,3 +272,4 @@ public class DatabaseSchemaInitializer implements CommandLineRunner {
         return count != null && count > 0;
     }
 }
+
