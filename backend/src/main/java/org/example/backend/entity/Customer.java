@@ -11,10 +11,11 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Customer extends User{
+public class Customer extends User {
+    public Customer() {
+        super();
+    }
     private int loyaltyPoints;
 
     // Mối quan hệ với ProfileCard (1 - 1)

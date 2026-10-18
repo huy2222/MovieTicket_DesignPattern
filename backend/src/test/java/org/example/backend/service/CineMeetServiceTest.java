@@ -13,6 +13,7 @@ import org.example.backend.repository.LocationRepository;
 import org.example.backend.repository.MatchRepository;
 import org.example.backend.repository.NotificationRepository;
 import org.example.backend.repository.SwipeRepository;
+import org.example.backend.repository.CineMeetReportRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,7 @@ class CineMeetServiceTest {
     @Mock MatchRepository matchRepository;
     @Mock NotificationRepository notificationRepository;
     @Mock CompatibilityService compatibilityService;
-    @Mock org.example.backend.repository.CineMeetReportRepository reportRepository;
+    @Mock CineMeetReportRepository cineMeetReportRepository;
 
     private CineMeetService service;
 
@@ -49,7 +50,7 @@ class CineMeetServiceTest {
                 matchRepository,
                 notificationRepository,
                 compatibilityService,
-                reportRepository
+                cineMeetReportRepository
         );
     }
 

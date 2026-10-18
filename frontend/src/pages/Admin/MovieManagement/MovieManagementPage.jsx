@@ -197,6 +197,12 @@ export default function MovieManagementPage() {
   };
 
   const handleDelete = async (movie) => {
+    const isEnded = getAdminDisplayStatus(movie.status) === "ENDED";
+    if (movie.hasRelatedData && isEnded) {
+      showToast("Phim đã ở trạng thái ngừng chiếu!", "info");
+      return;
+    }
+
     const confirmMessage = movie.hasRelatedData
       ? `Phim "${movie.title}" đã có dữ liệu liên quan. Hệ thống sẽ chuyển sang trạng thái NGỪNG CHIẾU thay vì xóa. Bạn có chắc chắn?`
       : `Bạn chắc chắn muốn xóa phim "${movie.title}"? Hành động này không thể hoàn tác.`;
@@ -414,79 +420,89 @@ export default function MovieManagementPage() {
                 </tr>
               </thead>
               <tbody>
-                {movies.map((movie) => (
-                  <tr key={movie.id}>
-                    <td>
-                      <img
-                        src={getPosterUrl(movie.posterUrl)}
-                        alt={movie.title}
-                        className="movie-table-poster"
-                        onError={(e) => {
-                          e.currentTarget.src = DEFAULT_POSTER;
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <strong>{movie.title}</strong>
-                      {movie.ageRestriction && (
-                        <div className="movie-age-badge">
-                          {getAgeRatingLabel(movie.ageRestriction)}
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      {movie.genres?.length > 0
-                        ? movie.genres.join(", ")
-                        : "—"}
-                    </td>
-                    <td>{formatDuration(movie.duration)}</td>
-                    <td>{formatDate(movie.releaseDate)}</td>
-                    <td>
-                      <select
-                        className={`movie-status-select ${
-                          MOVIE_STATUS_CLASS[movie.status] || ""
-                        }`}
-                        value={getAdminDisplayStatus(movie.status)}
-                        disabled={statusUpdatingId === movie.id}
-                        onChange={(e) =>
-                          handleStatusChange(movie, e.target.value)
-                        }
-                      >
-                        <option value="NOW_SHOWING">
-                          {MOVIE_STATUS_LABELS.NOW_SHOWING}
-                        </option>
-                        <option value="COMING_SOON">
-                          {MOVIE_STATUS_LABELS.COMING_SOON}
-                        </option>
-                        <option value="ENDED">
-                          {MOVIE_STATUS_LABELS.ENDED}
-                        </option>
-                      </select>
-                    </td>
-                    <td>
-                      <div className="movie-actions">
-                        <button
-                          className="btn-action edit"
-                          onClick={() => handleEdit(movie)}
-                          title="Chỉnh sửa"
-                        >
-                          ✏️ Sửa
-                        </button>
-                        <button
-                          className="btn-action delete"
-                          onClick={() => handleDelete(movie)}
-                          title={
-                            movie.hasRelatedData
-                              ? "Ngừng chiếu"
-                              : "Xóa phim"
+                {movies.map((movie) => {
+                  const isEnded = getAdminDisplayStatus(movie.status) === "ENDED";
+                  const isStopDisabled = movie.hasRelatedData && isEnded;
+
+                  return (
+                    <tr key={movie.id}>
+                      <td>
+                        <img
+                          src={getPosterUrl(movie.posterUrl)}
+                          alt={movie.title}
+                          className="movie-table-poster"
+                          onError={(e) => {
+                            e.currentTarget.src = DEFAULT_POSTER;
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <strong>{movie.title}</strong>
+                        {movie.ageRestriction && (
+                          <div className="movie-age-badge">
+                            {getAgeRatingLabel(movie.ageRestriction)}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        {movie.genres?.length > 0
+                          ? movie.genres.join(", ")
+                          : "—"}
+                      </td>
+                      <td>{formatDuration(movie.duration)}</td>
+                      <td>{formatDate(movie.releaseDate)}</td>
+                      <td>
+                        <select
+                          className={`movie-status-select ${
+                            MOVIE_STATUS_CLASS[movie.status] || ""
+                          }`}
+                          value={getAdminDisplayStatus(movie.status)}
+                          disabled={statusUpdatingId === movie.id}
+                          onChange={(e) =>
+                            handleStatusChange(movie, e.target.value)
                           }
                         >
-                          {movie.hasRelatedData ? "⏹ Ngưng" : "🗑️ Xóa"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <option value="NOW_SHOWING">
+                            {MOVIE_STATUS_LABELS.NOW_SHOWING}
+                          </option>
+                          <option value="COMING_SOON">
+                            {MOVIE_STATUS_LABELS.COMING_SOON}
+                          </option>
+                          <option value="ENDED">
+                            {MOVIE_STATUS_LABELS.ENDED}
+                          </option>
+                        </select>
+                      </td>
+                      <td>
+                        <div className="movie-actions">
+                          <button
+                            className="btn-action edit"
+                            onClick={() => handleEdit(movie)}
+                            title="Chỉnh sửa"
+                          >
+                            ✏️ Sửa
+                          </button>
+                          <button
+                            className={`btn-action delete ${
+                              isStopDisabled ? "disabled" : ""
+                            }`}
+                            onClick={() => handleDelete(movie)}
+                            disabled={isStopDisabled}
+                            title={
+                              movie.hasRelatedData
+                                ? isEnded
+                                  ? "Phim đã ở trạng thái ngừng chiếu"
+                                  : "Ngừng chiếu"
+                                : "Xóa phim"
+                            }
+                          >
+                            {movie.hasRelatedData ? "⏹ Ngưng" : "🗑️ Xóa"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

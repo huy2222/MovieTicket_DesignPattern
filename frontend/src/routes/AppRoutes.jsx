@@ -75,6 +75,8 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<ProfilePage />} />
+        <Route path="/bookings" element={<BookingPage />} />
+        <Route path="/booking" element={<BookingPage />} />
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/payment/result" element={<PaymentResultPage />} />
         <Route path="/cinemeet/payment/result" element={<PaymentResultPage />} />

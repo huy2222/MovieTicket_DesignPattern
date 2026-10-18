@@ -14,9 +14,9 @@ import java.util.List;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class User {
+    public User() {
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // userId trong sơ đồ

@@ -102,6 +102,15 @@ public class MovieService {
 
     @Transactional(readOnly = true)
     public MoviePageResponse searchMovies(MovieSearchRequest request) {
+        if (request.getMinDuration() != null && request.getMaxDuration() != null
+                && request.getMinDuration() > request.getMaxDuration()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Thời lượng tối thiểu không được lớn hơn thời lượng tối đa");
+        }
+        if (request.getReleaseFrom() != null && request.getReleaseTo() != null
+                && request.getReleaseFrom().isAfter(request.getReleaseTo())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ngày bắt đầu không được lớn hơn ngày kết thúc");
+        }
+
         String sortByField = request.getSortBy();
         if ("title".equalsIgnoreCase(sortByField) || "name".equalsIgnoreCase(sortByField)) {
             sortByField = "title";
@@ -220,6 +229,9 @@ public class MovieService {
         Movie movie = findMovie(id);
 
         if (hasRelatedData(id)) {
+            if (movie.getStatus() == MovieStatus.ENDED) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phim đã ở trạng thái ngừng chiếu");
+            }
             movie.setStatus(MovieStatus.ENDED);
             movieRepository.save(movie);
             return MovieDeleteResponse.builder()

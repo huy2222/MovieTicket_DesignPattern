@@ -82,6 +82,9 @@ export default function Header() {
               <Link to="/movies" className="nav-link">
                 Phim
               </Link>
+              <Link to="/bookings" className="nav-link">
+                Đặt vé
+              </Link>
               <Link to="/support" className="nav-link">
                 🎧 Hỗ trợ
               </Link>

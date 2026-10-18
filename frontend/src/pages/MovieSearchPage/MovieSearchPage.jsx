@@ -72,6 +72,19 @@ export default function MovieSearchPage() {
   const [releaseTo, setReleaseTo] = useState("");
   const [sortBy, setSortBy] = useState("releaseDate_desc");
 
+  // Validation
+  const numMinDuration = minDuration !== "" ? parseInt(minDuration, 10) : null;
+  const numMaxDuration = maxDuration !== "" ? parseInt(maxDuration, 10) : null;
+  const durationError =
+    numMinDuration !== null && numMaxDuration !== null && numMinDuration > numMaxDuration
+      ? "Thời lượng tối thiểu không được lớn hơn thời lượng tối đa"
+      : "";
+
+  const dateError =
+    releaseFrom && releaseTo && releaseFrom > releaseTo
+      ? "Ngày bắt đầu không được lớn hơn ngày kết thúc"
+      : "";
+
   // Pagination
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -130,6 +143,9 @@ export default function MovieSearchPage() {
   ]);
 
   const fetchMoviesList = useCallback(async () => {
+    if (durationError || dateError) {
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
@@ -139,14 +155,18 @@ export default function MovieSearchPage() {
       setTotalElements(res.data.totalElements || 0);
     } catch (err) {
       console.error("Lỗi tìm kiếm phim:", err);
-      setError("Không thể tải danh sách phim. Vui lòng thử lại.");
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Không thể tải danh sách phim. Vui lòng thử lại.";
+      setError(message);
       setMovies([]);
       setTotalPages(0);
       setTotalElements(0);
     } finally {
       setLoading(false);
     }
-  }, [buildSearchParams]);
+  }, [buildSearchParams, durationError, dateError]);
 
   useEffect(() => {
     fetchMoviesList();
@@ -173,6 +193,9 @@ export default function MovieSearchPage() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    if (durationError || dateError) {
+      return;
+    }
     setPage(0);
     fetchMoviesList();
   };
@@ -330,8 +353,12 @@ export default function MovieSearchPage() {
                   <input
                     type="number"
                     min="0"
-                    placeholder="Từ"
-                    className="filter-input-text duration-range-input"
+                    placeholder="Thời lượng từ (phút)"
+                    title="Thời lượng từ (phút)"
+                    aria-label="Thời lượng từ (phút)"
+                    className={`filter-input-text duration-range-input ${
+                      durationError ? "input-error" : ""
+                    }`}
                     value={minDuration}
                     onChange={(e) => setMinDuration(e.target.value)}
                     id="filter-min-duration"
@@ -340,13 +367,22 @@ export default function MovieSearchPage() {
                   <input
                     type="number"
                     min="0"
-                    placeholder="Đến"
-                    className="filter-input-text duration-range-input"
+                    placeholder="đến (phút)"
+                    title="Thời lượng đến (phút)"
+                    aria-label="Thời lượng đến (phút)"
+                    className={`filter-input-text duration-range-input ${
+                      durationError ? "input-error" : ""
+                    }`}
                     value={maxDuration}
                     onChange={(e) => setMaxDuration(e.target.value)}
                     id="filter-max-duration"
                   />
                 </div>
+                {durationError && (
+                  <p className="filter-error-text" id="duration-error-msg" role="alert">
+                    ⚠️ {durationError}
+                  </p>
+                )}
               </div>
 
               {/* Release Date Range */}
@@ -357,7 +393,9 @@ export default function MovieSearchPage() {
                     <span>Từ</span>
                     <input
                       type="date"
-                      className="filter-input-text"
+                      className={`filter-input-text ${
+                        dateError ? "input-error" : ""
+                      }`}
                       value={releaseFrom}
                       onChange={(e) => setReleaseFrom(e.target.value)}
                       id="filter-release-from"
@@ -367,19 +405,27 @@ export default function MovieSearchPage() {
                     <span>Đến</span>
                     <input
                       type="date"
-                      className="filter-input-text"
+                      className={`filter-input-text ${
+                        dateError ? "input-error" : ""
+                      }`}
                       value={releaseTo}
                       onChange={(e) => setReleaseTo(e.target.value)}
                       id="filter-release-to"
                     />
                   </div>
                 </div>
+                {dateError && (
+                  <p className="filter-error-text" id="date-error-msg" role="alert">
+                    ⚠️ {dateError}
+                  </p>
+                )}
               </div>
 
               <button
                 type="submit"
                 className="btn-apply-filters"
                 id="btn-apply-filters"
+                disabled={Boolean(durationError || dateError)}
               >
                 Áp dụng bộ lọc
               </button>
@@ -421,7 +467,16 @@ export default function MovieSearchPage() {
                 <div className="search-spinner" />
                 <p>Đang tải dữ liệu phim...</p>
               </div>
-            ) : movies.length === 0 ? (
+            ) : durationError || dateError ? (
+              <div className="search-results-empty filter-error-state">
+                <span className="empty-icon" style={{ fontSize: "2.5rem" }}>⚠️</span>
+                <h3 style={{ color: "#ef4444" }}>Khoảng tìm kiếm không hợp lệ</h3>
+                <p style={{ color: "#fca5a5" }}>{durationError || dateError}</p>
+                <p style={{ color: "#9ca3af", fontSize: "0.875rem", marginTop: "0.5rem" }}>
+                  Vui lòng kiểm tra lại giá trị &quot;Từ&quot; và &quot;Đến&quot; để hiển thị danh sách phim phù hợp.
+                </p>
+              </div>
+            ) : error ? null : movies.length === 0 ? (
               <div className="search-results-empty">
                 <span className="empty-icon">🎬</span>
                 <h3>Không tìm thấy phim phù hợp</h3>
