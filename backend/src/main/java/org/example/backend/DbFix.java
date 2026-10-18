@@ -33,7 +33,7 @@ public class DbFix implements CommandLineRunner {
                     System.out.println("Found 'price' column in table: " + tableName);
                     
                     // Drop it
-                    if (!tableName.equalsIgnoreCase("combos") && !tableName.equalsIgnoreCase("showtimes")) {
+                    if (!tableName.equalsIgnoreCase("combos") && !tableName.equalsIgnoreCase("showtimes") && !tableName.equalsIgnoreCase("booking_combos")) {
                         try {
                             jdbcTemplate.execute("ALTER TABLE " + tableName + " DROP COLUMN price");
                             System.out.println("-> DROPPED 'price' from " + tableName);
