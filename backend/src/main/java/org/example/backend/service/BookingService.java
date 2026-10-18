@@ -307,7 +307,7 @@ public class BookingService {
     }
 
     @org.springframework.transaction.annotation.Transactional
-    public void handleVNPayReturn(Map<String, String> params) {
+    public Long handleVNPayReturn(Map<String, String> params) {
         if (!vnPayService.verifyPayment(params)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chữ ký không hợp lệ");
         }
@@ -378,6 +378,7 @@ public class BookingService {
             combos.forEach(c -> c.setFulfillmentStatus(org.example.backend.enums.ComboFulfillmentStatus.CANCELLED));
             bookingComboRepository.saveAll(combos);
         }
+        return booking != null ? booking.getId() : null;
     }
 
 

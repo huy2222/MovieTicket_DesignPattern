@@ -55,15 +55,16 @@ public class BookingController {
     public org.springframework.http.ResponseEntity<Void> handleVNPayReturn(@org.springframework.web.bind.annotation.RequestParam java.util.Map<String, String> params) {
         String frontendUrl = "http://localhost:5173/payment/result";
         try {
-            bookingService.handleVNPayReturn(params);
+            Long bookingId = bookingService.handleVNPayReturn(params);
             String responseCode = params.get("vnp_ResponseCode");
+            String bookingParam = (bookingId != null ? "&bookingId=" + bookingId : "");
             if ("00".equals(responseCode)) {
                 return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FOUND)
-                        .location(java.net.URI.create(frontendUrl + "?status=success"))
+                        .location(java.net.URI.create(frontendUrl + "?status=success" + bookingParam))
                         .build();
             } else {
                 return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.FOUND)
-                        .location(java.net.URI.create(frontendUrl + "?status=failed"))
+                        .location(java.net.URI.create(frontendUrl + "?status=failed" + bookingParam))
                         .build();
             }
         } catch (Exception e) {
