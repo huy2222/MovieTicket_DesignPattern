@@ -13,6 +13,18 @@ export default function HomePage() {
   const [comingSoon, setComingSoon] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem("token");
+  const userStr = localStorage.getItem("user");
+  let user = null;
+  if (token && userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch (e) {
+      // ignore
+    }
+  }
+  const isLoggedIn = Boolean(token && user);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,17 +99,19 @@ export default function HomePage() {
         )}
       </main>
 
-      <section className="cinema-promo">
-        <div className="container text-center">
-          <h2 className="promo-title">Đặt vé ngay hôm nay</h2>
-          <p className="promo-desc">
-            Chọn phim yêu thích và trải nghiệm không gian rạp chiếu hiện đại.
-          </p>
-          <Link to="/login" className="btn btn-cinema btn-lg">
-            Đăng nhập để đặt vé
-          </Link>
-        </div>
-      </section>
+      {!isLoggedIn && (
+        <section className="cinema-promo">
+          <div className="container text-center">
+            <h2 className="promo-title">Đặt vé ngay hôm nay</h2>
+            <p className="promo-desc">
+              Chọn phim yêu thích và trải nghiệm không gian rạp chiếu hiện đại.
+            </p>
+            <Link to="/login" className="btn btn-cinema btn-lg">
+              Đăng nhập để đặt vé
+            </Link>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>
