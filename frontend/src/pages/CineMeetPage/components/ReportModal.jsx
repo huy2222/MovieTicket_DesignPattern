@@ -54,7 +54,7 @@ export default function ReportModal({ target, onClose, onSuccess }) {
   };
 
   return (
-    <div className="report-modal-backdrop" onMouseDown={submitting ? undefined : onClose}>
+    <div data-testid="cinemeet-report-modal" className="report-modal-backdrop" onMouseDown={submitting ? undefined : onClose}>
       <form className="report-modal" onSubmit={handleSubmit} onMouseDown={(event) => event.stopPropagation()}>
         <div className="report-modal-heading">
           <div className="report-modal-icon" aria-hidden="true">!</div>
@@ -65,7 +65,7 @@ export default function ReportModal({ target, onClose, onSuccess }) {
           <button type="button" className="report-modal-close" onClick={onClose} disabled={submitting} aria-label="Đóng">×</button>
         </div>
 
-        <div className="report-target-preview">
+        <div data-testid="cinemeet-report-target" className="report-target-preview">
           <span className="report-target-label">Đối tượng báo cáo</span>
           <strong>{target.userName || "Người dùng CineMeet"}</strong>
           {target.type === "MESSAGE" ? (
@@ -77,7 +77,7 @@ export default function ReportModal({ target, onClose, onSuccess }) {
 
         <label className="report-field">
           <span>Lý do báo cáo <em>*</em></span>
-          <select value={reason} onChange={(event) => setReason(event.target.value)} autoFocus>
+          <select data-testid="cinemeet-report-reason" value={reason} onChange={(event) => setReason(event.target.value)} autoFocus>
             <option value="">Chọn lý do phù hợp</option>
             {REPORT_REASONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
@@ -86,6 +86,7 @@ export default function ReportModal({ target, onClose, onSuccess }) {
         <label className="report-field">
           <span>Mô tả thêm <small>({description.length}/1000)</small></span>
           <textarea
+            data-testid="cinemeet-report-description"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             maxLength={1000}
@@ -95,11 +96,11 @@ export default function ReportModal({ target, onClose, onSuccess }) {
         </label>
 
         <p className="report-privacy-note">Báo cáo được bảo mật. Người bị báo cáo sẽ không biết danh tính của bạn.</p>
-        {error ? <div className="report-modal-error" role="alert">{error}</div> : null}
+        {error ? <div data-testid="cinemeet-report-error" className="report-modal-error" role="alert">{error}</div> : null}
 
         <div className="report-modal-actions">
           <button type="button" className="report-button-secondary" onClick={onClose} disabled={submitting}>Hủy</button>
-          <button type="submit" className="report-button-danger" disabled={submitting}>
+          <button data-testid="cinemeet-report-submit" type="submit" className="report-button-danger" disabled={submitting}>
             {submitting ? "Đang gửi..." : "Gửi báo cáo"}
           </button>
         </div>

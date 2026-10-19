@@ -58,6 +58,7 @@ export default function ProfilePage() {
               <div className="relative h-40 bg-gradient-to-r from-[#e50914] via-[#c0392b] to-[#ffc83b]">
                 <div className="absolute inset-0 opacity-40 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')]"/>
                 <button
+                  data-testid="profile-edit"
                   onClick={() => setEditMode(true)}
                   className="absolute right-4 top-4 flex items-center gap-2 rounded-xl border border-white/20 bg-black/30 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-black/50"
                 >
@@ -82,7 +83,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="mb-4">
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
+                  <h1 data-testid="profile-display-name" className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
                     {data.fullName || "Chưa đặt tên"}
                   </h1>
                   <div className="flex flex-wrap gap-2">
@@ -188,6 +189,7 @@ export default function ProfilePage() {
 
             <div className="flex justify-end">
               <button
+                data-testid="profile-edit-bottom"
                 onClick={() => setEditMode(true)}
                 className="rounded-xl bg-gradient-to-r from-[#e50914] to-[#b20710] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/30 transition hover:from-[#ff3847] hover:to-[#e50914]"
               >

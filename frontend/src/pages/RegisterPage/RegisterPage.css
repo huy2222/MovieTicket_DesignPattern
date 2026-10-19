@@ -1,13 +1,17 @@
 .register-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: linear-gradient(135deg,#0f172a,#1e293b);
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
 }
 
 .register-card {
     width: 450px;
+    max-width: 100%;
     background: #1e293b;
     padding: 40px;
     border-radius: 20px;
@@ -80,6 +84,11 @@
 
 .register-btn:hover {
     background: #dc2626;
+}
+
+.register-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 .login-link {

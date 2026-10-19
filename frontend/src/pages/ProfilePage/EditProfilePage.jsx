@@ -228,6 +228,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
               Hỗ trợ ảnh JPG, PNG, WEBP. Dung lượng tối đa 15MB.
             </p>
             <input
+              data-testid="profile-avatar-input"
               type="file"
               accept="image/*"
               onChange={handleAvatarChange}
@@ -244,6 +245,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                 Tên hiển thị
               </label>
               <input
+                data-testid="profile-full-name"
                 name="fullName"
                 value={form.fullName}
                 onChange={handleChange}
@@ -257,6 +259,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                 Tuổi
               </label>
               <input
+                data-testid="profile-age"
                 name="age"
                 type="number"
                 value={form.age}
@@ -273,6 +276,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
               Giới thiệu bản thân (Bio)
             </label>
             <textarea
+              data-testid="profile-bio"
               name="bio"
               value={form.bio}
               onChange={handleChange}
@@ -333,6 +337,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                   Thành phố / Tỉnh
                 </label>
                 <select
+                  data-testid="profile-city"
                   name="city"
                   value={form.city}
                   onChange={handleCityChange}
@@ -353,6 +358,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                   Quận / Huyện
                 </label>
                 <select
+                  data-testid="profile-district"
                   name="district"
                   value={form.district}
                   onChange={handleDistrictChange}
@@ -376,6 +382,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                   Phường / Xã
                 </label>
                 <select
+                  data-testid="profile-ward"
                   name="ward"
                   value={form.ward}
                   onChange={handleChange}
@@ -411,6 +418,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
                 Số nhà, tên đường
               </label>
               <input
+                data-testid="profile-address"
                 name="address"
                 value={form.address}
                 onChange={handleChange}
@@ -425,6 +433,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
         <div className="mt-8 pt-6 border-t border-white/5 flex justify-end gap-3">
           {onCancel && (
             <button
+              data-testid="profile-cancel"
               type="button"
               onClick={onCancel}
               className="bg-white/5 hover:bg-white/10 text-slate-300 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm border border-white/5"
@@ -433,6 +442,7 @@ export default function EditProfilePage({ data, onSave, onCancel }) {
             </button>
           )}
           <button
+            data-testid="profile-save"
             type="submit"
             className="bg-gradient-to-r from-[#e50914] to-[#b20710] hover:from-[#ff3847] hover:to-[#e50914] text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-red-900/30 transition-all duration-300 transform hover:scale-[1.02] text-sm"
           >

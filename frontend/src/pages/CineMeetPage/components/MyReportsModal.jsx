@@ -32,7 +32,7 @@ export default function MyReportsModal({ reports, loading, error, onClose, onRef
 
   return (
     <div className="report-modal-backdrop" onMouseDown={onClose}>
-      <section className="my-reports-modal" onMouseDown={(event) => event.stopPropagation()}>
+      <section data-testid="cinemeet-my-reports-modal" className="my-reports-modal" onMouseDown={(event) => event.stopPropagation()}>
         <header className="my-reports-header">
           <div>
             <p className="report-modal-eyebrow">CineMeet Safety</p>
@@ -54,7 +54,7 @@ export default function MyReportsModal({ reports, loading, error, onClose, onRef
           {!loading && !error ? reports.map((report) => {
             const status = STATUS_META[report.status] || { label: report.status, detail: "" };
             return (
-              <article className="my-report-card" key={report.id}>
+              <article data-testid={`cinemeet-my-report-${report.id}`} className="my-report-card" key={report.id}>
                 <div className="my-report-card-top">
                   <div className="my-report-user">
                     <span>{report.reportedUserName?.charAt(0)?.toUpperCase() || "U"}</span>

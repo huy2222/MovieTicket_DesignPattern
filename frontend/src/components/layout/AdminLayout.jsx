@@ -52,7 +52,7 @@ export default function AdminLayout() {
     <div className="admin-layout">
       <AdminSidebar
         isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
+        onToggle={() => setSidebarOpen((open) => !open)}
       />
 
       <main className={`admin-content ${!sidebarOpen ? "expanded" : ""}`}>

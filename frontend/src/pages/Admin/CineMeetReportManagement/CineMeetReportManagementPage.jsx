@@ -31,9 +31,9 @@ const formatDateTime = (value) => value
     })
   : "—";
 
-function StatusBadge({ status }) {
+function StatusBadge({ status, testId }) {
   const meta = STATUS_META[status] || { label: status, icon: "●" };
-  return <span className={`cmr-status cmr-status--${status?.toLowerCase()}`}>{meta.icon} {meta.label}</span>;
+  return <span data-testid={testId} className={`cmr-status cmr-status--${status?.toLowerCase()}`}>{meta.icon} {meta.label}</span>;
 }
 
 export default function CineMeetReportManagementPage() {
@@ -141,8 +141,8 @@ export default function CineMeetReportManagementPage() {
   };
 
   return (
-    <div className="cmr-page">
-      {toast ? <div className={`cmr-toast cmr-toast--${toast.type}`}>{toast.message}</div> : null}
+    <div data-testid="cmr-page" className="cmr-page">
+      {toast ? <div data-testid="cmr-toast" className={`cmr-toast cmr-toast--${toast.type}`}>{toast.message}</div> : null}
 
       <header className="cmr-header">
         <div>
@@ -167,7 +167,7 @@ export default function CineMeetReportManagementPage() {
           <div className="cmr-toolbar">
             <label className="cmr-search">
               <span>⌕</span>
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm ID, người báo cáo, người bị báo cáo..." />
+              <input data-testid="cmr-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm ID, người báo cáo, người bị báo cáo..." />
             </label>
             <select value={status} onChange={(event) => setStatus(event.target.value)}>
               <option value="ALL">Tất cả trạng thái</option>
@@ -186,7 +186,7 @@ export default function CineMeetReportManagementPage() {
                 <thead><tr><th>Mã</th><th>Đối tượng</th><th>Lý do</th><th>Thời gian</th><th>Trạng thái</th></tr></thead>
                 <tbody>
                   {filteredReports.map((report) => (
-                    <tr key={report.id} className={selected?.id === report.id ? "is-selected" : ""} onClick={() => openReport(report)}>
+                    <tr data-testid={`cmr-row-${report.id}`} key={report.id} className={selected?.id === report.id ? "is-selected" : ""} onClick={() => openReport(report)}>
                       <td><span className="cmr-id">#{report.id}</span></td>
                       <td>
                         <div className="cmr-user-cell">
@@ -205,13 +205,13 @@ export default function CineMeetReportManagementPage() {
           )}
         </div>
 
-        <aside className={`cmr-detail ${selected ? "is-open" : ""}`}>
+        <aside data-testid={selected ? `cmr-detail-${selected.id}` : "cmr-detail-empty"} className={`cmr-detail ${selected ? "is-open" : ""}`}>
           {!selected ? (
             <div className="cmr-detail-placeholder"><span>◫</span><h3>Chọn một báo cáo</h3><p>Thông tin chi tiết và thao tác xử lý sẽ xuất hiện tại đây.</p></div>
           ) : (
             <>
               <div className="cmr-detail-header">
-                <div><p>Báo cáo #{selected.id}</p><StatusBadge status={selected.status} /></div>
+                <div><p>Báo cáo #{selected.id}</p><StatusBadge testId="cmr-detail-status" status={selected.status} /></div>
                 <button type="button" onClick={() => setSelected(null)} aria-label="Đóng chi tiết">×</button>
               </div>
 
@@ -273,22 +273,22 @@ export default function CineMeetReportManagementPage() {
                 ) : null}
 
                 {selected.status === "PENDING" ? (
-                  <button type="button" className="cmr-primary-action" disabled={busy} onClick={() => runUpdate(() => startCineMeetReportReview(selected.id), "Đã tiếp nhận báo cáo")}>{busy ? "Đang cập nhật..." : "Tiếp nhận xử lý"}</button>
+                  <button data-testid="cmr-start-review" type="button" className="cmr-primary-action" disabled={busy} onClick={() => runUpdate(() => startCineMeetReportReview(selected.id), "Đã tiếp nhận báo cáo")}>{busy ? "Đang cập nhật..." : "Tiếp nhận xử lý"}</button>
                 ) : null}
 
                 {selected.status === "REVIEWING" ? (
                   <section className="cmr-resolution-box">
-                    <label><span>Ghi chú xử lý <em>*</em></span><textarea rows={4} maxLength={1000} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Ghi lại căn cứ và kết quả xác minh..." /></label>
+                    <label><span>Ghi chú xử lý <em>*</em></span><textarea data-testid="cmr-resolution-note" rows={4} maxLength={1000} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Ghi lại căn cứ và kết quả xác minh..." /></label>
                     {error ? <div className="cmr-inline-error">{error}</div> : null}
                     <div className="cmr-resolution-actions">
-                      <button type="button" className="cmr-reject" disabled={busy} onClick={() => handleResolve("REJECTED")}>Từ chối báo cáo</button>
-                      <button type="button" className="cmr-resolve" disabled={busy} onClick={() => handleResolve("RESOLVED")}>Xác nhận vi phạm</button>
+                      <button data-testid="cmr-reject" type="button" className="cmr-reject" disabled={busy} onClick={() => handleResolve("REJECTED")}>Từ chối báo cáo</button>
+                      <button data-testid="cmr-resolve" type="button" className="cmr-resolve" disabled={busy} onClick={() => handleResolve("RESOLVED")}>Xác nhận vi phạm</button>
                     </div>
                   </section>
                 ) : null}
 
                 {["RESOLVED", "REJECTED"].includes(selected.status) ? (
-                  <section className="cmr-result"><span>Kết quả xử lý</span><p>{selected.resolutionNote}</p></section>
+                  <section data-testid="cmr-result" className="cmr-result"><span>Kết quả xử lý</span><p>{selected.resolutionNote}</p></section>
                 ) : null}
               </div>
             </>

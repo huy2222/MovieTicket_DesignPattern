@@ -364,6 +364,8 @@ export default function MovieDetailPage() {
                 <div className="detail-actions mt-4">
                   <Link
                     to={`/booking/${movie.id}`}
+                    id="book-movie-now"
+                    data-testid="book-movie-now"
                     className="btn btn-cinema btn-lg flex-grow-1"
                     style={{ padding: '15px 40px', fontSize: '1.2rem', textTransform: 'uppercase', textAlign: 'center' }}
                   >

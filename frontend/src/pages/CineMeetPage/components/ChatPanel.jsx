@@ -603,13 +603,14 @@ export default function ChatPanel({ match, onClose, onReport }) {
           {error ? <p className="mb-2 text-xs text-red-400">{error}</p> : null}
           <div className="flex gap-2">
             <input
+              data-testid="cinemeet-message-input"
               value={content}
               onChange={(event) => setContent(event.target.value)}
               maxLength={1000}
               placeholder="Nhập tin nhắn..."
               className="min-w-0 flex-1 rounded-xl border border-[#3a3a3a] bg-[#222] px-3 py-2.5 text-sm text-white outline-none focus:border-[#e50914]"
             />
-            <button type="submit" disabled={!content.trim() || busy} className="rounded-xl bg-[#e50914] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff1a26] disabled:opacity-50">
+            <button data-testid="cinemeet-message-send" type="submit" disabled={!content.trim() || busy} className="rounded-xl bg-[#e50914] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ff1a26] disabled:opacity-50">
               Gửi
             </button>
           </div>
