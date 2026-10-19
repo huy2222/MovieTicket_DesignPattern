@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./TicketCard.css";
 
 const STATUS_LABELS = {
@@ -14,6 +15,7 @@ function formatCurrency(amount) {
 
 export default function TicketCard({ booking }) {
   const {
+    bookingId,
     movieTitle,
     posterUrl,
     showDate,
@@ -24,7 +26,19 @@ export default function TicketCard({ booking }) {
     status,
     totalAmount,
     ticketCount,
+    bookingDate,
   } = booking;
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e) => {
+    e.stopPropagation();
+    if (bookingId) {
+      navigator.clipboard.writeText(String(bookingId));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div className="ticket-card" data-status={status}>
@@ -39,6 +53,22 @@ export default function TicketCard({ booking }) {
 
       {/* Info */}
       <div className="ticket-info">
+        <div className="ticket-header-meta">
+          <div className="ticket-booking-id-badge" title="Mã đơn dùng để tra cứu vé và nhận combo bắp nước">
+            <span className="booking-id-tag">MÃ ĐƠN:</span>
+            <span className="booking-id-value">#{bookingId}</span>
+            <button
+              type="button"
+              className="ticket-copy-btn"
+              onClick={handleCopy}
+              title="Sao chép mã đơn"
+            >
+              {copied ? "✅" : "📋"}
+            </button>
+          </div>
+          {bookingDate && <span className="ticket-booking-date">Đặt: {bookingDate}</span>}
+        </div>
+
         <h3 className="ticket-movie-title">{movieTitle}</h3>
 
         <div className="ticket-details-grid">

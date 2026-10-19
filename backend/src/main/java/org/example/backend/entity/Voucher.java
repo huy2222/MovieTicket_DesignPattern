@@ -31,12 +31,14 @@ public class Voucher {
     private LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 50)
     private VoucherStatus status;
 
     // ===== Decorator Pattern Fields =====
 
     // Loại voucher — dùng để biết nên dùng Decorator nào
     @Enumerated(EnumType.STRING)
+    @Column(name = "voucher_type", length = 50)
     private VoucherType voucherType;
 
     // Phần trăm giảm giá (dùng cho PERCENT_DISCOUNT và MIN_TICKET_DISCOUNT)

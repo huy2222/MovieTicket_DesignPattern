@@ -77,6 +77,66 @@
   min-width: 0;
 }
 
+/* Header Meta: Booking ID + Booking Date */
+.ticket-header-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+
+.ticket-booking-id-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.ticket-booking-id-badge:hover {
+  background: rgba(229, 9, 20, 0.2);
+  border-color: rgba(229, 9, 20, 0.5);
+}
+
+.booking-id-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ff6b6b;
+}
+
+.booking-id-value {
+  font-family: var(--mono, monospace);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+
+.ticket-copy-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.ticket-copy-btn:hover {
+  transform: scale(1.2);
+}
+
+.ticket-booking-date {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .ticket-movie-title {
   font-size: 1.1rem;
   font-weight: 700;

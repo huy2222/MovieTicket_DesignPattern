@@ -18,7 +18,9 @@ public class DatabaseFixRunner {
             jdbcTemplate.execute("ALTER TABLE tickets MODIFY status VARCHAR(255)");
             jdbcTemplate.execute("ALTER TABLE payments MODIFY status VARCHAR(255)");
             jdbcTemplate.execute("ALTER TABLE movies MODIFY status VARCHAR(255)");
-            System.out.println("✅ Đã tự động sửa kiểu dữ liệu các cột status thành VARCHAR(255) trong Database!");
+            jdbcTemplate.execute("ALTER TABLE vouchers MODIFY voucher_type VARCHAR(255)");
+            jdbcTemplate.execute("ALTER TABLE vouchers MODIFY status VARCHAR(255)");
+            System.out.println("✅ Đã tự động sửa kiểu dữ liệu các cột status và voucher_type thành VARCHAR(255) trong Database!");
         } catch (Exception e) {
             System.err.println("⚠️ Thông báo Database Fix Runner: " + e.getMessage());
         }
