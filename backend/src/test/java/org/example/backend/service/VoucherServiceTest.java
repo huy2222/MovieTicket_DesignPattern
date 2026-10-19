@@ -232,4 +232,31 @@ class VoucherServiceTest {
 
         verify(voucherRepository).save(overdueVoucher);
     }
+
+    @Test
+    @DisplayName("TC08 - applyVoucher MAX_CAP_PERCENT_DISCOUNT gioi han muc giam toi da")
+    void applyVoucher_MaxCapPercentDiscount_CapsDiscountAtMaxAmount() {
+        Voucher maxCapVoucher = new Voucher();
+        maxCapVoucher.setId(100L);
+        maxCapVoucher.setCode("MAXCAP50");
+        maxCapVoucher.setStatus(VoucherStatus.ACTIVE);
+        maxCapVoucher.setVoucherType(VoucherType.MAX_CAP_PERCENT_DISCOUNT);
+        maxCapVoucher.setDiscountPercent(50.0);
+        maxCapVoucher.setMaxDiscountAmount(30000.0);
+        maxCapVoucher.setMinimumOrderAmount(50000.0);
+        maxCapVoucher.setUsageLimit(10);
+        maxCapVoucher.setUsedCount(0);
+        maxCapVoucher.setStartTime(LocalDateTime.now().minusDays(1));
+        maxCapVoucher.setEndTime(LocalDateTime.now().plusDays(10));
+
+        when(voucherRepository.findByCode("MAXCAP50")).thenReturn(Optional.of(maxCapVoucher));
+
+        // Truong hop 1: Don 200k, giam 50% = 100k > tran 30k -> giam 30k, con 170k
+        double priceExceedingCap = voucherService.applyVoucher("MAXCAP50", 200000.0, 2);
+        assertEquals(170000.0, priceExceedingCap, 0.01,
+                "Don 200,000 giam 50% co tran 30,000 thi gia sau giam phai la 170,000");
+
+        // Truong hop 2: Don duoi minimumOrderAmount (40k < 50k) -> nem RuntimeException
+        assertThrows(RuntimeException.class, () -> voucherService.applyVoucher("MAXCAP50", 40000.0, 1));
+    }
 }

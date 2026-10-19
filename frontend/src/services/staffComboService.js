@@ -6,7 +6,7 @@ import api from "../api/axiosConfig";
  * @param {string} bookingCode 
  */
 export const searchComboOrders = async (bookingCode) => {
-  const response = await api.get(`/api/staff/combo-orders/search`, {
+  const response = await api.get(`/staff/combo-orders/search`, {
     params: { bookingCode },
   });
   return response.data;
@@ -17,7 +17,7 @@ export const searchComboOrders = async (bookingCode) => {
  * @param {number|string} comboOrderId - ID của bookingCombo
  */
 export const confirmComboReceived = async (comboOrderId) => {
-  const response = await api.patch(`/api/staff/combo-orders/${comboOrderId}/receive`);
+  const response = await api.patch(`/staff/combo-orders/${comboOrderId}/receive`);
   return response.data;
 };
 
@@ -25,6 +25,6 @@ export const confirmComboReceived = async (comboOrderId) => {
  * Lấy danh sách các Combo đang hoạt động
  */
 export const getActiveCombos = async () => {
-  const response = await api.get(`/api/combos`);
+  const response = await api.get(`/combos`);
   return response.data;
 };
