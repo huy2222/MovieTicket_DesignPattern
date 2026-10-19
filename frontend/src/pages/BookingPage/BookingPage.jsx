@@ -314,6 +314,8 @@ export default function BookingPage() {
                   return (
                     <button
                       key={seat.id}
+                      data-testid={`seat-${seat.rowLabel}${seat.columnNumber}`}
+                      aria-label={`Ghế ${seat.rowLabel}${seat.columnNumber}`}
                       className={seatClass}
                       onClick={() => toggleSeat(seat)}
                       disabled={isBooked}
@@ -522,6 +524,8 @@ export default function BookingPage() {
                     return (
                       <button 
                         key={dateStr} 
+                        data-testid={`booking-date-${dateStr}`}
+                        data-date={dateStr}
                         className={`date-btn ${selectedDate === dateStr ? 'active' : ''}`}
                         onClick={() => setSelectedDate(dateStr)}
                       >
@@ -538,6 +542,7 @@ export default function BookingPage() {
                     {cities.map(city => (
                       <button
                         key={city}
+                        data-testid="booking-city"
                         className={`city-btn ${selectedCity === city ? 'active' : ''}`}
                         onClick={() => setSelectedCity(city)}
                       >
@@ -560,6 +565,7 @@ export default function BookingPage() {
                             return (
                               <button 
                                 key={st.id} 
+                                data-testid={`showtime-${st.id}`}
                                 className="showtime-btn"
                                 onClick={() => handleSelectShowtime(st)}
                               >
@@ -593,6 +599,8 @@ export default function BookingPage() {
                     <h3 className="total-price">Tổng tiền: {calculateTotal().toLocaleString('vi-VN')} VNĐ</h3>
                   </div>
                   <button 
+                    id="booking-next"
+                    data-testid="booking-next"
                     className="btn btn-primary next-btn" 
                     disabled={selectedSeats.length === 0}
                     onClick={() => setStep(3)}

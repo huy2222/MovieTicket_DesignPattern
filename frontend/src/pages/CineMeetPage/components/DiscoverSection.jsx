@@ -12,6 +12,7 @@ export default function DiscoverSection({ profiles, loading, locationStatus, onU
         </div>
         <div className="flex flex-col items-end gap-2">
           <button
+            data-testid="cinemeet-refresh-location"
             type="button"
             onClick={onUseCurrentLocation}
             className="rounded-lg border border-[#3a3a3a] bg-[#2a2a2a] px-3 py-2 text-sm text-white transition hover:bg-[#333]"

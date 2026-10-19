@@ -3,7 +3,10 @@
    ============================================ */
 .admin-sidebar {
   width: 260px;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
   background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0a0a0a 100%);
   border-right: 1px solid rgba(229, 9, 20, 0.15);
   display: flex;
@@ -12,6 +15,7 @@
   top: 0;
   left: 0;
   z-index: 1000;
+  overflow: hidden;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -21,6 +25,7 @@
 
 /* Logo Area */
 .sidebar-logo {
+  flex-shrink: 0;
   padding: 1.5rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
@@ -55,43 +60,86 @@
 /* Toggle Button */
 .sidebar-toggle {
   position: fixed;
-  top: 5.75rem;
-  left: 244px;
-  width: 34px;
-  height: 42px;
-  background: rgba(229, 9, 20, 0.14);
-  border: 1px solid rgba(229, 9, 20, 0.3);
-  border-radius: 0 10px 10px 0;
+  top: 50%;
+  left: 260px;
+  width: 36px;
+  height: 56px;
+  padding: 0;
+  background: #220b0e;
+  border: 1px solid rgba(229, 9, 20, 0.45);
+  border-left: 0;
+  border-radius: 0 12px 12px 0;
   color: var(--text-light);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 1001;
-  transition: all 0.3s ease;
-  font-size: 1.75rem;
-  line-height: 1;
+  transform: translateY(-50%);
+  transition:
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
 .sidebar-toggle:hover {
   background: var(--accent-red);
   border-color: var(--accent-red);
-  transform: scale(1.05);
+  box-shadow: 0 10px 28px rgba(229, 9, 20, 0.3);
+}
+
+.sidebar-toggle:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 3px;
 }
 
 .sidebar-toggle.collapsed {
-  left: 0.75rem;
-  border-radius: 10px;
+  left: 0;
+}
+
+.sidebar-toggle-icon {
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-toggle.collapsed .sidebar-toggle-icon {
+  transform: rotate(180deg);
 }
 
 /* Navigation */
 .sidebar-nav {
   flex: 1;
+  min-height: 0;
   padding: 1rem 0;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(229, 9, 20, 0.55) rgba(255, 255, 255, 0.04);
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(229, 9, 20, 0.55);
+  border-radius: 999px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-red);
 }
 
 .sidebar-section-label {
@@ -150,6 +198,7 @@
 
 /* Footer */
 .sidebar-footer {
+  flex-shrink: 0;
   padding: 1rem 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -178,20 +227,8 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .admin-sidebar {
-    transform: translateX(-260px);
-  }
-
-  .admin-sidebar.open {
-    transform: translateX(0);
-  }
-
   .sidebar-toggle {
-    top: 1rem;
-    left: 0.75rem;
-  }
-
-  .sidebar-toggle.open {
-    left: 244px;
+    width: 34px;
+    height: 52px;
   }
 }

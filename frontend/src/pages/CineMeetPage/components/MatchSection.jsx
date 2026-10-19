@@ -21,7 +21,7 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
             const favoriteGenres = match.favoriteGenres ?? match.peer?.favoriteGenres ?? [];
 
             return (
-            <div key={match.matchId} className="rounded-xl border border-[#2a2a2a] bg-[#131313] p-3">
+            <div key={match.matchId} data-testid={`cinemeet-match-${match.matchId}`} className="rounded-xl border border-[#2a2a2a] bg-[#131313] p-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full bg-[#2a2a2a]">
@@ -37,6 +37,7 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                   </div>
                 </div>
                 <button
+                  data-testid={`cinemeet-chat-${match.matchId}`}
                   type="button"
                   onClick={() => onOpenChat(match)}
                   className="rounded-lg border border-[#e50914]/60 px-3 py-1.5 text-xs font-medium text-[#ff6b74] transition hover:bg-[#e50914]/15"
@@ -65,6 +66,7 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
 
               <div className="mt-3 flex gap-2">
                 <button
+                  data-testid={`cinemeet-close-${match.matchId}`}
                   type="button"
                   onClick={() => onCloseMatch(match.matchId)}
                   className="rounded-lg border border-[#3a3a3a] bg-[#252525] px-3 py-1.5 text-xs text-white hover:bg-[#303030]"
@@ -72,6 +74,7 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                   Đóng
                 </button>
                 <button
+                  data-testid={`cinemeet-block-${match.matchId}`}
                   type="button"
                   onClick={() => onBlockMatch(match.matchId)}
                   className="rounded-lg border border-[#e50914]/60 bg-[#321417] px-3 py-1.5 text-xs text-[#ff7d85] hover:bg-[#3e1a1f]"
@@ -79,6 +82,7 @@ export default function MatchSection({ matches, loading, disabled, onCloseMatch,
                   Chặn
                 </button>
                 <button
+                  data-testid={`cinemeet-report-match-${match.matchId}`}
                   type="button"
                   onClick={() => onReport(match)}
                   className="ml-auto rounded-lg px-3 py-1.5 text-xs text-[#888] hover:bg-red-500/10 hover:text-red-300"

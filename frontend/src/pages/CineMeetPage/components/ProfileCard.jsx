@@ -3,7 +3,7 @@ export default function ProfileCard({ profile, onSkip, onLike, onReport }) {
   const cinema = (profile.frequentCinemas ?? [])[0] || "Chưa có dữ liệu";
 
   return (
-    <article className="w-[280px] md:w-[300px] shrink-0 rounded-2xl border border-[#2a2a2a] bg-[#1a1a1a] shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_38px_rgba(0,0,0,0.5)]">
+    <article data-testid={`cinemeet-profile-${profile.customerId}`} className="w-[280px] md:w-[300px] shrink-0 rounded-2xl border border-[#2a2a2a] bg-[#1a1a1a] shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_38px_rgba(0,0,0,0.5)]">
       <div className="relative h-[200px] overflow-hidden rounded-t-2xl bg-[#242424]">
         {profile.avatar ? (
           <img src={profile.avatar} alt={profile.name} className="h-full w-full object-cover" />
@@ -31,6 +31,7 @@ export default function ProfileCard({ profile, onSkip, onLike, onReport }) {
 
         <div className="grid grid-cols-2 gap-2 pt-2">
           <button
+            data-testid={`cinemeet-skip-${profile.customerId}`}
             type="button"
             onClick={onSkip}
             className="rounded-xl border border-[#3a3a3a] bg-[#2a2a2a] px-3 py-2 text-sm font-medium text-white transition hover:border-[#4a4a4a] hover:bg-[#343434]"
@@ -38,6 +39,7 @@ export default function ProfileCard({ profile, onSkip, onLike, onReport }) {
             Bỏ qua
           </button>
           <button
+            data-testid={`cinemeet-like-${profile.customerId}`}
             type="button"
             onClick={onLike}
             className="rounded-xl border border-[#e50914] bg-[#e50914] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#ff1b28]"
@@ -46,6 +48,7 @@ export default function ProfileCard({ profile, onSkip, onLike, onReport }) {
           </button>
         </div>
         <button
+          data-testid={`cinemeet-report-${profile.customerId}`}
           type="button"
           onClick={onReport}
           className="w-full rounded-lg px-3 py-1.5 text-xs text-[#8f8f8f] transition hover:bg-red-500/10 hover:text-red-300"

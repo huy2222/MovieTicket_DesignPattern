@@ -96,6 +96,7 @@ export default function MyTicketsPage() {
         <div className="my-tickets-tabs">
           {TABS.map((tab) => (
             <button
+              data-testid={`my-tickets-tab-${tab.key}`}
               key={tab.key}
               className={`my-tickets-tab ${activeTab === tab.key ? "active" : ""}`}
               onClick={() => setActiveTab(tab.key)}
@@ -115,7 +116,7 @@ export default function MyTicketsPage() {
             <p>Đang tải danh sách vé...</p>
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div className="my-tickets-empty">
+          <div data-testid="my-tickets-empty" className="my-tickets-empty">
             <div className="my-tickets-empty-icon">🎫</div>
             <h3>
               {activeTab === "ALL"

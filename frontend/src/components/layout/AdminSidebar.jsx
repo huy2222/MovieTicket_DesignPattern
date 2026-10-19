@@ -131,15 +131,34 @@ export default function AdminSidebar({ isOpen, onToggle }) {
   return (
     <>
       <button
-        className={`sidebar-toggle ${!isOpen ? "collapsed" : ""}`}
+        className={`sidebar-toggle ${isOpen ? "open" : "collapsed"}`}
         onClick={onToggle}
         title={isOpen ? "Thu gọn sidebar" : "Mở sidebar"}
         aria-label={isOpen ? "Thu gọn sidebar" : "Mở sidebar"}
+        aria-expanded={isOpen}
+        aria-controls="admin-sidebar"
+        type="button"
       >
-        {isOpen ? "‹" : "›"}
+        <svg
+          className="sidebar-toggle-icon"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
       </button>
 
-      <aside className={`admin-sidebar ${!isOpen ? "collapsed" : ""}`}>
+      <aside
+        id="admin-sidebar"
+        className={`admin-sidebar ${isOpen ? "open" : "collapsed"}`}
+      >
         <div className="sidebar-logo">
           <h1 className="sidebar-logo-text">Cinemax</h1>
           <span className="sidebar-logo-badge">Quản trị</span>

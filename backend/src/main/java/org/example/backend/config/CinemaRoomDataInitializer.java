@@ -44,6 +44,27 @@ public class CinemaRoomDataInitializer implements CommandLineRunner {
 
             seedRooms(cinema, cinemaSeed.rooms());
         }
+
+        repairRoomsWithoutSeats();
+    }
+
+    /**
+     * Older/demo data can contain a room with a configured seat count but no
+     * rows in the seats table. Such a room can have showtimes, but the booking
+     * page has nothing to render. Rebuild only completely missing layouts so
+     * existing seat IDs and bookings are never replaced.
+     */
+    private void repairRoomsWithoutSeats() {
+        for (Room room : roomRepository.findAll()) {
+            if (room.getSeatCount() <= 0 || (room.getSeats() != null && !room.getSeats().isEmpty())) {
+                continue;
+            }
+
+            room.setSeats(roomFactory.createSeats(room, room.getSeatCount(), room.getRoomType()));
+            roomRepository.save(room);
+            System.out.println("[Seed] Created " + room.getSeatCount()
+                    + " missing seats for room " + room.getId() + " (" + room.getName() + ")");
+        }
     }
 
     private java.util.Optional<Cinema> findCinema(CinemaSeed seed) {

@@ -41,7 +41,7 @@ export default function TicketCard({ booking }) {
   };
 
   return (
-    <div className="ticket-card" data-status={status}>
+    <div className="ticket-card" data-testid={`ticket-${booking.bookingId}`} data-status={status}>
       {/* Poster */}
       <div className="ticket-poster">
         {posterUrl ? (

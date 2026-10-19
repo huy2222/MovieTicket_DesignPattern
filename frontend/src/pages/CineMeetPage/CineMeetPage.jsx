@@ -370,7 +370,7 @@ export default function CineMeetPage() {
             {error}
           </div>
         ) : null}
-        {notice ? <div className="cinemeet-report-toast" role="status">{notice}</div> : null}
+        {notice ? <div data-testid="cinemeet-report-toast" className="cinemeet-report-toast" role="status">{notice}</div> : null}
 
         <section className={`cinemeet-toggle-card ${cineMeetEnabled ? "is-enabled" : "is-disabled"}`}>
           <div className="flex min-w-0 items-center gap-4">
@@ -385,11 +385,12 @@ export default function CineMeetPage() {
             </div>
           </div>
           <div className="cinemeet-toggle-actions">
-            <button type="button" className="cinemeet-my-reports-button" onClick={openMyReports}>
+            <button data-testid="cinemeet-my-reports" type="button" className="cinemeet-my-reports-button" onClick={openMyReports}>
               Báo cáo của tôi
               {myReports.some((report) => report.status === "REVIEWING") ? <i /> : null}
             </button>
             <button
+              data-testid="cinemeet-toggle"
               type="button"
               onClick={handleToggleCineMeet}
               disabled={savingCineMeet || !profileData}
